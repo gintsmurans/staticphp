@@ -1,0 +1,18 @@
+
+body{font-family: Verdana; font-size: 12px;}
+.hover{cursor: pointer;}
+#loader{display: none;}
+
+.translation_table
+{
+    width: 1000px;
+
+    empty-cells: show; 
+    border-collapse: collapse; 
+    border-color: #DDDDDD;
+}
+.translation_table td{height: 25px;}
+
+
+.password{text-align: center; padding-top: 100px;}
+.password *{vertical-align: middle;}
