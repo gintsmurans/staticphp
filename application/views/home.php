@@ -1,6 +1,6 @@
 <?php load('views/header'); ?>
 
-        <h1>Welcome to the Frame test page</h1>
+        <h1>Welcome to the Framework test page</h1>
         
         <div class="content">
         
