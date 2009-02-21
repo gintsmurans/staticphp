@@ -21,7 +21,7 @@ function change(td, id, lang)
     // Change to input
     td.innerHTML = (
         lang == 'scope' || lang == 'ident' ? 
-        '<input type="text" value="'+td.innerHTML+'" onblur="save(null, this, \''+id+'\', \''+lang+'\');" onkeyup=" if (event.keyCode == 27){ cancel(this, \''+id+'\', \''+lang+'\'); } " />' : 
+        '<input type="text" value="'+td.innerHTML+'" onblur="save(null, this, \''+id+'\', \''+lang+'\');" onkeyup=" if (event.keyCode == 27){ cancel(this, \''+id+'\', \''+lang+'\'); }else if(event.keyCode === 13){ this.blur(); } " />' : 
         '<textarea cols="100" rows="20" onblur="save(null, this, \''+id+'\', \''+lang+'\');" onkeyup=" if (event.keyCode == 27){ cancel(this, \''+id+'\', \''+lang+'\'); } ">'+td.innerHTML+'</textarea>'        
     );
 
@@ -64,7 +64,7 @@ function cancel(input, id, lang)
 
 function insert_line()
 {
-    html = '<tr>';
+    html = '<tr><td></td>';
 
     for (var k in tr_keys)
     {
@@ -74,4 +74,28 @@ function insert_line()
     html += '</tr>';
     
     $('#insert').before(html);
+}
+
+
+function delete_item(id, data)
+{
+    if (data == null)
+    {
+        if (id != null)
+        {
+            $('#loader').show();
+            $.post('<?php echo site_url('language/delete', 'ajax'); ?>', {id: id}, function(data){ delete_item(null, data); }, 'json');
+        }
+    }
+    else
+    {
+        $('#loader').hide();
+
+        if (data.id != null)
+        {
+            $('#item-'+data.id).
+                css('background', '#faf189').
+                fadeOut('slow', function(){$('#item-'+data.id).remove();});
+        }
+    }
 }

@@ -66,7 +66,16 @@ class mlanguage_admin
             languages::exec("UPDATE `languages` SET $set WHERE `id` = ?", array_values($data));
         }
     }
-
+    
+    
+    
+    public static function delete($id)
+    {
+        if (!empty($id))
+        {
+            languages::exec("DELETE FROM `languages` WHERE `id` = ?", array($id));
+        }
+    }
 }
 
 

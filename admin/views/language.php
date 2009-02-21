@@ -13,13 +13,15 @@
 
             <table border="1" cellspacing="0" cellpadding="4" align="center" class="translation_table">
                 <tr>
+                    <th></th>
                     <th>
                         Scope<br />
 
                         <?php if (!empty($scopes)): ?>
                         <select onchange="location.href = '<?php echo site_url('language/index/'); ?>' + this.value;">
+                            <option value="0"></option>
                             <?php foreach ($scopes as $scope): ?>
-                                <option value="<?php echo $scope->scope; ?>"<?php if (router::segment(2) == $scope->scope){ echo ' selected="selected"'; }?>><?php echo $scope->scope; ?></option>
+                            <option value="<?php echo $scope->scope; ?>"<?php if (router::segment(2) == $scope->scope){ echo ' selected="selected"'; }?>><?php echo $scope->scope; ?></option>
                             <?php endforeach; ?>
                         </select>
                         <?php endif; ?>
@@ -30,7 +32,8 @@
                     <?php endforeach; ?>
                 </tr>
             <?php if (!empty($translations)): foreach($translations as $item): ?>
-                <tr>
+                <tr id="item-<?php echo $item->id; ?>">
+                    <td class="hover item-delete" onclick="if (confirm('Do you really want to delete this record?')){ delete_item('<?php echo $item->id; ?>'); }"></td>
                     <td class="hover" onclick="change(this, '<?php echo $item->id; ?>', 'scope');"><?php echo $item->scope; ?></td>
                     <td class="hover" onclick="change(this, '<?php echo $item->id; ?>', 'ident');"><?php echo $item->ident; ?></td>
 

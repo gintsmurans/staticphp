@@ -16,3 +16,10 @@ body{font-family: Verdana; font-size: 12px;}
 
 .password{text-align: center; padding-top: 100px;}
 .password *{vertical-align: middle;}
+
+
+.item-delete
+{
+    width: 18px;
+    background: url('images/delete.png') center center no-repeat;
+}
