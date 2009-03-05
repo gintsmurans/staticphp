@@ -1,6 +1,6 @@
 <?php
 /*
-    "Frame" - Little PHP Framework
+    "StaticPHP Framework" - Little PHP Framework
 
 ---------------------------------------------------------------------------------
     This program is free software: you can redistribute it and/or modify
@@ -28,16 +28,26 @@ $config['db']['password'] = '';
 $config['db']['autoload'] = false;
 
 
-// Set debug
-$config['debug'] = true;
 
+
+// Debug IP
+$config['debug_ip'] = '::1';
+
+// Client IP, 
+$config['client_ip'] = $_SERVER['REMOTE_ADDR'];
+
+
+// Set debug
+$config['debug'] = false;
 
 // Print script execution time
 $config['timer'] = false;
 
 
+
+
 // Set base_url
-$config['base_url'] = 'AUTO';
+$config['base_url'] = 'auto';
 
 
 
@@ -77,25 +87,6 @@ $config['autoload'] = array('helpers/system');
 // they must be in correct sequence. For example, if url is /ajax/test/en/open/29, where ajax and test is prefixes, 
 // then array should look like this - array('ajax', 'test'), anyway url can look like /test/en/open/29, too.
 $config['url_prefixes'] = array('ajax');
-
-
-
-// Routing, each next item overrides current one
-// format: 'regular expression' => '[controller directory / ]controller class name | method name'
-// Leave first one for default controller
-$config['routing'] = array(
-
-	// Default Controller and Method names
-	'' => 'home/index',
-	
-	
-	// Handle javascript files with php
-	// Put whatever expression equals for js directory, but remember to change it in .htaccess file too
-	// Just comment it out, if you don't want php to handle javascript files
-    'js/.+?\.js' => 'js/index',
-    
-    // Rest of the routing
-);
 
 
 ?>

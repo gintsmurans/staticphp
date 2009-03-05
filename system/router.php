@@ -1,6 +1,6 @@
 <?php
 /*
-    "Frame" - Little PHP Framework
+    "StaticPHP Framework" - Little PHP Framework
 
 ---------------------------------------------------------------------------------
     This program is free software: you can redistribute it and/or modify
@@ -79,6 +79,8 @@ class router
     {
     	header("HTTP/1.0 404 Not Found");
     	load('views/E404');
+
+    	exit;
     }
 
 
@@ -93,7 +95,7 @@ class router
     {
         // Get urls
         $domain_url = 'http'.(isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '').'://'.$_SERVER['HTTP_HOST'].'/';
-        $script_path = self::trim_slashes(dirname($_SERVER['SCRIPT_NAME']), true);
+        $script_path = self::trim_slashes((g('config')->base_url === 'auto' ? dirname($_SERVER['SCRIPT_NAME']) : g('config')->base_url), true);
         
         // Get request string        
         self::$url = urldecode(g('config')->request_uri);
@@ -103,10 +105,7 @@ class router
 
         // Set config
         g('config')->domain_url = $domain_url;
-        if (g('config')->base_url == 'AUTO')
-        {
-            g('config')->base_url = $domain_url.(!empty($script_path) ? $script_path.'/' : '');
-        }
+        g('config')->base_url = $domain_url.(!empty($script_path) ? $script_path.'/' : '');
     }
     
     

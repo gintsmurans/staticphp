@@ -1,6 +1,6 @@
 <?php
 /*
-    "Frame" - Little PHP Framework
+    "StaticPHP Framework" - Little PHP Framework
 
 ---------------------------------------------------------------------------------
     This program is free software: you can redistribute it and/or modify
@@ -87,7 +87,7 @@ function load($file, $vars = array(), $prefix = null, $return = false)
         $tmp = file_get_contents($file);
         if (!empty($vars) && is_array($vars))
         {
-            $tmp = str_replace(array_keys($vars), $vars, $tmp);
+            $tmp = strtr($tmp, $vars);
         }
 
         return $tmp;
@@ -147,7 +147,7 @@ function l($id, $replace = array(), $output = true)
     // Replace with some new values, if provided
     if (!empty($replace))
     {
-        $text = vsprintf($text, $replace);
+        $text = strtr($text, (array) $replace);
     }
 
 
@@ -208,5 +208,18 @@ function &g($var = null, $set = null)
 		return $vars;
 	}
 }
+
+
+
+// AUTOLOAD
+function __autoload($class_name)
+{
+    if ($class_name === 'db')
+    {
+        include_once SYS_PATH.'db.php';
+        DB::init();
+    }
+}
+
 
 ?>

@@ -34,7 +34,7 @@ function save(data, input, id, lang)
     if (data == null && input != null)
     {
         $('#loader').show();
-        $.post('<?php echo site_url('language/set', 'ajax'); ?>', {id: id, lang: lang, value: input.value}, function(data){ save(data); }, 'json');
+        $.post('<?php echo site_url('language/set', 'ajax'); ?>', {id: id, lang: lang, value: encodeURIComponent(input.value)}, function(data){ save(data); }, 'json');
         
         var td = input.parentNode;
         td.innerHTML = input.value;

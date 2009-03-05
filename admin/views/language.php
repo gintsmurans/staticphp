@@ -44,7 +44,7 @@
             <?php endforeach; endif; ?>
             
                 <tr id="insert">
-                    <td colspan="<?php echo count($tr_keys) + 2; ?>" align="right"><input type="button" value="Insert line" onclick="insert_line()" /></td>
+                    <td colspan="<?php echo count($tr_keys) + 3; ?>" align="right"><input type="button" value="Insert line" onclick="insert_line()" /></td>
                 </tr>
             </table>
             

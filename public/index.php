@@ -1,6 +1,6 @@
 <?php
 /*
-    "Frame" - Little PHP Framework
+    "StaticPHP Framework" - Little PHP Framework
 
 ---------------------------------------------------------------------------------
     This program is free software: you can redistribute it and/or modify
@@ -31,13 +31,18 @@ define('PUBLIC_PATH', dirname(__FILE__).DS);
 define('BASE_PATH', realpath(PUBLIC_PATH.'..'.DS).DS);
 
 
-// include config file
+// include config files
 include_once PUBLIC_PATH.'config.php';
+include_once PUBLIC_PATH.'routing.php';
 
 
 // Define system paths
 define('APP_PATH', BASE_PATH.trim($config['app_path'], '/\\').DS);
 define('SYS_PATH', BASE_PATH.trim($config['sys_path'], '/\\').DS);
+
+
+// Set debug
+$config['debug'] = ($config['debug'] || $config['client_ip'] === (string) $config['debug_ip']);
 
 
 // Include & init error handler class

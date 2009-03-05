@@ -1,6 +1,6 @@
 <?php
 /*
-    "Frame" - Little PHP Framework
+    "StaticPHP Framework" - Little PHP Framework
 
 ---------------------------------------------------------------------------------
     This program is free software: you can redistribute it and/or modify

@@ -11,6 +11,8 @@ class language
 
     public static function construct()
     {
+        load('helpers/forms');
+
         load(ADMIN_PATH.'models/mlanguage_admin');
 
         if (empty($_SESSION['language_auth']))
@@ -30,7 +32,7 @@ class language
         
         if (ispost())
         {
-            if (g('config')->ladmin_password == sha1($_POST['p']))
+            if (g('config')->admin_password == sha1($_POST['p']))
             {
                 $_SESSION['language_auth'] = true;
                 $output = array('done' => true);
@@ -90,7 +92,7 @@ class language
     {
         if (ispost(array('id', 'lang', 'value')))
         {
-            $new_id = mlanguage_admin::set(array($_POST['lang'] => $_POST['value']), $_POST['id']);
+            $new_id = mlanguage_admin::set(array($_POST['lang'] => rawurldecode($_POST['value'])), $_POST['id']);
             echo json_encode(array('id' => $new_id));
         }
         else
