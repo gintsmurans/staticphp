@@ -339,7 +339,6 @@ class fv
 		{
 			return false;
 		}
-
 		echo (!empty($field) ? ' checked="checked"' : '');
 	}
 
@@ -369,7 +368,6 @@ class fv
         return false;
       }
     }
-
     return $field;
   }
   
