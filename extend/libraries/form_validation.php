@@ -106,16 +106,23 @@ class fv
       foreach (self::$rules[$name]['filter'] as $item)
       {
         $matches = $args = array();
+        $call = null;
+        
+        // Get args from []
         if (preg_match('/(\w+)\[(.*)\]/', $item, $matches))
         {
           $item = $matches[1];
           $args = explode(',', $matches[2]);
+          $args = str_replace('&#44;', ',', $args);
         }
-
-        if (function_exists($item))
+        
+        // Add value as first argument
+        array_unshift($args, self::$post[$name]);
+        
+        // Call function
+        if (($tmp = self::call_func($item, $args)) != false)
         {
-          array_unshift($args, self::$post[$name]);
-          self::$post[$name] = call_user_func_array($item, $args);
+          self::$post[$name] = $tmp;
         }
       }
     }
@@ -129,23 +136,23 @@ class fv
       foreach (self::$rules[$name]['valid'] as $item)
       {
         $matches = $args = array();
+        $call = null;
+
+        // Get args from []
         if (preg_match('/(\w+)\[(.*)\]/', $item, $matches))
         {
           $item = $matches[1];
           $args = explode(',', $matches[2]);
           $args = str_replace('&#44;', ',', $args);
         }
-
-        if (in_array($item, array_keys(self::$default_errors)))
+        
+        // Add value as first argument
+        array_unshift($args, self::$post[$name]);
+        
+        // Call function
+        if (self::call_func($item, $args) === false)
         {
-          if (method_exists('fv', 'valid_'.$item))
-          {
-            array_unshift($args, self::$post[$name]);
-            if (call_user_func_array(array('fv', 'valid_'.$item), $args) === false)
-            {
-              self::set_error($item, $name, self::$post[$name]);
-            }
-          }
+          self::set_error($item, $name, self::$post[$name]);
         }
       }
     }
@@ -158,7 +165,7 @@ class fv
     self::$errors[$name][] = &$tmp;
 
     $tmp = strtr(
-      (!empty(self::$rules[$name]['errors'][$type]) ? self::$rules[$name]['errors'][$type] : self::$default_errors[$type]), 
+      (!empty(self::$rules[$name]['errors'][$type]) ? self::$rules[$name]['errors'][$type] : (empty(self::$default_errors[$type]) ? '' : self::$default_errors[$type])), 
       array('!name' => $name, '!value' => $value)
     );
   }
@@ -169,41 +176,124 @@ class fv
   }
   
   
+  private static function call_func($func, $args = null)
+  {
+    // Check for callable function
+    if (method_exists('fv', $func))
+    {
+      $call = array('fv', $func);
+    }
+    elseif (function_exists($func))
+    {
+      $call = $func;
+    }
+
+    // Call method / function
+    if (!empty($call))
+    {
+      return call_user_func_array($call, $args);
+    }
+  }
+
+
+
+
+  /**
+  *
+  *   FILTER METHODS
+  *
+  **/
+
+  public static function xss($string)
+  {
+    // Decode urls
+    $string = rawurldecode($string);
+    
+    // Escape non ending tags
+    $string = preg_replace('#(<)([a-z]+[^>]*(</[a-z]*>|</|$))#iu', '&lt;$2', $string);
+    
+    // Avoid php tags
+    $string = str_ireplace(array("\t", '<?php', '<?', '?>'),  array(' ', '&lt;?php', '&lt;?', '?&gt;'), $string);
+    
+    // Clean empty tags
+    $string = preg_replace('#<(?!input¦br¦img¦hr¦\/)[^>]*>\s*<\/[^>]*>#iu', '', $string);
+
+    $string = str_ireplace(array("&amp;", "&lt;", "&gt;"), array("&amp;amp;", "&amp;lt;", "&amp;gt;"), $string);
+    
+    // fix &entitiy\n;
+    $string = preg_replace('#(&\#*\w+)[\x00-\x20]+;#u', "$1;", $string);
+    $string = preg_replace('#(&\#x*)([0-9A-F]+);*#iu', "$1$2;", $string);
+
+    $string = html_entity_decode($string, ENT_COMPAT, "UTF-8");
+    
+    // remove any attribute starting with "on" or xmlns
+    $string = preg_replace('#(<[^>]+[\x00-\x20\"\'\/])\ ?(on|xmlns)[^>]*?>#iUu', "$1>", $string);
+    
+    // remove javascript: and vbscript: protocol
+    $string = preg_replace('#([a-z]*)[\x00-\x20\/]*=[\x00-\x20\/]*([\`\'\"]*)[\x00-\x20\/]*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iUu', '$1=$2nojavascript...', $string);
+    $string = preg_replace('#([a-z]*)[\x00-\x20\/]*=[\x00-\x20\/]*([\`\'\"]*)[\x00-\x20\/]*v[\x00-\x20]*b[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iUu', '$1=$2novbscript...', $string);
+    $string = preg_replace('#([a-z]*)[\x00-\x20\/]*=[\x00-\x20\/]*([\`\'\"]*)[\x00-\x20\/]*-moz-binding[\x00-\x20]*:#Uu', '$1=$2nomozbinding...', $string);
+    $string = preg_replace('#([a-z]*)[\x00-\x20\/]*=[\x00-\x20\/]*([\`\'\"]*)[\x00-\x20\/]*data[\x00-\x20]*:#Uu', '$1=$2nodata...', $string);
+    
+    //remove any style attributes, IE allows too much stupid things in them, eg.
+    //<span style="width: expression(alert('Ping!'));"></span> 
+    // and in general you really don't want style declarations in your UGC
+
+    $string = preg_replace('#(<[^>]+[\x00-\x20\"\'\/])(class|lang|style|size|face)[^>]*>#iUu', "$1>", $string);
+
+    //remove namespaced elements (we do not need them...)
+    $string = preg_replace('#</*\w+:\w[^>]*>#i', "", $string);
+    
+    //remove really unwanted tags
+    //do {
+    //    $oldstring = $string;
+        $string = preg_replace('#</*(applet|meta|xml|blink|link|style|script|embed|object|iframe|frame|frameset|ilayer|layer|bgsound|title|base)[^>]*(>|<|$)#i', "", $string);
+    //} while ($oldstring != $string);
+    
+    return $string;
+  }
+
+
+
+
+  /**
+  *
+  *   VALIDATION METHODS
+  *
+  **/
   
-  // --- VALIDATION METHODS ---
-  
-  public static function valid_required($value)
+  public static function required($value)
   {
     return !empty($value);
   }
 
-  public static function valid_email($email)
+  public static function email($email)
   {
     return (bool) preg_match("/^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/ix", $email);
   }
 
-  public static function valid_date($value, $format = '^(19|20)[0-9]{2}[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$')
+  public static function date($value, $format = '^(19|20)[0-9]{2}[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$')
   {
     return self::valid_format($value, $format);
   }
   
-  public static function valid_ipv4($value)
+  public static function ipv4($value)
   {
     return (bool) preg_match('/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/', $value);
   }
   
-  public static function valid_ipv6($value)
+  public static function ipv6($value)
   {
     return (bool) preg_match('/^(^(([0-9A-F]{1,4}(((:[0-9A-F]{1,4}){5}::[0-9A-F]{1,4})|((:[0-9A-F]{1,4}){4}::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,1})|((:[0-9A-F]{1,4}){3}::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,2})|((:[0-9A-F]{1,4}){2}::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,3})|(:[0-9A-F]{1,4}::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,4})|(::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,5})|(:[0-9A-F]{1,4}){7}))$|^(::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,6})$)|^::$)|^((([0-9A-F]{1,4}(((:[0-9A-F]{1,4}){3}::([0-9A-F]{1,4}){1})|((:[0-9A-F]{1,4}){2}::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,1})|((:[0-9A-F]{1,4}){1}::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,2})|(::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,3})|((:[0-9A-F]{1,4}){0,5})))|([:]{2}[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,4})):|::)((25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{0,2})\.){3}(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{0,2})$$/', $value);
   }
   
-  public static function valid_credit_card($value)
+  public static function credit_card($value)
   {
     $value = preg_replace('/[^0-9]+/', '', $value);
     return (bool) preg_match('/^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6011[0-9]{12}|3(?:0[0-5]|[68][0-9])[0-9]{11}|3[47][0-9]{13})$/', $value);
   }
   
-  public static function valid_length($value, $from, $to = null)
+  public static function length($value, $from, $to = null)
   {
     $len = strlen($value);
 
@@ -228,28 +318,28 @@ class fv
     }
   }
   
-  public static function valid_equal($value, $equal, $cast = false)
+  public static function equal($value, $equal, $cast = false)
   {
     return ($cast == false ? $value === $equal : $value == $equal);
   }
 
-  public static function valid_format($value, $format = '')
+  public static function format($value, $format = '')
   {
     $format = str_replace('/', '\\/', $format);
     return (bool) preg_match("/$format/", $value);
   }
   
-  public static function valid_integer($value)
+  public static function integer($value)
   {
     return (bool) preg_match('/^\d+$/x', $value);
   }
   
-  public static function valid_float($value, $delimiter = '.')
+  public static function float($value, $delimiter = '.')
   {
     return (bool) preg_match('/^\d+'.preg_quote($delimiter, '/').'?\d+$/', $value);
   }
   
-  public static function valid_string($value)
+  public static function string($value)
   {
     return (bool) preg_match('/^[a-z]+$/i', $value);
   }
@@ -257,22 +347,22 @@ class fv
 
 
 
-  public static function valid_upload_required($upload)
+  public static function upload_required($upload)
   {
     return (is_array($upload) && !empty($upload['name']) && !empty($upload['tmp_name']) && !empty($upload['size']));
   }
   
-  public static function valid_upload_size($upload, $size)
+  public static function upload_size($upload, $size)
   {
-    if (self::valid_upload_required($upload))
+    if (self::upload_required($upload))
     {
       return ($upload['size'] <= $size);
     }
   }
   
-  public static function valid_upload_ext($upload, $extensions)
+  public static function upload_ext($upload, $extensions)
   {
-    if (self::valid_upload_required($upload))
+    if (self::upload_required($upload))
     {
       $ext = explode(' ', $extensions);
       $tmp = explode('.', $upload['name']);
@@ -280,10 +370,15 @@ class fv
       return in_array(end($tmp), $ext);
     }
   }
-  
-  
-  
-  // --- FORM HELPERS ----
+
+
+
+
+  /**
+  *
+  *   FORM HELPERS
+  *
+  **/
 
   public static function isget()
   {
