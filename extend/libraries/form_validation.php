@@ -1,6 +1,28 @@
 <?php
 /*
     "StaticPHP Framework" - Little PHP Framework
+    
+    Form Validation class
+    Simple usage:
+      
+      fv::init($_POST);
+      fv::add_rules(array(
+        'email' => array(
+          'valid' => array('required', 'email'),
+          'filter' => array('trim'),
+        ),
+      ));
+      
+      // This will print out all errors
+      if (fv::validate() == false)
+      {
+        print_r(fv::$errors_all);
+      }
+      
+      // And html code, this will output first error for "email" field
+      <?php if (($test = fv::get_error('email')) != false): ?>
+        <div class="error"><?php echo $test[0]; ?></div>
+      <?php endif; ?>
 
 ---------------------------------------------------------------------------------
     This program is free software: you can redistribute it and/or modify
@@ -225,7 +247,7 @@ class fv
     $string = preg_replace('#(&\#x*)([0-9A-F]+);*#iu', "$1$2;", $string);
 
     $string = html_entity_decode($string, ENT_COMPAT, "UTF-8");
-    
+
     // remove any attribute starting with "on" or xmlns
     $string = preg_replace('#(<[^>]+[\x00-\x20\"\'\/])\ ?(on|xmlns)[^>]*?>#iUu', "$1>", $string);
     
