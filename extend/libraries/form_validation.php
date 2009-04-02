@@ -515,7 +515,4 @@ class fv
   
 }
 
-
-echo fv::set_friendly("sdfjks dh sdhfk jdhsfjk sdhf \\/';';");
-
 ?>
