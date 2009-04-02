@@ -23,6 +23,12 @@
       <?php if (($test = fv::get_error('email')) != false): ?>
         <div class="error"><?php echo $test[0]; ?></div>
       <?php endif; ?>
+      
+      // Another usage
+      <div><input type="text" name="email"<?php fv::set_input('email'); ?> /></div>
+      
+      // And even this one
+      <div><input type="text" name="test[]"<?php fv::set_input(array('test', 0)); ?> /></div>
 
 ---------------------------------------------------------------------------------
     This program is free software: you can redistribute it and/or modify
