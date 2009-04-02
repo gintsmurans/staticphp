@@ -231,6 +231,26 @@ class fv
   *   FILTER METHODS
   *
   **/
+  
+  public static function set_plain($string)
+  {
+    return preg_replace('/[^a-z_\-0-9\ ]+/iu', '', $string);
+  }
+
+  // Requires iconv
+  public static function set_friendly($string)
+  {
+    setlocale(LC_ALL, 'en_US.UTF8');
+
+    $string = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
+    $string = trim($string);
+    $string = strip_tags($string);
+    $string = strtolower($string);
+    $string = str_replace(array(' ', "'"), '-', $string);
+    $string = preg_replace('/[^a-z_\-0-9]*/', '', $string);
+
+    return $string;
+  }
 
   public static function xss($string)
   {
@@ -324,17 +344,16 @@ class fv
   public static function length($value, $from, $to = null)
   {
     $len = strlen($value);
-
     switch (true)
     {
       case ($to == '>'):
         return ($len >= $from);
       break;
-      
+
       case ($to == '>'):
         return ($len <= $from);
       break;
-      
+
       case (ctype_digit($to)):
         return ($len >= $from && $len <= $to);
       break;
@@ -369,7 +388,7 @@ class fv
   
   public static function string($value)
   {
-    return (bool) preg_match('/^[a-z]+$/i', $value);
+    return (bool) preg_match('/^[a-z]+$/iu', $value);
   }
 
 
@@ -495,5 +514,8 @@ class fv
   }
   
 }
+
+
+echo fv::set_plain("sdfjks dh sdhfk jdhsfjk sdhf \\/';';");
 
 ?>
