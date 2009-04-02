@@ -243,11 +243,11 @@ class fv
     setlocale(LC_ALL, 'en_US.UTF8');
 
     $string = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
-    $string = trim($string);
     $string = strip_tags($string);
     $string = strtolower($string);
     $string = str_replace(array(' ', "'"), '-', $string);
     $string = preg_replace('/[^a-z_\-0-9]*/', '', $string);
+    $string = trim($string, '-');
 
     return $string;
   }
@@ -516,6 +516,6 @@ class fv
 }
 
 
-echo fv::set_plain("sdfjks dh sdhfk jdhsfjk sdhf \\/';';");
+echo fv::set_friendly("sdfjks dh sdhfk jdhsfjk sdhf \\/';';");
 
 ?>
