@@ -432,6 +432,7 @@ class fv
     return (strtolower($_SERVER['REQUEST_METHOD']) === 'get');
   }
   
+  // $isset checks against $_POST not local self::$post
   public static function ispost($isset = null)
   {
     // Check if post
@@ -445,7 +446,7 @@ class fv
     {
       foreach((array) $isset as $key)
       {
-        if (!isset(self::$post[$key]))
+        if (!isset($_POST[$key]))
         {
           return false;
         }
