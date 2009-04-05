@@ -31,7 +31,7 @@ $config['db']['autoload'] = false;
 
 
 // Debug IP
-$config['debug_ip'] = '::1';
+$config['debug_ip'] = array('::1', '127.0.0.1');
 
 // Client IP, 
 $config['client_ip'] = $_SERVER['REMOTE_ADDR'];
