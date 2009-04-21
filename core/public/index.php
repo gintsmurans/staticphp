@@ -43,7 +43,6 @@ define('SYS_PATH', BASE_PATH.trim($config['sys_path'], '/\\').DS);
 
 // Set debug
 $config['debug'] = ($config['debug'] || in_array($config['client_ip'], (array) $config['debug_ip']));
-echo $config['debug'];
 
 
 // Include & init error handler class

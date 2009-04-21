@@ -148,10 +148,7 @@ class fv
         array_unshift($args, self::$post[$name]);
         
         // Call function
-        if (($tmp = self::call_func($item, $args)) != false)
-        {
-          self::$post[$name] = $tmp;
-        }
+        self::$post[$name] = self::call_func($item, $args);
       }
     }
   }
@@ -232,9 +229,9 @@ class fv
   *
   **/
   
-  public static function set_plain($string)
+  public static function set_plain($string, $valid = '')
   {
-    return preg_replace('/[^a-z_\-0-9\ ]+/iu', '', $string);
+    return preg_replace('/[^a-z_\-0-9\ \p{L}'.$valid.']+/iu', '', $string);
   }
 
   // Requires iconv
@@ -312,6 +309,7 @@ class fv
   
   public static function required($value)
   {
+    $value = trim($value);
     return !empty($value);
   }
 
@@ -388,7 +386,7 @@ class fv
   
   public static function string($value)
   {
-    return (bool) preg_match('/^[a-z]+$/iu', $value);
+    return (bool) preg_match('/^[a-z\p{L}]+$/iu', $value);
   }
 
 
