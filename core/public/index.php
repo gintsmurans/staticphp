@@ -71,10 +71,14 @@ if (g('config')->db['autoload'] === true)
 
 
 
-
 // Init language class
 include_once SYS_PATH.'languages.php';
 Languages::init();
+
+
+
+// Include router class
+include_once SYS_PATH.'router.php';
 
 
 
@@ -86,8 +90,7 @@ foreach(g('config')->autoload as $autoload)
 
 
 
-// Include & Init router class
-include_once SYS_PATH.'router.php';
+// Init router
 router::init();
 
 
