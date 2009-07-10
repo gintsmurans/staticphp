@@ -21,29 +21,10 @@
 */
 
 
+// Start a session
+session_start();
 
-class home
-{
-  // Variables to pass to a view, I like to keep them in global array
-  private static $vars = array();
-
-
-  // This is called every time controller loads    
-  public static function __construct__()
-  {
-  }
-
-
-  // Default method
-  public static function index()
-  {
-    // Enable timer output
-    g('config')->timer = true;
-
-    // Load view
-    // Pass array (key => value) as second parameter, to get variables available in your view
-    load('views/home', self::$vars);
-  }    
-}
+// Send some headers
+header('Content-type: text/html; charset=utf-8');
 
 ?>

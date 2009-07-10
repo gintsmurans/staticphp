@@ -24,4 +24,5 @@
 
         </div>
 
-<?php load('views/footer'); ?>
+    </body>
+</html>
