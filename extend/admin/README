@@ -6,3 +6,4 @@ users_table.sql
 And you are done.
 
 Now open http://your_domain/path_to_framework/public/language
+default username and password is root:root
