@@ -23,6 +23,7 @@
 
 // Start a session
 session_start();
+// sessions::init(); // Using sessions class
 
 // Send some headers
 header('Content-type: text/html; charset=utf-8');

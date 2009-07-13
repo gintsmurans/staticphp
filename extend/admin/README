@@ -2,7 +2,7 @@
 To use this little administration you need to !! merge !! these directories with fresh StaticPHP framework installation (excluding this README file:).
 Next step is to set up config/admin.php file properly.
 config.php -> $config['autoload'] = array('helpers/system', 'models/user_model', 'libraries/form_validation');
-users_table.sql
+table_users.sql
 And you are done.
 
 Now open http://your_domain/path_to_framework/public/language

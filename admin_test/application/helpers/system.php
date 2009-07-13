@@ -22,7 +22,8 @@
 
 
 // Start a session
-session_start();
+// session_start();
+sessions::init();
 
 // Send some headers
 header('Content-type: text/html; charset=utf-8');

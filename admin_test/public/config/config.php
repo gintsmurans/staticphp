@@ -80,7 +80,7 @@ $config['language_path'] = 'languages.sq3';
 // Autoload
 // Loads from application directory without .php extension
 // You can put full path/to/file too, only without .php
-$config['autoload'] = array('helpers/system', 'models/user_model', 'libraries/form_validation');
+$config['autoload'] = array('libraries/sessions', 'helpers/system', 'models/user_model', 'libraries/form_validation');
 
 
 // Load additional config files
