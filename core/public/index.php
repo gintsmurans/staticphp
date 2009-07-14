@@ -32,13 +32,13 @@ define('BASE_PATH', realpath(PUBLIC_PATH.'..'.DS).DS);
 
 
 // include config files
-include_once PUBLIC_PATH.'config/config.php';
-include_once PUBLIC_PATH.'config/routing.php';
+include PUBLIC_PATH.'config/config.php';
+include PUBLIC_PATH.'config/routing.php';
 
 // Autoload additional config files
 foreach($config['load_configs'] as $tmp)
 {
-  include_once PUBLIC_PATH.'config/'. $tmp .'.php';
+  include PUBLIC_PATH.'config/'. $tmp .'.php';
 }
 
 
@@ -50,16 +50,17 @@ define('SYS_PATH', BASE_PATH.trim($config['sys_path'], '/\\').DS);
 // Set debug
 $config['debug'] = ($config['debug'] || in_array($config['client_ip'], (array) $config['debug_ip']));
 
-
 // Include & init error handler class
-include_once SYS_PATH.'error_handler.php';
+include SYS_PATH.'error_handler.php';
 eh::init($config['debug']);
 
 
-
 // Include system default helper
-include_once SYS_PATH.'helper.php';
+include SYS_PATH.'helper.php';
 
+
+// Load all available languages
+include (is_dir($config['lang_path']) ? $config['lang_path'] : APP_PATH . $config['lang_path']) . '/config.php';
 
 
 // Set config array within g() function
@@ -67,32 +68,24 @@ g('config', $config);
 unset($config);
 
 
-
 // Init database, if autoload === true
 if (g('config')->db['autoload'] === true)
 {
-  include_once SYS_PATH.'db.php';
+  include SYS_PATH.'db.php';
   DB::init();
 }
 
 
-
-// Init language class
-include_once SYS_PATH.'languages.php';
-Languages::init();
-
-
-
 // Include router class
-include_once SYS_PATH.'router.php';
-
+include SYS_PATH.'router.php';
 
 
 // Autoload files from config
-foreach(g('config')->autoload as $tmp)
+foreach(g('config')->load_files as $tmp)
 {
   load($tmp);
 }
+
 
 // No need for $tmp variable anymore
 unset($tmp);

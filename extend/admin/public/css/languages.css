@@ -23,3 +23,14 @@ body{font-family: Verdana; font-size: 12px;}
     width: 18px;
     background: url('images/delete.png') center center no-repeat;
 }
+
+
+
+.add-language{
+  padding: 20px 0;
+  text-align: center;
+}
+.aslink{
+  cursor: pointer;
+  text-decoration: underline;
+}

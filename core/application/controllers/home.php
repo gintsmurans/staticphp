@@ -31,6 +31,7 @@ class home
   // This is called every time controller loads    
   public static function __construct__()
   {
+
   }
 
 

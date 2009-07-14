@@ -44,6 +44,24 @@ function make_path_string($string)
 
 
 
+function load_lang($file, $lang = '')
+{
+  if (empty($lang))
+  {
+    $lang = g('config')->language;
+  }
+
+  if (!is_file(APP_PATH .'languages/'. $lang .'/'. $file . '_lang.php'))
+  {
+    $lang = g('config')->lang_default;
+  }
+  
+  // include APP_PATH .'languages/'. $lang .'/'. $file . '_lang.php';
+  load('languages/'. $lang .'/'. $file . '_lang');
+}
+
+
+
 function load($file, $vars = array(), $prefix = null, $return = false)
 {
   // Make filename
@@ -98,60 +116,6 @@ function load($file, $vars = array(), $prefix = null, $return = false)
     }
 
     include $file;
-  }
-}
-
-
-
-
-function l($id, $replace = array(), $output = true)
-{
-  // Check if not empty $id
-  if (empty($id))
-  {
-    return false;
-  }
-
-
-// ---- SELECT FROM DB -----
-  $result = languages::query("SELECT `".g('config')->language."` FROM `languages` WHERE `ident` = ? LIMIT 1", array($id))->fetch();
-
-  if (!empty($result))
-  {
-    $text = $result->{g('config')->language};
-  }
-
-  // Else insert into languages db as NOT-FOUND
-  else
-  {
-    languages::exec("INSERT INTO `languages` (`scope`, `ident`) VALUES (?, ?)", array('NOT-FOUND', $id));
-    $text = $id;
-  }
-// ---- !SELECT FROM DB -----
-
-
-
-// ---- PREPARE -----
-  // Replace with some new values, if provided
-  if (!empty($replace))
-  {
-    $text = strtr($text, (array) $replace);
-  }
-
-
-  // Replace with predefined values
-  $text = str_replace(array('%base_url', '%site_url'), array(base_url(), site_url()), $text);
-// ---- !PREPARE -----
-
-
-  // Output or return
-  if ($output === true)
-  {
-    echo $text;
-  }
-  else
-  {
-    return $text;
   }
 }
 

@@ -9,3 +9,13 @@ table, table th, table td{ empty-cells: show; border-collapse: collapse; border-
 
 .copyright{text-align: right; color: #AAA; border-top: 2px #EEEEEE solid; margin-top: 50px;}
 .copyright a{color: #AAA; text-decoration: none;}
+
+
+img{ vertical-align: middle; }
+a img{ border: none; }
+
+.nojs{ font-size: 14px; font-weight: bold; text-align: center; }
+
+
+.msg_failed{ color: #FF0000; font-size: 14px; font-weight: bold; text-align: center; }
+.msg_ok{ color: #a5d11e; font-size: 14px; font-weight: bold; text-align: center; }

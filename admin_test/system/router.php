@@ -95,7 +95,7 @@ class router
     {
         // Get urls
         $domain_url = 'http'.(isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '').'://'.$_SERVER['HTTP_HOST'].'/';
-        $script_path = self::trim_slashes((g('config')->base_url === 'auto' ? dirname($_SERVER['SCRIPT_NAME']) : g('config')->base_url), true);
+        $script_path = self::trim_slashes(dirname($_SERVER['SCRIPT_NAME']), true);
         
         // Get request string        
         self::$url = urldecode(g('config')->request_uri);
@@ -106,14 +106,14 @@ class router
 
         // Set config
         g('config')->domain_url = $domain_url;
-        g('config')->base_url = $domain_url.(!empty($script_path) ? $script_path.'/' : '');
+        g('config')->base_url = (g('config')->base_url === 'auto' ? $domain_url.(!empty($script_path) ? $script_path.'/' : '') : g('config')->base_url);
     }
     
     
     private static function split_segments()
     {
         $prefixes = array();
-        $lang_prefixes = array_keys(g('config')->languages);
+        $lang_prefixes = g('config')->languages;
         $segments = explode('/', self::$url);
         
         
@@ -134,11 +134,11 @@ class router
         {
             if (g('config')->lang_redirect === true)
             {
-                self::redirect(site_url(g('config')->lang_default_prefix . '/' . implode('/', $segments), implode('/', $prefixes), false), false, true);
+                self::redirect(site_url(g('config')->lang_default . '/' . implode('/', $segments), implode('/', $prefixes), false), false, true);
             }
             else
             {
-                $lang = g('config')->lang_default_prefix;
+                $lang = g('config')->lang_default;
             }
         }
         else
@@ -158,6 +158,13 @@ class router
 
         // Unset local ones
         unset($segments, $prefixes, $lang);
+
+
+        // Autoload default language files
+        foreach(g('config')->load_languages as $tmp)
+        {
+          load_lang($tmp);
+        }
     }
 
 

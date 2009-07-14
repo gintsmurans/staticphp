@@ -3,7 +3,7 @@
 
 // Path to productio site language file
 // In application directory
-$config['language_path'] = '/Library/WebServer/Documents/framework/admin_test/application/languages.sq3';
+$config['lang_path'] = '/Library/WebServer/Documents/framework/admin_test/application/languages/';
 
 
 $config['access'] = array(

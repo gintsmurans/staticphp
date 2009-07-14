@@ -138,6 +138,12 @@ class db
       }
     }
   }
+  
+  
+  public static function last_insert_id()
+  {
+    return self::$db_link->lastInsertId();
+  }
 }
 
 ?>

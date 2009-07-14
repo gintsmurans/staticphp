@@ -50,40 +50,15 @@ $config['base_url'] = 'auto';
 
 
 
-// Set application and system paths
-$config['app_path'] = 'application';
+// Set paths
 $config['sys_path'] = 'system';
+$config['app_path'] = 'application';
+$config['lang_path'] = 'languages';
 
 
 // Set where requested uri and query string will be taken from
 $config['request_uri'] =& $_SERVER['REQUEST_URI'];
 $config['query_string'] =& $_SERVER['QUERY_STRING'];
-
-
-// Languages
-// Available language prefixes
-$config['languages'] = array('en' => 'english');
-
-// Default language prefix
-$config['lang_default_prefix'] = 'en';
-
-// Redirect or not if language is not provided
-$config['lang_redirect'] = false;
-
-// Path to language file
-// In application directory
-$config['language_path'] = 'languages.sq3';
-
-
-// Autoload
-// Loads from application directory without .php extension
-// You can put full path/to/file too, only without .php
-$config['autoload'] = array('helpers/system');
-
-
-// Load additional config files
-// Loads from public/config directory without .php extension
-$config['load_configs'] = array();
 
 
 // URL prefixes can be useful when for example identifying ajax requests, 
@@ -92,5 +67,31 @@ $config['load_configs'] = array();
 // then array should look like this - array('ajax', 'test'), anyway url can look like /test/en/open/29, too.
 $config['url_prefixes'] = array('ajax');
 
+
+// Languages
+// Default language
+$config['lang_default'] = 'en';
+
+// Redirect or not if language is not provided
+$config['lang_redirect'] = false;
+
+
+// Autoload
+// Put filenames without "php" extension
+// --------------- 
+
+// Loads from application directory without .php extension
+// You can put full path/to/file too, only without .php
+$config['load_files'] = array('helpers/system');
+
+
+// Load additional config files
+// Loads from public/config directory
+$config['load_configs'] = array();
+
+
+// Load default language files
+// Loads them from application/languages/$current_language/ directory
+$config['load_languages'] = array('home');
 
 ?>
