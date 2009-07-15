@@ -42,7 +42,7 @@ class languages
     }
 
     load('views/header');
-    load('views/languages', self::$vars);
+    load('views/languages/index', self::$vars);
     load('views/footer');
   }
   
