@@ -121,7 +121,7 @@ class languages
   {
     if (fv::ispost('ident'))
     {
-      $_POST['ident'] = fv::set_friendly($_POST['ident']);
+      $_POST['ident'] = mb_strtoupper(str_replace('-', '_', fv::set_friendly($_POST['ident'])));
       if (empty($_POST['ident']))
       {
         $output = array('error' => 'Failed! There was no correct "ident" provided!');
@@ -148,20 +148,29 @@ class languages
 
   public static function edit_item()
   {
-    if (fv::ispost(array('id', 'lang', 'value')))
+    if (fv::ispost(array('ident', 'lang', 'value')))
     {
-      $new_id = languages_model::set(array($_POST['lang'] => rawurldecode($_POST['value'])), $_POST['id']);
-      echo json_encode(array('id' => $new_id));
+      if ($_POST['lang'] == 'ident')
+      {
+        $_POST['value'] = mb_strtoupper(str_replace('-', '_', fv::set_friendly($_POST['value'])));
+      }
+      elseif ($_POST['lang'] == 'scope')
+      {
+        $_POST['value'] = fv::set_friendly($_POST['value']);
+      }
+
+      languages_model::set(array($_POST['lang'] => rawurldecode($_POST['value'])), $_POST['ident']);
+      echo json_encode(array('value' => $_POST['value']));
     }
   }
 
 
   public static function delete_item()
   {
-    if (fv::ispost(array('id')))
+    if (fv::ispost(array('ident')))
     {
-      languages_model::delete($_POST['id']);
-      echo json_encode(array('id' => $_POST['id']));
+      languages_model::delete($_POST['ident']);
+      echo json_encode(array('ident' => $_POST['ident']));
     }
   }
   
@@ -186,37 +195,27 @@ class languages
 
     if (!empty($languages))
     {
-      $result = languages_model::get_languages();
-      foreach ($result as $item)
-      {
-        foreach ($languages as $lang)
-        {
-          if (!empty($item->scope) && !empty($item->ident) && in_array($lang, g('config')->languages))
-          {
-            if (empty($items[$lang][$item->scope]))
-            {
-              $items[$lang][$item->scope] = '';
-            }
-            
-            $items[$lang][$item->scope] .= "define('". mb_strtoupper(str_replace('-', '_', $item->ident)) ."', '". str_replace("'", "\'", $item->{$lang}) ."');\n";
-          }
-        }
-      }
-      
-      foreach ($items as $lang => $item)
-      {
-        foreach ($item as $scope => $data)
-        {
-          $html = load('views/languages/language_sample', array('%lang' => strtoupper($lang), '%date' => date('Y-m-d H:i:s'), '%translations' => $data), null, true);
-          if (!is_dir(g('config')->lang_path . $lang .'/'))
-          {
-            mkdir(g('config')->lang_path . $lang .'/');
-          }
-          file_put_contents(g('config')->lang_path . $lang .'/'. $scope .'_lang.php', $html);
-        }
-      }
-      
+      languages_model::copy_to_web($languages);      
       $_SESSION['msg_ok'] = 'Ok! Language(-s) is copied to the server.';
+    }
+
+    router::redirect(router::$class);
+  }
+  
+  
+  public static function copy_from_web()
+  {
+    if (!empty(router::$segments[2]))
+    {
+      if (!in_array(router::$segments[2], g('config')->languages) || !is_dir(g('config')->lang_path . router::$segments[2] .'/'))
+      {
+        $_SESSION['msg_failed'] = 'Failed! Language needs to be enabled and copied to website.';
+      }
+      else
+      {
+        languages_model::copy_from_web(router::$segments[2]);
+        $_SESSION['msg_ok'] = 'Ok! Language(-s) is copied to the server.';
+      }
     }
 
     router::redirect(router::$class);

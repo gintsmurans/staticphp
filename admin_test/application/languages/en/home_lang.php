@@ -1,10 +1,11 @@
 <?php
 // EN
-// Created: 2009-07-15 01:41:19
+// Created: 2009-07-15 15:34:46
 
-define('PAGE_TITLE', 'PAGE TITLE');
-define('TESTME', '');
-define('TESTME2', '');
-define('TESTMEAGAINACN', '');
+define('PAGE_TITLE', 'Page title');
+define('TESTME', 'TEST');
+define('TESTME255', '');
+define('TESTMEAG225', '');
+define('DFASDADA', '');
 
 ?>

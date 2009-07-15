@@ -1,7 +1,5 @@
 
-body{font-family: Verdana; font-size: 12px;}
 .hover{cursor: pointer;}
-#loader{display: none;}
 
 .translation_table
 {
@@ -11,7 +9,7 @@ body{font-family: Verdana; font-size: 12px;}
     border-collapse: collapse; 
     border-color: #DDDDDD;
 }
-.translation_table td{height: 25px;}
+.translation_table td, .translation_table td .edit{height: 18px; overflow: hidden;}
 
 
 .password{text-align: center; padding-top: 100px;}
@@ -33,4 +31,26 @@ body{font-family: Verdana; font-size: 12px;}
 .aslink{
   cursor: pointer;
   text-decoration: underline;
+}
+
+.save_cancel{
+  padding: 10px 0;
+  text-align: center;
+}
+
+
+.edit-absolute{
+  background: #000;
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+.edit-absolute-inner{
+  background-color: #FFF;
+  border: 4px #DDD solid;
+  position: absolute;
+}
+.edit-absolute textarea{
+  height: 350px;
+  width: 800px;
 }

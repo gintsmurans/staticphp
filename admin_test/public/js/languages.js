@@ -1,5 +1,8 @@
 
-var inputs = [];
+var tmp_input;
+var current_td;
+var current_ident;
+var current_field;
 
 
 $().ready(function(){
@@ -61,7 +64,7 @@ $().ready(function(){
           add.val('');
 
           html = '<tr>';
-          html += '<td class="hover" onclick="if (confirm(\'Are you sure want to delete this item?\')){ delete_item(\''+ data.ident +'\'); }"><img src="'+ BASE_URL +'css/images/delete.png" alt="" /></td>';
+          html += '<td class="hover delete" onclick="if (confirm(\'Are you sure want to delete this item?\')){ delete_item(\''+ data.ident +'\'); }"><img src="'+ BASE_URL +'css/images/delete.png" alt="" /></td>';
           html += '<td class="hover" onclick="change(this, \''+ data.ident +'\', \'scope\');"></td>';
           html += '<td class="hover" onclick="change(this, \''+ data.ident +'\', \'ident\');">'+ data.ident +'</td>';
       
@@ -83,111 +86,171 @@ $().ready(function(){
     {
       $('#add_item_button').click();
     }
-  });  
+  });
+  
+  
+  // Change scope
+  $('#scope_change').bind('change', function(){
+    location.href = BASE_URL +'languages/index/'+ this.value;
+  });
+  
+  
+  // Document keyup
+  $(document).bind('keyup', function(e){
+    if (current_td)
+    {
+      if (e.keyCode == 27)
+      {
+        cancel();
+      }
+      else if (e.keyCode == 13)
+      {
+        save();
+      }
+    }
+  });
 });
 
 
-function change(td, id, lang)
+function change(td, ident, field)
 {
-    // Calculate length
-    var length = td.innerHTML.length * 0.8;
-    if (length > 100)
-    {
-        length = 100;
-    }
-    else if (length < 2)
-    {
-        length = 3;
-    }
+  // get JQuery object
+  current_td = $(td);
+  current_ident = ident;
+  current_field = field;
 
-    // Save original value
-    inputs[id] = td.innerHTML;
+  
+  // Unbind td click
+  current_td.unbind()[0].onclick = '';
 
-    // Change to input
-    td.innerHTML = (
-        lang == 'scope' || lang == 'ident' ? 
-        '<input type="text" value="'+td.innerHTML+'" onblur="save(null, this, \''+id+'\', \''+lang+'\');" onkeyup=" if (event.keyCode == 27){ cancel(this, \''+id+'\', \''+lang+'\'); }else if(event.keyCode === 13){ this.blur(); } " />' : 
-        '<textarea cols="100" rows="20">'+td.innerHTML+'</textarea><div><span class="aslink" onclick="save(null, this, \''+id+'\', \''+lang+'\');">Save</span> <span class="aslink" onclick="cancel(this, \''+id+'\', \''+lang+'\');">Cancel</span></div>'
+
+  // Save original value
+  tmp_input = current_td.html();
+
+
+  // Change to input
+  if (current_field == 'scope' || current_field == 'ident')
+  {
+    current_td.html(
+      '<input type="text" id="edit-'+ current_ident +'" value="'+ tmp_input +'" />'+
+      '&nbsp;&nbsp;<span class="hover" onmouseup="save();"><img src="'+ BASE_URL +'css/images/save.png" /></span>'+
+      '&nbsp;<span class="hover" onmouseup="cancel();"><img src="'+ BASE_URL +'css/images/trash.png" /></span>'
     );
+    $(':input:first', current_td).select();
+  }
+  else
+  {
+    html = '<div class="edit-absolute">';
+    html += '<div class="edit-absolute-inner">';
+    html += '<textarea id="edit-'+ current_ident +'" cols="100" rows="20">'+ tmp_input +'</textarea>';
+    html += '<div class="save_cancel"><span class="hover" onclick="save();"><img src="'+ BASE_URL +'css/images/save.png" /></span> <span class="hover" onclick="cancel();"><img src="'+ BASE_URL +'css/images/trash.png" /></span>';
+    html += '</div>';
+    html += '</div>';
 
-    td.onclick = null;
-    $(':input:first', td).select();
-    if (lang != 'scope' && lang != 'ident')
-    {
-      $(':input:first', td).wysiwyg();
-      $('#iframeID').focus();
-    }
-}
-    
-function save(data, input, id, lang)
-{
-    if (data == null && input != null)
-    {
-        $('#loader').show();
-        $.post(AJAX_URL + 'language/set', {id: id, lang: lang, value: encodeURIComponent(input.value)}, function(data){ save(data); }, 'json');
+    html = $(html).css({width: $(window).width(), height: $(document).height()}).appendTo('body').find('.edit-absolute-inner');
+    html.css({left: ($(window).width() / 2 - 400), top: $(window).scrollTop() + ($(window).height() / 2 - 175 - 40)});
+
+    $('#edit-'+ current_ident).wysiwyg({
+      controls: {
+        strikeThrough : { visible : true }, 
+        underline : { visible : true },
+
+        separator00 : { visible : true },
+
+        justifyLeft : { visible : true },
+        justifyCenter : { visible : true },
+        justifyRight : { visible : true },
+        justifyFull : { visible : true },
         
-        var td = input.parentNode;
-        td.innerHTML = input.value;
-        eval("td.onclick = function(){change(this, '"+id+"', '"+lang+"');}");
+        separator01 : { visible : true },
+        
+        subscript   : { visible : true },
+        superscript : { visible : true },
+
+        separator03 : { visible : true },
+
+        undo : { visible : true },
+        redo : { visible : true },
+
+        separator04 : { visible : true, separator : true },
+
+        insertOrderedList    : { visible : true },
+        insertUnorderedList  : { visible : true },
+        insertHorizontalRule : { visible : true },
+        
+        insertImage : { visible : false },
+        
+        h1mozilla : { visible : false },
+        h2mozilla : { visible : false },
+        h3mozilla : { visible : false },
+
+        h1 : { visible : false },
+        h2 : { visible : false },
+        h3 : { visible : false },
+        
+        separator08 : { separator : false },
+        separator09 : { separator : false },
+
+        increaseFontSize : { visible : false },
+        decreaseFontSize : { visible : false },
+      }
+    });
+  }
+}
+    
+function save()
+{
+  var edit = $('#edit-'+ current_ident);
+  if (current_td && edit.length == 1)
+  {
+    if (tmp_input == edit.val())
+    {
+      cancel();
     }
     else
     {
-        $('#loader').hide();
-        if (data.id != null)
-        {
-            location.reload();
-        }
+      // var td = $(input.parentNode);
+      show_loader(current_td);
+  
+      $.post(AJAX_URL + 'languages/edit_item', {ident: current_ident, lang: current_field, value: encodeURIComponent(edit.val())}, function(data){
+        tmp_input = unescape(data.value);
+        cancel();
+      }, 'json');
     }
+  }
 }
 
 
-function cancel(input, id, lang)
+function cancel()
 {
-    if (inputs[id])
+  if (current_td)
+  {
+    current_td.html(tmp_input);
+    eval("current_td.bind('click', function(){ change(this, '"+ current_ident +"', '"+ current_field +"'); });");
+
+    tmp_input = null;
+    current_td = null;
+    
+    if (current_field != 'scope' && current_field != 'ident')
     {
-        var td = input.parentNode;
-        td.innerHTML = inputs[id];
-        eval("td.onclick = function(){change(this, '"+id+"', '"+lang+"');}");
+      $('.edit-absolute').remove();
     }
+  }
 }
 
 
-function insert_line()
+function delete_item(ident)
 {
-    html = '<tr><td></td>';
-    
-    html += '<td class="hover" onclick="change(this, \'new\', \'scope\');"></td>';
-
-    for (var k in languages)
-    {
-        html += '<td class="hover" onclick="change(this, \'new\', \''+ tr_keys[k] +'\');"></td>';
-    }
-    
-    html += '</tr>';
-    
-    $('#insert').before(html);
-}
-
-
-function delete_item(id, data)
-{
-    if (data == null)
-    {
-        if (id != null)
+  if ($.trim(ident) != '')
+  {
+    show_loader('#item-'+ ident +' .delete');
+    $.post(AJAX_URL + 'languages/delete_item', {ident: ident}, function(data){
+        if (data.ident)
         {
-            $('#loader').show();
-            $.post(AJAX_URL + 'language/delete', {id: id}, function(data){ delete_item(null, data); }, 'json');
+          $('#item-'+data.ident).
+          css('background', '#faf189').
+          fadeOut('slow', function(){$('#item-'+data.ident).remove();});
         }
-    }
-    else
-    {
-        $('#loader').hide();
-
-        if (data.id != null)
-        {
-            $('#item-'+data.id).
-                css('background', '#faf189').
-                fadeOut('slow', function(){$('#item-'+data.id).remove();});
-        }
-    }
+    }, 'json');
+  }
 }

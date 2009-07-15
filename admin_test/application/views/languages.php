@@ -31,7 +31,7 @@
                 Scope<br />
   
                 <?php if (!empty($scopes)): ?>
-                <select onchange="location.href = '<?php echo site_url('language/index/'); ?>' + this.value;">
+                <select id="scope_change">
                     <option value="0"></option>
                     <?php foreach ($scopes as $scope): ?>
                     <option value="<?php echo $scope->scope; ?>"<?php if (router::segment(2) == $scope->scope){ echo ' selected="selected"'; }?>><?php echo $scope->scope; ?></option>
@@ -47,8 +47,9 @@
               <?php echo $lang; ?>
               <div style="float: right;">
                 <a href="#" title="Copy &quot;<?php echo $lang; ?>&quot; to website" onclick="if (confirm('Are you sure want to copy this language to website?')){ window.location.href = '<?php echo site_url('languages/copy_to_web/'. $lang); ?>'; } return false;"><img src="<?php echo base_url('css/images/down'. (in_array($lang, g('config')->languages) ? '' : '-gray') .'.png'); ?>" /></a>
+                <a href="#" title="Copy &quot;<?php echo $lang; ?>&quot; from website" onclick="if (confirm('Are you sure want to copy this language from website?')){ window.location.href = '<?php echo site_url('languages/copy_from_web/'. $lang); ?>'; } return false;"><img src="<?php echo base_url('css/images/up'. (in_array($lang, g('config')->languages) ? '' : '-gray') .'.png'); ?>" /></a>
               <?php if ($lang != g('config')->lang_default): ?>
-                <a href="#" title="<?php echo (in_array($lang, g('config')->languages) ? 'Disable' : 'Enable'); ?>" onclick="if (confirm('Are you sure want to enable/disable this language?')){ window.location.href = '<?php echo site_url('languages/activate_language/'. $lang); ?>'; } return false;"><img src="<?php echo site_url('css/images/tick'. (in_array($lang, g('config')->languages) ? '' : '-gray') .'.png'); ?>" alt="" /></a>&nbsp;
+                <a href="#" title="<?php echo (in_array($lang, g('config')->languages) ? 'Disable' : 'Enable'); ?>" onclick="if (confirm('Are you sure want to enable/disable this language?')){ window.location.href = '<?php echo site_url('languages/activate_language/'. $lang); ?>'; } return false;"><img src="<?php echo site_url('css/images/tick'. (in_array($lang, g('config')->languages) ? '-gray' : '') .'.png'); ?>" alt="" /></a>&nbsp;
                 <a href="#" title="Delete" onclick="if (confirm('Are you sure want to delete this whole language?')){ window.location.href = '<?php echo site_url('languages/delete_language/'. $lang); ?>'; } return false;"><img src="<?php echo site_url('css/images/delete.png'); ?>" alt="" /></a>
               <?php endif; ?>
               </div>
@@ -58,12 +59,12 @@
   
     <?php if (!empty($translations)): foreach($translations as $item): ?>
         <tr id="item-<?php echo $item->ident; ?>">
-            <td class="hover" onclick="if (confirm('Are you sure want to delete this item?')){ delete_item('<?php echo $item->ident; ?>'); }"><img src="<?php echo site_url('css/images/delete.png'); ?>" alt="" /></td>
+            <td class="hover delete" onclick="if (confirm('Are you sure want to delete this item?')){ delete_item('<?php echo $item->ident; ?>'); }"><img src="<?php echo site_url('css/images/delete.png'); ?>" alt="" /></td>
             <td class="hover" onclick="change(this, '<?php echo $item->ident; ?>', 'scope');"><?php echo $item->scope; ?></td>
             <td class="hover" onclick="change(this, '<?php echo $item->ident; ?>', 'ident');"><?php echo $item->ident; ?></td>
   
             <?php foreach($languages as $lang): ?>
-            <td class="hover" onclick="change(this, '<?php echo $item->ident; ?>', '<?php echo $lang; ?>');"><?php echo $item->{$lang}; ?></td>
+            <td class="hover"><div class="edit" onclick="change(this, '<?php echo $item->ident; ?>', '<?php echo $lang; ?>');"><?php echo $item->{$lang}; ?></div></td>
             <?php endforeach; ?>
         </tr>
     <?php endforeach; endif; ?>
@@ -72,7 +73,7 @@
             <td colspan="<?php echo count($languages) + 3; ?>" align="right">
               Ident: 
               <input type="text" id="add_item" />
-              <span id="add_item_button" class="aslink">Add item</span>
+              <img src="<?php echo base_url('css/images/document.png'); ?>" /> <span id="add_item_button" class="aslink">Add item</span>
             </td>
         </tr>
     </table>
