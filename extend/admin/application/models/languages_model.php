@@ -84,9 +84,9 @@ class languages_model
     }
     
     
-    public static function copy_to_web($languages)
+    public static function copy_to_web($languages, $scope = null)
     {
-      $result = languages_model::get_languages();
+      $result = languages_model::get_languages((empty($scope) ? '' : array('scope' => $scope)));
       foreach ($result as $item)
       {
         foreach ($languages as $lang)
@@ -102,7 +102,7 @@ class languages_model
           }
         }
       }
-      
+
       foreach ($items as $lang => $item)
       {
         foreach ($item as $scope => $data)
@@ -118,39 +118,50 @@ class languages_model
     }
 
 
-    public static function copy_from_web($lang)
+    public static function copy_from_web($languages, $scope = null)
     {
-      if (is_dir(g('config')->lang_path . $lang .'/'))
+      foreach ($languages as $lang)
       {
-        $dh = opendir(g('config')->lang_path . $lang .'/');
-        while ($file = readdir($dh))
+        if (is_dir(g('config')->lang_path . $lang .'/'))
         {
-          if ($file[0] == '.' || !preg_match('/_lang.php/', $file))
+          $dh = opendir(g('config')->lang_path . $lang .'/');
+          while ($file = readdir($dh))
           {
-            continue;
-          }
-
-          $scope = str_replace('_lang.php', '', $file);
-          $defined = get_defined_constants(true);
-          $defined = $defined['user'];
-          
-          include g('config')->lang_path . $lang .'/'. $file;
-
-          $defined2 = get_defined_constants(true);
-          $defined2 = $defined2['user'];
-          
-          $difference = array_diff_key($defined2, $defined);
-          
-          foreach ($difference as $ident => $value)
-          {
-            $result = self::get_languages(array('ident' => $ident));
-            if (!empty($result))
+            // Check for the real files
+            if ($file[0] == '.' || !preg_match('/_lang.php/', $file))
             {
-              db::query("UPDATE `languages` SET `{$lang}` = ? WHERE `ident` = ? LIMIT 1", array($value, $ident));
+              continue;
             }
-            else
+
+            // Get / Check scopes
+            $file_scope = str_replace('_lang.php', '', $file);
+            if (!empty($scope) && $scope != $file_scope)
             {
-              db::query("INSERT INTO `languages` SET `scope` = ?, `{$lang}` = ?, `ident` = ?", array($scope, $value, $ident));
+              continue;
+            }
+
+            // Get all defined from the file
+            $test = file_get_contents(g('config')->lang_path . $lang .'/'. $file);
+            $matches = '';
+
+            preg_match_all('/define ?\( ?[\'"](.*)\', \'(.*)[\'"] ?\)/', $test, $matches);            
+            if (empty($matches[1]))
+            {
+              continue;
+            }
+
+            // Insert them into db
+            foreach ($matches[1] as $key => $ident)
+            {
+              $result = self::get_languages(array('ident' => $ident));
+              if (!empty($result))
+              {
+                db::query("UPDATE `languages` SET `{$lang}` = ? WHERE `ident` = ? LIMIT 1", array($matches[2][$key], $ident));
+              }
+              else
+              {
+                db::query("INSERT INTO `languages` SET `scope` = ?, `{$lang}` = ?, `ident` = ?", array($file_scope, $matches[2][$key], $ident));
+              }
             }
           }
         }

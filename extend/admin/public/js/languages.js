@@ -39,6 +39,31 @@ $().ready(function(){
     }
   });
   
+  // Copy from web
+  $('#copy_from_web').bind('click', function(){
+    if (confirm('Are you sure want to copy all languages from website?'))
+    {
+      window.location.href = BASE_URL + 'languages/copy_from_web';
+    }
+  });
+  
+  // Copy scope to web
+  $('#copy_scope_to_web').bind('click', function(){
+    scope_change = $('#scope_change');
+    if (scope_change.val() != 0 && confirm('Are you sure want to copy this scope to website?'))
+    {
+      location.href = BASE_URL +'languages/copy_scope_to_web/'+ scope_change.val();
+    }
+  });
+  
+  // Copy scope from web
+  $('#copy_scope_from_web').bind('click', function(){
+    scope_change = $('#scope_change');
+    if (scope_change.val() != 0 && confirm('Are you sure want to copy this scope from website?'))
+    {
+      location.href = BASE_URL +'languages/copy_scope_from_web/'+ scope_change.val();
+    }
+  });
 
   // Add item
   // Add language
@@ -51,13 +76,12 @@ $().ready(function(){
     else
     {
       var button = show_loader('#add_item_button');
-      $.post(AJAX_URL + 'languages/add_item', {ident: add.val()}, function(data){
+      $.post(AJAX_URL + 'languages/add_item', {ident: add.val(), scope: (current_scope ? current_scope : '')}, function(data){
         $('#add_item_button').html(button);
         if (data.error)
         {
+          alert(data.error);
           add.select().focus();
-          $('#msg_failed').html(data.error);
-          setTimeout("$('#msg_failed').html('');", 3000);
         }
         else if (data.ident)
         {
@@ -65,7 +89,7 @@ $().ready(function(){
 
           html = '<tr>';
           html += '<td class="hover delete" onclick="if (confirm(\'Are you sure want to delete this item?\')){ delete_item(\''+ data.ident +'\'); }"><img src="'+ BASE_URL +'css/images/delete.png" alt="" /></td>';
-          html += '<td class="hover" onclick="change(this, \''+ data.ident +'\', \'scope\');"></td>';
+          html += '<td class="hover" onclick="change(this, \''+ data.ident +'\', \'scope\');">'+ data.scope +'</td>';
           html += '<td class="hover" onclick="change(this, \''+ data.ident +'\', \'ident\');">'+ data.ident +'</td>';
       
           for (var k in languages)

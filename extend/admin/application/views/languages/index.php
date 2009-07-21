@@ -10,17 +10,20 @@
   <script type="text/javascript" src="<?php echo site_url('js/languages.js'); ?>"></script>
   <script type="text/javascript">
       var languages = <?php echo json_encode(array_slice(languages_model::$fields, 1)); ?>;
+      <?php if (!empty($current_scope)): ?>
+      var current_scope = '<?php echo $current_scope; ?>';
+      <?php endif; ?>
   </script>
 
   <div id="msg_failed" class="msg_failed"><?php if (!empty($msg_failed)): echo $msg_failed; endif; ?></div>
   <div id="msg_ok" class="msg_ok"><?php if (!empty($msg_ok)): echo $msg_ok; endif; ?></div>
-  
+
   <div class="add-language">
     <input type="text" id="add_language" /> 
-    <img src="<?php echo base_url('css/images/add.png'); ?>" /> <span id="add_language_button" class="aslink">Add language</span> | 
-    <img src="<?php echo base_url('css/images/down.png'); ?>" /> <span id="copy_to_web" class="aslink">Copy all enabled languages to website</span>
+    <img src="<?php echo base_url('css/images/add.png'); ?>" alt="" /> <span id="add_language_button" class="aslink">Add language</span> | 
+    <img src="<?php echo base_url('css/images/down.png'); ?>" alt="" /> <span id="copy_to_web" class="aslink">Copy all to the website</span> | 
+    <img src="<?php echo base_url('css/images/up.png'); ?>" alt="" /> <span id="copy_from_web" class="aslink">Copy all from the website</span>
   </div>
-
 
   <div id="translations">
     <table border="1" cellspacing="0" cellpadding="4" align="center" class="translation_table">
@@ -37,6 +40,8 @@
                     <option value="<?php echo $scope->scope; ?>"<?php if (router::segment(2) == $scope->scope){ echo ' selected="selected"'; }?>><?php echo $scope->scope; ?></option>
                     <?php endforeach; ?>
                 </select>
+                <span id="copy_scope_to_web" class="aslink"><img src="<?php echo base_url('css/images/down'. (empty($current_scope) ? '-gray' : '') .'.png'); ?>" alt="" /></span>
+                <span id="copy_scope_from_web" class="aslink"><img src="<?php echo base_url('css/images/up'. (empty($current_scope) ? '-gray' : '') .'.png'); ?>" alt="" /></span>
                 <?php endif; ?>
             </th>
             
@@ -73,7 +78,7 @@
             <td colspan="<?php echo count($languages) + 3; ?>" align="right">
               Ident: 
               <input type="text" id="add_item" />
-              <img src="<?php echo base_url('css/images/document.png'); ?>" /> <span id="add_item_button" class="aslink">Add item</span>
+              <img src="<?php echo base_url('css/images/add.png'); ?>" /> <span id="add_item_button" class="aslink">Add item</span>
             </td>
         </tr>
     </table>

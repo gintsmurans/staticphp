@@ -12,13 +12,25 @@ class languages
     load('models/languages_model');
 
     user_model::check_access();
-    
+
     // Language stuff
     self::$vars['languages'] = languages_model::get_columns();
     self::$vars['scopes'] = languages_model::get_scopes();
-
-    $data = (!empty(router::$segments[2]) && !empty(self::$vars['scopes']) && in_array(router::$segments[2], self::$vars['scopes']) ? array('scope' => router::$segments[2]) : null);
-    self::$vars['translations'] = languages_model::get_languages($data);
+    
+    if (!empty(router::$segments[2]))
+    {
+      $scope = db::query("SELECT `scope` FROM `languages` WHERE `scope` = ?", router::$segments[2])->fetch();
+      if (!empty($scope))
+      {
+        self::$vars['current_scope'] = $scope->scope;
+        self::$vars['translations'] = languages_model::get_languages(array('scope' => $scope->scope));
+      }
+    }
+    
+    if (empty(self::$vars['translations']))
+    {
+      self::$vars['translations'] = languages_model::get_languages();
+    }
   }
 
 
@@ -135,8 +147,13 @@ class languages
         }
         else
         {
-          db::exec("INSERT INTO `languages` SET `ident` = ?", $_POST['ident']);
-          $output = array('ident' => $_POST['ident']);
+          $data['ident'] = $_POST['ident'];
+          if (!empty($_POST['scope']))
+          {
+            $data['scope'] = $_POST['scope'];
+          }
+          db::insert('languages', $data);
+          $output = $data;
         }
       }
 
@@ -177,48 +194,45 @@ class languages
   
   public static function copy_to_web()
   {
-    if (empty(router::$segments[2]))
-    {
-      $languages = languages_model::$fields;
-    }
-    else
-    {
-      if (!in_array(router::$segments[2], g('config')->languages))
-      {
-        $_SESSION['msg_failed'] = 'Failed! Language needs to be enabled.';
-      }
-      else
-      {
-        $languages = (array) router::$segments[2];
-      }
-    }
+    $languages = (empty(router::$segments[2]) ? languages_model::$fields : (array) router::$segments[2]);
+    languages_model::copy_to_web($languages);
 
-    if (!empty($languages))
-    {
-      languages_model::copy_to_web($languages);      
-      $_SESSION['msg_ok'] = 'Ok! Language(-s) is copied to the server.';
-    }
+    $_SESSION['msg_ok'] = 'Ok! Language(-s) is copied to the website.';
 
-    router::redirect(router::$class);
+    // router::redirect(router::$class);
   }
   
   
   public static function copy_from_web()
   {
-    if (!empty(router::$segments[2]))
-    {
-      if (!in_array(router::$segments[2], g('config')->languages) || !is_dir(g('config')->lang_path . router::$segments[2] .'/'))
-      {
-        $_SESSION['msg_failed'] = 'Failed! Language needs to be enabled and copied to website.';
-      }
-      else
-      {
-        languages_model::copy_from_web(router::$segments[2]);
-        $_SESSION['msg_ok'] = 'Ok! Language(-s) is copied to the server.';
-      }
-    }
+    $languages = (empty(router::$segments[2]) ? languages_model::$fields : (array) router::$segments[2]);
+    languages_model::copy_from_web($languages);
+    $_SESSION['msg_ok'] = 'Ok! Language(-s) is copied from the website.';
 
     router::redirect(router::$class);
+  }
+  
+  
+  public static function copy_scope_to_web()
+  {
+    if (!empty(router::$segments[2]))
+    {
+      languages_model::copy_to_web(g('config')->languages, router::$segments[2]);
+      $_SESSION['msg_ok'] = 'Ok! Scope is copied to the server.';
+    }
+
+    router::redirect(router::$class .'/index/'. router::$segments[2]);
+  }
+
+  public static function copy_scope_from_web()
+  {
+    if (!empty(router::$segments[2]))
+    {
+      languages_model::copy_from_web(g('config')->languages, router::$segments[2]);
+      $_SESSION['msg_ok'] = 'Ok! Language(-s) is copied from the server.';
+    }
+
+    router::redirect(router::$class .'/index/'. router::$segments[2]);
   }
 }
 
