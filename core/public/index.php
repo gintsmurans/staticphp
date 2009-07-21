@@ -35,16 +35,17 @@ define('BASE_PATH', realpath(PUBLIC_PATH.'..'.DS).DS);
 include PUBLIC_PATH.'config/config.php';
 include PUBLIC_PATH.'config/routing.php';
 
+
+// Define system paths
+define('APP_PATH', BASE_PATH.trim($config['app_path'], '/\\').DS);
+define('SYS_PATH', BASE_PATH.trim($config['sys_path'], '/\\').DS);
+
+
 // Autoload additional config files
 foreach($config['load_configs'] as $tmp)
 {
   include PUBLIC_PATH.'config/'. $tmp .'.php';
 }
-
-
-// Define system paths
-define('APP_PATH', BASE_PATH.trim($config['app_path'], '/\\').DS);
-define('SYS_PATH', BASE_PATH.trim($config['sys_path'], '/\\').DS);
 
 
 // Set debug

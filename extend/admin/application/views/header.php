@@ -18,7 +18,7 @@
       <div class="menu">
         <a href="<?php echo site_url('languages'); ?>"><img src="<?php echo base_url('css/images/globe.png'); ?>" alt="" /> Languages</a> | 
         <a href="<?php echo site_url('users'); ?>"><img src="<?php echo base_url('css/images/user.png'); ?>" alt="" /> Users</a> | 
-        <a href="<?php echo site_url('login/out'); ?>"><img src="<?php echo base_url('css/images/stop.png'); ?>" alt="" /> Logout</a>
+        <a href="<?php echo site_url('login/out'); ?>"><img src="<?php echo base_url('css/images/log-out-16x16.png'); ?>" alt="" /> Logout</a>
       </div>
       
       <noscript><p class="nojs">To use the site, enable javascript in your browser settings!</p></noscript>

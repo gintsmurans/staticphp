@@ -8,7 +8,7 @@ class languages
 
 
   public static function __construct__()
-  {
+  {  
     load('models/languages_model');
 
     user_model::check_access();

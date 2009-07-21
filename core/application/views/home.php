@@ -4,8 +4,6 @@
         
         <div class="content">
         
-            <div align="right"><a href="http://staticphp.com/docs">A lot have been changed, but you can still look into docs to get main idea!</a></div>
-        
             <strong>This page files (edit them to change this page):</strong>
             <ol>
                 <li>Controller: <strong><?php echo APP_PATH.'controllers/home.php'; ?></strong></li>

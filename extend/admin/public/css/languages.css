@@ -50,6 +50,12 @@
   border: 4px #DDD solid;
   position: absolute;
 }
+.edit-absolute-inner .close{
+  position:  absolute;
+  right: -15px;
+  top: -15px;
+  text-align: right;
+}
 .edit-absolute textarea{
   height: 350px;
   width: 800px;

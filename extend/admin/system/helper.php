@@ -44,20 +44,9 @@ function make_path_string($string)
 
 
 
-function load_lang($file, $lang = '')
+function load_lang($file)
 {
-  if (empty($lang))
-  {
-    $lang = g('config')->language;
-  }
-
-  if (!is_file(APP_PATH .'languages/'. $lang .'/'. $file . '_lang.php'))
-  {
-    $lang = g('config')->lang_default;
-  }
-  
-  // include APP_PATH .'languages/'. $lang .'/'. $file . '_lang.php';
-  load('languages/'. $lang .'/'. $file . '_lang');
+  load('languages/'. g('config')->language .'/'. $file . '_lang');
 }
 
 
@@ -88,34 +77,34 @@ function load($file, $vars = array(), $prefix = null, $return = false)
 	{
     $vars = array_merge($vars, (array) g()->vars);
 	}
-
-  // Include or return file
-  if ($return === true)
-  {
-    $tmp = file_get_contents($file);
-    if (!empty($vars) && is_array($vars))
-    {
-      $tmp = strtr($tmp, $vars);
-    }
-
-    return $tmp;
+	
+	// If return === true
+	if ($return === true)
+	{
+    ob_start();
   }
-  else
-  {
-    // Extract vars	
-    if (!empty($vars) && is_array($vars))
-    {
-    	if (!empty($prefix))
-    	{
-    		extract($vars, EXTR_PREFIX_ALL, $prefix);
-    	}
-    	else
-    	{
-    		extract($vars);
-    	}
-    }
 
-    include $file;
+  // Extract vars	
+  if (!empty($vars) && is_array($vars))
+  {
+  	if (!empty($prefix))
+  	{
+  		extract($vars, EXTR_PREFIX_ALL, $prefix);
+  	}
+  	else
+  	{
+  		extract($vars);
+  	}
+  }
+
+  include $file;
+
+  // If return === true
+	if ($return === true)
+	{
+    $contents = ob_get_contents();
+    ob_end_clean();
+    return $contents;
   }
 }
 

@@ -166,8 +166,9 @@ function change(td, ident, field)
   {
     html = '<div class="edit-absolute">';
     html += '<div class="edit-absolute-inner">';
+    html += '<div class="close"><span class="hover" onclick="cancel();"><img src="'+ BASE_URL +'css/images/close.png" /></span></div>';
     html += '<textarea id="edit-'+ current_ident +'" cols="100" rows="20">'+ tmp_input +'</textarea>';
-    html += '<div class="save_cancel"><span class="hover" onclick="save();"><img src="'+ BASE_URL +'css/images/save.png" /></span> <span class="hover" onclick="cancel();"><img src="'+ BASE_URL +'css/images/trash.png" /></span>';
+    html += '<div class="save_cancel"><span class="hover" onclick="save();"><img src="'+ BASE_URL +'css/images/save-32x32.png" /></span>';
     html += '</div>';
     html += '</div>';
 
@@ -196,7 +197,7 @@ function change(td, ident, field)
         undo : { visible : true },
         redo : { visible : true },
 
-        separator04 : { visible : true, separator : true },
+        separator04 : { visible : true },
 
         insertOrderedList    : { visible : true },
         insertUnorderedList  : { visible : true },
@@ -212,6 +213,9 @@ function change(td, ident, field)
         h2 : { visible : false },
         h3 : { visible : false },
         
+        removeFormat : { visible : false },
+        
+        separator06 : { separator : false },
         separator08 : { separator : false },
         separator09 : { separator : false },
 
