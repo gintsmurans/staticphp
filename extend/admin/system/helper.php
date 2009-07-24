@@ -51,7 +51,7 @@ function load_lang($file)
 
 
 
-function load($file, $vars = array(), $prefix = null, $return = false)
+function load($file, $vars = array(), $prefix = null)
 {
   // Make filename
 	$file = rtrim(make_path_string($file), DS).'.php';
@@ -78,12 +78,6 @@ function load($file, $vars = array(), $prefix = null, $return = false)
     $vars = array_merge($vars, (array) g()->vars);
 	}
 	
-	// If return === true
-	if ($return === true)
-	{
-    ob_start();
-  }
-
   // Extract vars	
   if (!empty($vars) && is_array($vars))
   {
@@ -98,14 +92,6 @@ function load($file, $vars = array(), $prefix = null, $return = false)
   }
 
   include $file;
-
-  // If return === true
-	if ($return === true)
-	{
-    $contents = ob_get_contents();
-    ob_end_clean();
-    return $contents;
-  }
 }
 
 

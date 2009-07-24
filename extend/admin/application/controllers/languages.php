@@ -199,7 +199,7 @@ class languages
 
     $_SESSION['msg_ok'] = 'Ok! Language(-s) is copied to the website.';
 
-    // router::redirect(router::$class);
+    router::redirect(router::$class);
   }
   
   

@@ -4,7 +4,7 @@
 $config['lang_path'] = APP_PATH .'languages/';
 
 $config['access'] = array(
-  'language',
+  'languages',
   'users',
 );
 

@@ -1,6 +1,6 @@
 <?php
 // LV
-// Created: 2009-07-21 05:24:37
+// Created: 2009-07-24 08:37:53
 
 define('ANOTHER_EXAMPLE', 'EEEEE');
 define('TESTME2', '');

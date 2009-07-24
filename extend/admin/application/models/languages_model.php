@@ -79,7 +79,7 @@ class languages_model
     public static function write_languages()
     {
       $languages = "'". implode("', '", g('config')->languages) ."'";
-      $html = load('views/languages/config_sample', array('%date' => date('Y-m-d H:i:s'), '%languages' => $languages), null, true);
+      $html = strtr(file_get_contents(APP_PATH .'views/languages/config_sample.php'), array('%date' => date('Y-m-d H:i:s'), '%languages' => $languages));
       file_put_contents(g('config')->lang_path  .'/config.php', $html);
     }
     
@@ -107,7 +107,7 @@ class languages_model
       {
         foreach ($item as $scope => $data)
         {
-          $html = load('views/languages/language_sample', array('%lang' => strtoupper($lang), '%date' => date('Y-m-d H:i:s'), '%translations' => $data), null, true);
+          $html = strtr(file_get_contents(APP_PATH .'views/languages/language_sample.php'), array('%lang' => strtoupper($lang), '%date' => date('Y-m-d H:i:s'), '%translations' => $data));
           if (!is_dir(g('config')->lang_path . $lang .'/'))
           {
             mkdir(g('config')->lang_path . $lang .'/');

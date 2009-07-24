@@ -2,8 +2,6 @@
 
 class users
 {
-
-
   private static $vars = array();
 
   public static function __construct__()
@@ -87,13 +85,21 @@ class users
     // Post
     if (fv::ispost(array('username', 'password')))
     {
+      $set = '';
       $data = array(
         $_POST['username'],
-        sha1($_POST['password']),
         (empty($_POST['c']) ? '' : json_encode($_POST['c'])),
-        router::$segments[2]
       );
-      db::exec("UPDATE `users` SET `username` = ?, `password` = ?, `access` = ? WHERE `id` = ? LIMIT 1", $data);
+
+      // If not empty password, set it too
+      if (!empty($_POST['password']))
+      {
+        $set = ', `password` = ?';
+        $data[] = sha1($_POST['password']);
+      }
+      $data[] = router::$segments[2];
+      
+      db::exec("UPDATE `users` SET `username` = ?, `access` = ?{$set} WHERE `id` = ? LIMIT 1", $data);
       router::redirect('users');
     }
 
