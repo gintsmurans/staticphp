@@ -2,22 +2,37 @@
 
 class user_model
 {
-  public static function check_access()
+  public static function check_access($class = '', $method = '')
   {
+    $class = (empty($class) ? router::$class : $class);
+    $method = (empty($method) ? router::$class : $method);
+
+    // Check for user
     if (empty($_SESSION['user']))
     {
       $_SESSION['login_redirect'] = site_url(router::$full_url);
       router::redirect('login');
     }
 
-    if (
-      (empty($_SESSION['user']->access->{'*'}) || $_SESSION['user']->access->{'*'} != '*' ) && 
-      (empty($_SESSION['user']->access->{router::$class}) || $_SESSION['user']->access->{router::$class} != '*') && 
-      (empty($_SESSION['user']->access->{router::$class}->{router::$method}))
-    )
+    // Check access    
+    if (self::_access($class, $method) === false)
     {
       router::error(403, 'Forbidden');
+      return false;
     }
+
+    // Else return true
+    return true;
+  }
+
+
+  public static function _access($class, $method = '')
+  {
+    return !(
+      (empty($_SESSION['user']->access->{'*'}) || $_SESSION['user']->access->{'*'} != '*' ) && 
+      (empty($_SESSION['user']->access->{$class}) || $_SESSION['user']->access->{$class} != '*') && 
+      (empty($_SESSION['user']->access->{$class}->{$method}))
+    );
   }
 
 

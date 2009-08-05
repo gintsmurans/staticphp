@@ -431,7 +431,7 @@ class fv
   }
   
   // $isset checks against $_POST not local self::$post
-  public static function ispost($isset = null)
+  public static function ispost()
   {
     // Check if post
     if (strtolower($_SERVER['REQUEST_METHOD']) !== 'post')
@@ -440,9 +440,9 @@ class fv
     }
 
     // Check if isset keys in POST data
-    if ($isset !== null)
+    if (func_num_args() > 0)
     {
-      foreach((array) $isset as $key)
+      foreach(func_get_args() as $key)
       {
         if (!isset($_POST[$key]))
         {

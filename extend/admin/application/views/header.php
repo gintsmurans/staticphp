@@ -16,8 +16,15 @@
     <div class="page">
       
       <div class="menu">
+
+        <?php if (user_model::_access('languages')): ?>
         <a href="<?php echo site_url('languages'); ?>"><img src="<?php echo base_url('css/images/globe.png'); ?>" alt="" /> Languages</a> | 
+        <?php endif; ?>
+
+        <?php if (user_model::_access('users')): ?>
         <a href="<?php echo site_url('users'); ?>"><img src="<?php echo base_url('css/images/user.png'); ?>" alt="" /> Users</a> | 
+        <?php endif; ?>
+
         <a href="<?php echo site_url('login/out'); ?>"><img src="<?php echo base_url('css/images/log-out-16x16.png'); ?>" alt="" /> Logout</a>
       </div>
       

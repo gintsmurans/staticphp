@@ -1,33 +1,37 @@
 <?php
 
 
-function css($file = null)
+function css()
 {
   static $files = array();
   
-  if (!empty($file))
+  if (func_num_args() > 0)
   {
-    $files[] = $file;
-  }elseif ($file === null)
+    $tmp = func_get_args();
+    $files = array_merge($files, $tmp);
+    unset($tmp);
+  }
+  else
   {
-    echo '<style type="text/css">';
     foreach ($files as $file)
     {
       echo "  @import '$file';  ";
     }
-    echo "</style>\n";
   }
 }
 
 
-function js($file = null)
+function js()
 {
   static $files = array();
   
-  if (!empty($file))
+  if (func_num_args() > 0)
   {
-    $files[] = $file;
-  }elseif ($file === null)
+    $tmp = func_get_args();
+    $files = array_merge($files, $tmp);
+    unset($tmp);
+  }
+  else
   {
     foreach ($files as $file)
     {
