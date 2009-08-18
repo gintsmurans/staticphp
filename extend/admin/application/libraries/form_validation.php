@@ -242,7 +242,7 @@ class fv
     $string = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
     $string = strip_tags($string);
     $string = strtolower($string);
-    $string = str_replace(array(' ', "'"), '-', $string);
+    $string = str_replace(array(' ', "'", '--', '--'), '-', $string);
     $string = preg_replace('/[^a-z_\-0-9]*/', '', $string);
     $string = trim($string, '-');
 

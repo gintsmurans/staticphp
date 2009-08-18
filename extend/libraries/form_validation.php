@@ -242,7 +242,7 @@ class fv
     $string = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
     $string = strip_tags($string);
     $string = strtolower($string);
-    $string = str_replace(array(' ', "'"), '-', $string);
+    $string = str_replace(array(' ', "'", '--', '--'), '-', $string);
     $string = preg_replace('/[^a-z_\-0-9]*/', '', $string);
     $string = trim($string, '-');
 
@@ -431,7 +431,7 @@ class fv
   }
   
   // $isset checks against $_POST not local self::$post
-  public static function ispost()
+  public static function ispost($isset = null)
   {
     // Check if post
     if (strtolower($_SERVER['REQUEST_METHOD']) !== 'post')
@@ -440,9 +440,9 @@ class fv
     }
 
     // Check if isset keys in POST data
-    if (func_num_args() > 0)
+    if ($isset !== null)
     {
-      foreach(func_get_args() as $key)
+      foreach((array) $isset as $key)
       {
         if (!isset($_POST[$key]))
         {

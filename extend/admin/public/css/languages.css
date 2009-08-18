@@ -1,20 +1,4 @@
 
-.hover{cursor: pointer;}
-
-.translation_table
-{
-    width: 1000px;
-
-    empty-cells: show; 
-    border-collapse: collapse; 
-    border-color: #DDDDDD;
-}
-.translation_table td, .translation_table td .edit{height: 18px; overflow: hidden;}
-
-
-.password{text-align: center; padding-top: 100px;}
-.password *{vertical-align: middle;}
-
 
 .item-delete
 {
@@ -25,12 +9,7 @@
 
 
 .add-language{
-  padding: 20px 0;
-  text-align: center;
-}
-.aslink{
-  cursor: pointer;
-  text-decoration: underline;
+  padding: 20px 0 10px;
 }
 
 .save_cancel{

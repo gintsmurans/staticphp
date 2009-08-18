@@ -16,7 +16,7 @@ $().ready(function(){
     }
     else
     {
-      show_loader('#add_language_button');
+      show_loader('#add_language_handler');
       $.post(AJAX_URL + 'languages/add_language', {lang: add.val()}, function(data){
         window.location.reload();
       });
@@ -33,7 +33,7 @@ $().ready(function(){
   
   // Copy to web
   $('#copy_to_web').bind('click', function(){
-    if (confirm('Are you sure want to copy all languages to website?'))
+    if (confirm(LANGUAGES_CONFIRM6))
     {
       window.location.href = BASE_URL + 'languages/copy_to_web';
     }
@@ -41,7 +41,7 @@ $().ready(function(){
   
   // Copy from web
   $('#copy_from_web').bind('click', function(){
-    if (confirm('Are you sure want to copy all languages from website?'))
+    if (confirm(LANGUAGES_CONFIRM7))
     {
       window.location.href = BASE_URL + 'languages/copy_from_web';
     }
@@ -50,7 +50,7 @@ $().ready(function(){
   // Copy scope to web
   $('#copy_scope_to_web').bind('click', function(){
     scope_change = $('#scope_change');
-    if (scope_change.val() != 0 && confirm('Are you sure want to copy this scope to website?'))
+    if (scope_change.val() != 0 && confirm(LANGUAGES_CONFIRM8))
     {
       location.href = BASE_URL +'languages/copy_scope_to_web/'+ scope_change.val();
     }
@@ -59,14 +59,13 @@ $().ready(function(){
   // Copy scope from web
   $('#copy_scope_from_web').bind('click', function(){
     scope_change = $('#scope_change');
-    if (scope_change.val() != 0 && confirm('Are you sure want to copy this scope from website?'))
+    if (scope_change.val() != 0 && confirm(LANGUAGES_CONFIRM9))
     {
       location.href = BASE_URL +'languages/copy_scope_from_web/'+ scope_change.val();
     }
   });
 
   // Add item
-  // Add language
   $('#add_item_button').bind('click', function(){
     var add = $('#add_item');
     if ($.trim(add.val()) == '')
@@ -75,9 +74,8 @@ $().ready(function(){
     }
     else
     {
-      var button = show_loader('#add_item_button');
+      show_loader('#add_item_handler');
       $.post(AJAX_URL + 'languages/add_item', {ident: add.val(), scope: (current_scope ? current_scope : '')}, function(data){
-        $('#add_item_button').html(button);
         if (data.error)
         {
           alert(data.error);
@@ -88,7 +86,7 @@ $().ready(function(){
           add.val('');
 
           html = '<tr>';
-          html += '<td class="hover delete" onclick="if (confirm(\'Are you sure want to delete this item?\')){ delete_item(\''+ data.ident +'\'); }"><img src="'+ BASE_URL +'css/images/delete.png" alt="" /></td>';
+          html += '<td class="hover delete" onclick="if (confirm(\''+ LANGUAGES_CONFIRM5 +'\')){ delete_item(\''+ data.ident +'\'); }"><img src="'+ BASE_URL +'css/images/delete.png" alt="" /></td>';
           html += '<td class="hover" onclick="change(this, \''+ data.ident +'\', \'scope\');">'+ data.scope +'</td>';
           html += '<td class="hover" onclick="change(this, \''+ data.ident +'\', \'ident\');">'+ data.ident +'</td>';
       
@@ -101,6 +99,8 @@ $().ready(function(){
           
           $('#insert').before(html);
         }
+        
+        show_loader('#add_item_handler');
       }, 'json');
     }
   });
@@ -157,8 +157,8 @@ function change(td, ident, field)
   {
     current_td.html(
       '<input type="text" id="edit-'+ current_ident +'" value="'+ tmp_input +'" />'+
-      '&nbsp;&nbsp;<span class="hover" onmouseup="save();"><img src="'+ BASE_URL +'css/images/save.png" /></span>'+
-      '&nbsp;<span class="hover" onmouseup="cancel();"><img src="'+ BASE_URL +'css/images/trash.png" /></span>'
+      '&nbsp;&nbsp;<span id="edit_handler"><span class="hover" onmouseup="save();"><img src="'+ BASE_URL +'css/images/save.png" /></span>'+
+      '&nbsp;<span class="hover" onmouseup="cancel();"><img src="'+ BASE_URL +'css/images/trash.png" /></span></span>'
     );
     $(':input:first', current_td).select();
   }
@@ -237,8 +237,7 @@ function save()
     }
     else
     {
-      // var td = $(input.parentNode);
-      show_loader(current_td);
+      show_loader($('#edit_handler', current_td));
   
       $.post(AJAX_URL + 'languages/edit_item', {ident: current_ident, lang: current_field, value: encodeURIComponent(edit.val())}, function(data){
         tmp_input = unescape(data.value);
@@ -271,7 +270,7 @@ function delete_item(ident)
 {
   if ($.trim(ident) != '')
   {
-    show_loader('#item-'+ ident +' .delete');
+    show_loader('#item-'+ ident +' .delete img');
     $.post(AJAX_URL + 'languages/delete_item', {ident: ident}, function(data){
         if (data.ident)
         {

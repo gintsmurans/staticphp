@@ -9,7 +9,7 @@ class login
 
   public static function __construct__()
   {
-
+    load_lang('login');
   }
   
   
@@ -17,6 +17,9 @@ class login
   {
     // Unset current session
     unset($_SESSION['user']);
+    
+    js(base_url('js/login.js'));
+    css(base_url('css/login.css'));
 
     load('views/login/header');
     load('views/login/login', self::$vars);

@@ -2,10 +2,41 @@
 
 class user_model
 {
+
+  public static function generate_access_list()
+  {
+    foreach (g('config')->access as $item)
+    {
+      if (is_file(APP_PATH .'controllers/'. $item .'.php'))
+      {
+        include_once APP_PATH .'controllers/'. $item .'.php';
+        $methods = get_class_methods($item);
+        if (!empty($methods))
+        {
+          // Add name to the list
+          $tmp =& $access_list[];
+          $tmp['name'] = $item;
+
+          // Sort methods and add to the list
+          asort($methods);
+          foreach ($methods as $method)
+          {
+            if ($method[0] != '_')
+            {
+              $tmp['methods'][] = $method;
+            }
+          }
+        }
+      }
+    }
+
+    return (empty($access_list) ? false : $access_list);
+  }
+
   public static function check_access($class = '', $method = '')
   {
     $class = (empty($class) ? router::$class : $class);
-    $method = (empty($method) ? router::$class : $method);
+    $method = (empty($method) ? router::$method : $method);
 
     // Check for user
     if (empty($_SESSION['user']))
@@ -40,22 +71,22 @@ class user_model
   {
     if (empty($username))
     {
-      return 'No username provided';
+      return LOGIN_NO_USERNAME;
     }
     elseif (empty($password))
     {
-      return 'No password provided';
+      return LOGIN_NO_PASSWORD;
     }
     else
     {
       $user = db::query("SELECT * FROM `users` WHERE `username` = ?", array($username))->fetch();
       if (empty($user->id))
       {
-        return 'Username not found!';
+        return LOGIN_USERNAME_NOT_FOUND;
       }
       elseif (sha1($_POST['password']) != $user->password)
       {
-        return 'Wrong password!';
+        return LOGIN_WRONG_PASSWORD;
       }
       else
       {

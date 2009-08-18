@@ -9,14 +9,15 @@ class languages
 
   public static function __construct__()
   {  
-    load('models/languages_model');
-
     user_model::check_access();
+    
+    load('models/languages_model');
+    load_lang('languages');
 
     // Language stuff
     self::$vars['languages'] = languages_model::get_columns();
     self::$vars['scopes'] = languages_model::get_scopes();
-    
+
     if (!empty(router::$segments[2]))
     {
       $scope = db::query("SELECT `scope` FROM `languages` WHERE `scope` = ?", router::$segments[2])->fetch();
@@ -26,11 +27,26 @@ class languages
         self::$vars['translations'] = languages_model::get_languages(array('scope' => $scope->scope));
       }
     }
-    
+
     if (empty(self::$vars['translations']))
     {
       self::$vars['translations'] = languages_model::get_languages();
     }
+    
+    
+    css(base_url('css/languages.css'), base_url('css/jquery.wysiwyg.css'));
+    js(base_url('js/jquery.wysiwyg.js'), base_url('js/languages.js'), base_url('languages/base_js'));
+    js('inline:
+      var languages = '. json_encode(array_slice(languages_model::$fields, 1)) .';
+      var current_scope = '. (empty($current_scope) ? 0 : $current_scope) .';
+    ');
+  }
+  
+  
+  public static function base_js()
+  {
+    header('Content-Type: text/javascript');
+    load('views/languages/base.js');
   }
 
 
@@ -38,7 +54,7 @@ class languages
   {
     if (count(g('config')->languages) > count(languages_model::$fields))
     {
-      self::$vars['error'] = 'There is difference between table columns and configuration file language array <a href="'.site_url('languages/setup').'>Change language database!</a>';
+      self::$vars['error'] = str_replace('!url', site_url('languages/setup'), LANGUAGES_CONFIG_DIFFERENCE);
     }
     
     if (!empty($_SESSION['msg_failed']))
@@ -86,16 +102,16 @@ class languages
     {
       if (router::$segments[2] == g('config')->lang_default)
       {
-        $_SESSION['msg_failed'] = 'Failed! You can\'t delete the default language.';
+        $_SESSION['msg_failed'] = LANGUAGES_ERROR1;
       }
       else if (in_array(router::$segments[2], g('config')->languages))
       {
-        $_SESSION['msg_failed'] = 'Failed! Set language to inactive and then delete it.';
+        $_SESSION['msg_failed'] = LANGUAGES_ERROR2;
       }
       else
       {
         languages_model::drop_language(router::$segments[2]);
-        $_SESSION['msg_ok'] = 'Ok! Language deleted.';
+        $_SESSION['msg_ok'] = LANGUAGES_OK1;
       }
     }
     router::redirect(router::$class);
@@ -108,7 +124,7 @@ class languages
     {
       if (!in_array(router::$segments[2], languages_model::$fields))
       {
-        $_SESSION['msg_failed'] = 'Failed! Can\'t find language in database.';
+        $_SESSION['msg_failed'] = LANGUAGES_ERROR3;
       }
       elseif (in_array(router::$segments[2], g('config')->languages))
       {
@@ -116,13 +132,13 @@ class languages
         unset($keys[router::$segments[2]]);
         g('config')->languages = array_flip($keys);
         languages_model::write_languages();
-        $_SESSION['msg_ok'] = 'Ok! Disabled language "'. router::$segments[2] .'".';
+        $_SESSION['msg_ok'] = str_replace('!lang', router::$segments[2], LANGUAGES_OK2);
       }
       else
       {
         g('config')->languages[] = router::$segments[2];
         languages_model::write_languages();
-        $_SESSION['msg_ok'] = 'Ok! Enabled language "'. router::$segments[2] .'".';        
+        $_SESSION['msg_ok'] = str_replace('!lang', router::$segments[2], LANGUAGES_OK3);
       }
     }
     router::redirect(router::$class);
@@ -136,14 +152,14 @@ class languages
       $_POST['ident'] = mb_strtoupper(str_replace('-', '_', fv::set_friendly($_POST['ident'])));
       if (empty($_POST['ident']))
       {
-        $output = array('error' => 'Failed! There was no correct "ident" provided!');
+        $output = array('error' => LANGUAGES_ERROR4);
       }
       else
       {
         $result = languages_model::get_languages(array('ident' => $_POST['ident']));
         if (!empty($result))
         {
-          $output = array('error' => 'Failed! Ident with the same name already exists.');
+          $output = array('error' => LANGUAGES_ERROR5);
         }
         else
         {
@@ -197,7 +213,7 @@ class languages
     $languages = (empty(router::$segments[2]) ? languages_model::$fields : (array) router::$segments[2]);
     languages_model::copy_to_web($languages);
 
-    $_SESSION['msg_ok'] = 'Ok! Language(-s) is copied to the website.';
+    $_SESSION['msg_ok'] = LANGUAGES_OK4;
 
     router::redirect(router::$class);
   }
@@ -207,7 +223,7 @@ class languages
   {
     $languages = (empty(router::$segments[2]) ? languages_model::$fields : (array) router::$segments[2]);
     languages_model::copy_from_web($languages);
-    $_SESSION['msg_ok'] = 'Ok! Language(-s) is copied from the website.';
+    $_SESSION['msg_ok'] = LANGUAGES_OK5;
 
     router::redirect(router::$class);
   }
@@ -218,7 +234,7 @@ class languages
     if (!empty(router::$segments[2]))
     {
       languages_model::copy_to_web(g('config')->languages, router::$segments[2]);
-      $_SESSION['msg_ok'] = 'Ok! Scope is copied to the server.';
+      $_SESSION['msg_ok'] = LANGUAGES_OK6;
     }
 
     router::redirect(router::$class .'/index/'. router::$segments[2]);
@@ -229,7 +245,7 @@ class languages
     if (!empty(router::$segments[2]))
     {
       languages_model::copy_from_web(g('config')->languages, router::$segments[2]);
-      $_SESSION['msg_ok'] = 'Ok! Language(-s) is copied from the server.';
+      $_SESSION['msg_ok'] = LANGUAGES_OK7;
     }
 
     router::redirect(router::$class .'/index/'. router::$segments[2]);

@@ -28,7 +28,7 @@
 $config['routing'] = array(
 
   // Default Controller and Method names
-  '' => 'languages/index',
+  '' => 'home/index',
 
   // Rest of the routing
   

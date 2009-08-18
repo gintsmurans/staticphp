@@ -170,86 +170,83 @@ class router
 
     private static function load_controller()
     {
-        // Get routing settings
-        $routing = g('config')->routing;
-        
-        // Get controllers path
-        $cpath = (defined('ADMIN_PATH') ? ADMIN_PATH : APP_PATH);
-        
-		// Explode default method
-		$tmp = explode('/', $routing['']);
-		$count = count($tmp);
-		
-		// Set default class and method
-		self::$class = $tmp[$count - 2];
-        self::$method = $tmp[$count - 1];
+      // Get routing settings
+      $routing = g('config')->routing;
+      
+  		// Explode default method
+  		$tmp = explode('/', $routing['']);
+  		$count = count($tmp);
+  		
+  		// Set default class and method
+	    self::$class = $tmp[$count - 2];
+      self::$method = $tmp[$count - 1];
 
 
 
-        // If empty segments set file as class name
-        if (empty(self::$segments[0]))
+      // If empty segments set file as class name
+      if (empty(self::$segments[0]))
+      {
+      	self::$file = implode('/', array_slice($tmp, 0, -1));
+      }
+      else
+      {
+        // Check config routing array
+        foreach((array)$routing as $key=>$item)
         {
-        	self::$file = implode('/', array_slice($tmp, 0, -1));
+          if (!empty($key) && !empty($item))
+          {
+            $key = str_replace('/', '\\/', $key);
+            if (preg_match('/'.$key.'/', self::$url))
+            {
+              // Explode found segments
+              $tmp = explode('/', $item);
+              $count = count($tmp);
+
+                // Set file, class and method
+                self::$file = implode('/', array_slice($tmp, 0, -1));
+                self::$class = $tmp[$count - 2];
+                self::$method = $tmp[$count - 1];
+
+              unset($tmp);
+            }
+          }
         }
-        else
+
+
+        // If there was no corresponding records from routing array, try segments
+        if (empty(self::$file))
         {
-	        // Check config routing array
-	        foreach((array)$routing as $key=>$item)
-	        {
-	            if (!empty($key) && !empty($item))
-	            {
-	                $key = str_replace('/', '\\/', $key);
-	                if (preg_match('/'.$key.'/', self::$url))
-                    {
-                        // Explode found segments
-	                    $tmp = explode('/', $item);
-	                    $count = count($tmp);
+          self::$file = self::$segments[0];
+          $mi = 1;
 
-                        // Set file, class and method
-                        self::$file = implode('/', array_slice($tmp, 0, -1));
-                        self::$class = $tmp[$count - 2];
-                        self::$method = $tmp[$count - 1];
+          // Check for subdirectory
+          if (is_dir(APP_PATH .'controllers'. DS . self::$file))
+          {
+            // Add set class name as segment[1]
+            if (!empty(self::$segments[1]))
+            {
+              self::$class = self::$segments[1];
+            }
 
-	                    unset($tmp);
-	                }
-	            }
-	        }
-	
-	
-	        // If there was no corresponding records from routing array, try segments
-	        if (empty(self::$file))
-	        {
-            	self::$file = self::$segments[0];
-    			$mi = 1;
+            // Add class name to self::$file
+            self::$file .= '/'.self::$class;
 
-                // Check for subdirectory
-                if (is_dir($cpath.'controllers'.DS.self::$file))
-                {
-                    // Add set class name as segment[1]
-                    if (!empty(self::$segments[1]))
-                    {
-                        self::$class = self::$segments[1];
-                    }
+            // Increase method index
+            ++$mi;
+          }
+          
+          // Add default class name to self::$file
+          else
+          {
+            self::$class = self::$file;
+          }
 
-                    // Add class name to self::$file
-                    self::$file .= '/'.self::$class;
-
-                    // Increase method index
-                    ++$mi;
-                }
-                
-                // Add default class name to self::$file
-                else
-                {
-                    self::$class = self::$file;
-                }
-
-                self::$method = (!empty(self::$segments[$mi]) ? self::$segments[$mi] : self::$method);
-	        }
+          self::$method = (!empty(self::$segments[$mi]) ? self::$segments[$mi] : self::$method);
+        }
 		}
 
 
-		self::_load_controller($cpath.'controllers'.DS.self::$file.'.php', self::$class, self::$method);
+		self::_load_controller(APP_PATH .'controllers' . DS . self::$file.'.php', self::$class, self::$method);
         unset($mi, $routing);
     }
     
@@ -266,12 +263,12 @@ class router
           $methods = get_class_methods($Class);
           if (in_array($Method, $methods) || in_array('__callStatic', $methods))
           {
-              // Call our contructor
-              if (in_array('__construct__', $methods))
-              {
-                  call_user_func(array($Class, '__construct__'));
-              }
-              call_user_func(array($Class, $Method));
+            // Call our contructor
+            if (in_array('__construct__', $methods))
+            {
+              call_user_func(array($Class, '__construct__'));
+            }
+            call_user_func(array($Class, $Method));
           }
           else
           {

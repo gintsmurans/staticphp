@@ -18,7 +18,7 @@ class languages_model
             $data = array_values($add);
         }
 
-        return db::query("SELECT * FROM `languages`{$where}", $data)->fetchAll();
+        return db::query("SELECT * FROM `languages`{$where} ORDER BY `scope`, `ident`", $data)->fetchAll();
     }
     
     
@@ -153,6 +153,7 @@ class languages_model
             // Insert them into db
             foreach ($matches[1] as $key => $ident)
             {
+              $matches[2][$key] = str_replace("\\'", "'", $matches[2][$key]);
               $result = self::get_languages(array('ident' => $ident));
               if (!empty($result))
               {

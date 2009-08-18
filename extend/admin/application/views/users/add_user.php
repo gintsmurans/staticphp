@@ -5,20 +5,20 @@
 <form action="" method="post">
   <table class="user-list">
     <tr>
-      <td>Username:</td>
+      <td><?php echo USERS_USERNAME; ?>:</td>
       <td><input type="text" name="username" /></td>
     </tr>
   
     <tr>
-      <td>Password:</td>
+      <td><?php echo USERS_PASSWORD; ?>:</td>
       <td><input type="password" name="password" /></td>
     </tr>
   
     <tr>
-      <td>Access:</td>
+      <td valign="top"><?php echo USERS_ACCESS; ?>:</td>
       <td class="text-left">
         <ul>
-          <li><input type="checkbox" name="c[*]" value="*" /> All</li>
+          <li><input type="checkbox" name="c[*]" value="*" /> <?php echo USERS_ALL; ?></li>
           <?php foreach ($access as $tmp_item): ?>
             <li>
               <input type="checkbox" name="c[<?php echo $tmp_item['name']; ?>]" value="*" /><?php echo $tmp_item['name']; ?>
@@ -36,7 +36,7 @@
     </tr>
     <tr>
       <td colspan="2" class="text-right">
-        <input type="submit" value="Add" />
+        <input type="submit" value="<?php echo BASE_SAVE; ?>" />
       </td>
     </tr>
   </table>

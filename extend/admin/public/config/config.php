@@ -81,7 +81,7 @@ $config['lang_redirect'] = false;
 
 // Loads from application directory without .php extension
 // You can put full path/to/file too, only without .php
-$config['load_files'] = array('libraries/sessions', 'helpers/system', 'models/user_model', 'libraries/form_validation');
+$config['load_files'] = array('libraries/sessions', 'helpers/system', 'helpers/html', 'models/user_model', 'libraries/form_validation');
 
 
 // Load additional config files
@@ -91,6 +91,6 @@ $config['load_configs'] = array('admin');
 
 // Load default language files
 // Loads them from application/languages/$current_language/ directory
-$config['load_languages'] = array();
+$config['load_languages'] = array('base');
 
 ?>

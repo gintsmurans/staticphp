@@ -7,6 +7,9 @@ class users
   public static function __construct__()
   {
     user_model::check_access();
+    self::$vars['access'] = user_model::generate_access_list();
+    
+    load_lang('users');
   }
   
   
@@ -18,25 +21,10 @@ class users
     load('views/users/users', self::$vars);
     load('views/footer');
   }
-
-
+  
+  
   public static function add()
   {
-    // Generate access list
-    $access =& self::$vars['access'];
-    foreach (g('config')->access as $item)
-    {
-      $tmp =& $access[];
-      $tmp['name'] = $item;
-      
-      if (is_file(APP_PATH .'controllers/'. $item .'.php'))
-      {
-        include_once APP_PATH .'controllers/'. $item .'.php';
-        $tmp['methods'] = get_class_methods($item);
-      }
-    }
-
-
     // Post
     if (fv::ispost(array('username', 'password')))
     {
@@ -67,20 +55,6 @@ class users
     // Get user
     self::$vars['user'] = db::query("SELECT * FROM `users` WHERE `id` = ? LIMIT 1", router::$segments[2])->fetch();
     self::$vars['user']->access = json_decode(self::$vars['user']->access);
-
-    // Generate access list
-    $access =& self::$vars['access'];
-    foreach (g('config')->access as $item)
-    {
-      $tmp =& $access[];
-      $tmp['name'] = $item;
-      
-      if (is_file(APP_PATH .'controllers/'. $item .'.php'))
-      {
-        include_once APP_PATH .'controllers/'. $item .'.php';
-        $tmp['methods'] = get_class_methods($item);
-      }
-    }
 
     // Post
     if (fv::ispost(array('username', 'password')))

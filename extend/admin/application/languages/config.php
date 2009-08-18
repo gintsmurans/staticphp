@@ -1,6 +1,6 @@
 <?php
-// Created: 2009-07-15 13:11:14
+// Created: 2009-08-19 00:41:43
 
-$config['languages'] = array('en', 'lv');
+$config['languages'] = array('en');
 
 ?>
