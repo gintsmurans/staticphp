@@ -43,35 +43,31 @@ function make_path_string($string)
 }
 
 
-
-function load_lang($file)
+function load_config($files)
 {
-  load('languages/'. g('config')->language .'/'. $file . '_lang');
+  foreach ((array) $files as $name)
+  {
+    include PUBLIC_PATH .'config/'. $name .'.php';
+    if (!empty($config))
+  	{
+  	 g()->{$name} = (object) $config;
+    }
+  }
+}
+
+
+function load_lang($files)
+{
+  foreach ((array) $files as $file)
+  {
+    include APP_PATH . g('config')->lang_path . '/'. g('config')->language .'/'. $file . '_lang.php';
+  }
 }
 
 
 
-function load($file, $vars = array(), $prefix = null)
+function load($files, $vars = array(), $prefix = null)
 {
-  // Make filename
-	$file = rtrim(make_path_string($file), DS).'.php';
-
-	// Check for file existance
-	switch(true)
-	{
-		case is_file($file):
-			// do nothing
-		break;
-
-		case is_file(APP_PATH.$file):
-      $file = APP_PATH.$file;
-		break;
-
-		default:
-			throw new Exception('Can\'t load file: '.$file);
-		break;
-	}
-	
 	// Check for global template variables
 	if (!empty(g()->vars))
 	{
@@ -91,7 +87,29 @@ function load($file, $vars = array(), $prefix = null)
   	}
   }
 
-  include $file;
+  foreach ((array) $files as $file)
+  {
+    // Make filename
+  	$file = rtrim(make_path_string($file), DS).'.php';
+  
+  	// Check for file existance
+  	switch(true)
+  	{
+  		case is_file($file):
+  			// do nothing
+  		break;
+  
+  		case is_file(APP_PATH.$file):
+        $file = APP_PATH.$file;
+  		break;
+  
+  		default:
+  			throw new Exception('Can\'t load file: '.$file);
+  		break;
+  	}
+  
+    include $file;
+  }
 }
 
 

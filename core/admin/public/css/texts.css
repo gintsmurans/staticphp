@@ -1,0 +1,17 @@
+.texts_table input.text{
+  width: 400px;
+}
+
+.texts_table textarea{
+  height: 250px;
+  width: 600px;
+}
+
+
+.texts_list{
+  margin-top: 10px;
+  width: 100%;
+}
+.texts_list tr.inactive{
+  color: #999;
+}

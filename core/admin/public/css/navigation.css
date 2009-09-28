@@ -1,0 +1,38 @@
+.menu-tree{
+  float: left;
+}
+.filetree .nr{
+  float: right;
+  font-size: 11px;
+}
+.filetree
+{
+  background-color: #f6f6f6;
+  margin: 10px 0;
+  padding: 10px 20px;
+
+  -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; 
+}
+.filetree a{
+  color: #3b3b3b;
+}
+.filetree a.active{
+  color: #45BDE9;
+}
+.filetree li.inactive a{
+  color: #999;
+}
+
+.menu-content{
+  float: left;
+  margin: 0 0 0 20px;
+  padding: 0 20px;
+  width: 600px;
+}
+
+
+input.submit{
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 5px;
+}

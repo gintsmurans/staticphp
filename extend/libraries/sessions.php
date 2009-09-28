@@ -70,7 +70,7 @@ class sessions
 
   public static function _gc($max)
   {
-    db::exec("DELETE FROM `sessions` WHERE `expires` = ?", (time() - $max));
+    db::exec("DELETE FROM `sessions` WHERE `expires` <= ?", (time() - $max));
     return true;
   }
 }
