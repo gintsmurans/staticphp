@@ -1,6 +1,6 @@
 <?php
 /*
-    "StaticPHP Framework" - Little PHP Framework
+    "StaticPHP Framework" - Simple PHP Framework
 
     Controller for handling javascript file with php
     To use add line below to your routing.php file

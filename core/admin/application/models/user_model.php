@@ -5,6 +5,8 @@ class user_model
 
   public static function generate_access_list()
   {
+    $access_list[] = array('name' => array('all', 'All'));
+
     foreach (g('config')->access as $item)
     {
       if (is_file(APP_PATH .'controllers/'. $item .'.php'))
@@ -15,7 +17,7 @@ class user_model
         {
           // Add name to the list
           $tmp =& $access_list[];
-          $tmp['name'] = $item;
+          $tmp['name'] = array($item, $item);
 
           // Sort methods and add to the list
           asort($methods);
@@ -23,15 +25,69 @@ class user_model
           {
             if ($method[0] != '_')
             {
-              $tmp['methods'][] = $method;
+              $tmp['child'][]['name'] = array($method, $method);
             }
           }
         }
       }
     }
 
-    return (empty($access_list) ? false : $access_list);
+    if (!empty(g('config')->access_callback))
+    {
+      foreach (g('config')->access_callback as $item)
+      {
+        if (!class_exists($item['class']))
+        {
+          load($item['file']);
+        }
+        if (is_callable(array($item['class'], $item['method'])))
+        {
+          $access = call_user_func(array($item['class'], $item['method']));
+          if (is_array($access))
+          {
+            $access_list = array_merge($access_list, $access);
+          }
+        }
+      }
+    }
+
+    return $access_list;
   }
+
+
+  static public function print_checkboxes(&$array, $parent = '', $edit = array(), &$checked = false)
+  {
+  	$html = '';
+  	$child_checked = true;
+  	foreach ($array as $row)
+  	{
+  		// Variables
+  		$tmp = '';
+  		$checked = !empty($edit[$row['name'][0]]);
+  		$child_checked = ($checked && $child_checked);
+  
+  		// Get child elements
+  		if (!empty($row['child']) && is_array($row['child']))
+  		{
+  			$tmp = self::print_checkboxes($row['child'], $parent .'['. $row['name'][0] .']', (empty($edit[$row['name'][0]]) ? null : $edit[$row['name'][0]]), $child_checked);
+  			$checked = ($child_checked && $checked);
+  		}
+  
+  		// Create html
+  		$html .= '<li>';		
+  		$html .= '<input type="checkbox" name="access'. $parent .'['. $row['name'][0] .']" value="1"'.( $checked ? ' checked="checked"' : '' ).' /> '.$row['name'][1];
+  		if (!empty($tmp))
+  		{
+  			$html .= '<ul>';
+  			$html .= $tmp;
+  			$html .= '</ul>';
+  		}
+  		$html .= '</li>';
+  	}
+  	$checked = $child_checked;
+  	return $html;
+  }
+
 
   public static function check_access($class = '', $method = '')
   {
@@ -57,13 +113,28 @@ class user_model
   }
 
 
-  public static function _access($class, $method = '')
+  public static function _access()
   {
-    return !(
-      (empty($_SESSION['user']->access->{'*'}) || $_SESSION['user']->access->{'*'} != '*' ) && 
-      (empty($_SESSION['user']->access->{$class}) || $_SESSION['user']->access->{$class} != '*') && 
-      (empty($_SESSION['user']->access->{$class}->{$method}))
-    );
+    $arr = $_SESSION['user']->access;
+    
+    if (!empty($arr['all']))
+    {
+      return true;
+    }
+    
+    foreach (func_get_args() as $arg)
+    {
+    	if (!empty($arr[$arg]))
+    	{
+    		$arr = $arr[$arg];
+    	}
+    	else
+    	{
+    		return false;
+    	}
+    }
+    
+    return true;
   }
 
 
@@ -90,7 +161,7 @@ class user_model
       }
       else
       {
-        $user->access = json_decode($user->access);
+        $user->access = json_decode($user->access, true);
         return $user;
       }
     }

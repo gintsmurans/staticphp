@@ -1,6 +1,6 @@
 <?php
 /*
-  "StaticPHP Framework" - Little PHP Framework
+  "StaticPHP Framework" - Simple PHP Framework
   
   Sessions handling class.
   For table structure look in extend/db_scripts/table_sessions.sql

@@ -1,6 +1,6 @@
 <?php
 /*
-  "StaticPHP Framework" - Little PHP Framework
+  "StaticPHP Framework" - Simple PHP Framework
   
   Memcached based sessions handler.
   Requires php "memcached" extension. 

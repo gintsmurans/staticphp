@@ -1,6 +1,6 @@
 <?php
 /*
-    "StaticPHP Framework" - Little PHP Framework
+    "StaticPHP Framework" - Simple PHP Framework
     
     !!!! NOT A FINAL VERSION, ONLY A DRAFT !!!!
     

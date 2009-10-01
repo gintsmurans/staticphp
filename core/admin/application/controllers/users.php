@@ -11,8 +11,8 @@ class users
     
     load_lang('admin_users');
   }
-  
-  
+
+
   public static function index()
   {
     self::$vars['users'] = db::query("SELECT * FROM `users` ORDER BY `username`")->fetchAll();
@@ -21,8 +21,8 @@ class users
     load('views/users/users', self::$vars);
     load('views/footer');
   }
-  
-  
+
+
   public static function add()
   {
     // Post
@@ -31,7 +31,7 @@ class users
       $data = array(
         $_POST['username'],
         sha1($_POST['password']),
-        (empty($_POST['c']) ? '' : json_encode($_POST['c']))
+        (empty($_POST['access']) ? '' : json_encode($_POST['access']))
       );
       db::exec("INSERT INTO `users` SET `username` = ?, `password` = ?, `access` = ?", $data);
       router::redirect('users');
@@ -54,7 +54,7 @@ class users
 
     // Get user
     self::$vars['user'] = db::query("SELECT * FROM `users` WHERE `id` = ? LIMIT 1", router::$segments[2])->fetch();
-    self::$vars['user']->access = json_decode(self::$vars['user']->access);
+    self::$vars['user']->access = json_decode(self::$vars['user']->access, true);
 
     // Post
     if (fv::ispost(array('username', 'password')))
@@ -62,7 +62,7 @@ class users
       $set = '';
       $data = array(
         $_POST['username'],
-        (empty($_POST['c']) ? '' : json_encode($_POST['c'])),
+        (empty($_POST['access']) ? '' : json_encode($_POST['access'])),
       );
 
       // If not empty password, set it too

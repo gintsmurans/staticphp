@@ -17,20 +17,8 @@
     <tr>
       <td valign="top"><?php echo USERS_ACCESS; ?>:</td>
       <td class="text-left">
-        <ul>
-          <li><input type="checkbox" name="c[*]" value="*" /> <?php echo USERS_ALL; ?></li>
-          <?php foreach ($access as $tmp_item): ?>
-            <li>
-              <input type="checkbox" name="c[<?php echo $tmp_item['name']; ?>]" value="*" /><?php echo $tmp_item['name']; ?>
-              <?php if (!empty($tmp_item['methods']) && is_array($tmp_item['methods'])): ?>
-                <ul>
-                <?php foreach ($tmp_item['methods'] as $method): ?>
-                  <li><input type="checkbox" name="c[<?php echo $tmp_item['name']; ?>][<?php echo $method; ?>]" value="*" /><?php echo $method; ?></li>
-                <?php endforeach; ?>
-                </ul>
-              <?php endif; ?>
-            </li>
-          <?php endforeach; ?>
+        <ul id="access_list">
+          <?php echo user_model::print_checkboxes($access); ?>
         </ul>
       </td>
     </tr>

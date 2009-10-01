@@ -8,3 +8,7 @@ td.text-right{ text-align: right; }
 #loader{ display: none; }
 .login-form{ text-align: center; padding-top: 100px; }
 .login-form img{ vertical-align: middle; }
+
+#access_list{
+  font-size: 11px;
+}
