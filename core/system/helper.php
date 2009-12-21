@@ -45,7 +45,7 @@ function make_path_string($string)
 
 function load_hook($hook)
 {
-  $tmp = router::url_to_file(&$hook);
+  $tmp = router::url_to_file($hook);
 
   $file = APP_PATH . $tmp['file'] .'.php';
   if (!in_array($file, get_included_files()))

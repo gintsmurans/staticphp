@@ -189,7 +189,7 @@ class router
     $routing = g('config')->routing;
     
     // Get controller, class, method from url
-    $tmp = router::url_to_file(&$routing['']);
+    $tmp = router::url_to_file($routing['']);
     
     // Set default class and method
     self::$class = $tmp['class'];
@@ -212,7 +212,7 @@ class router
           if (preg_match('/'.$key.'/', self::$url))
           {
             // Get controller, class, method from url
-            $tmp = router::url_to_file(&$item);
+            $tmp = router::url_to_file($item);
 
             // Set file, class and method
             self::$class = $tmp['class'];
@@ -293,7 +293,7 @@ class router
           // Call our contructor
           if (in_array('_construct', $methods))
           {
-            call_user_func(array($Class, '_construct'), &$Class, &$Method);
+            call_user_func(array($Class, '_construct'), $Class, $Method);
           }
           call_user_func(array($Class, $Method));
         }

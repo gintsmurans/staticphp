@@ -99,7 +99,12 @@ router::init();
 // If DEBUG output load time
 if (g('config')->timer === true)
 {
-  echo '<pre style="border-top: 1px #DDD solid; padding-top: 4px;">Generated in ', round(microtime(true) - $microtime, 5), ' seconds.<br />Memory: '.round(memory_get_usage() / 1024 / 1024, 4).' Mb<br /><br />'.exec("uptime").'</pre>';
+echo '
+<pre style="border-top: 1px #DDD solid; padding-top: 4px;">
+Generated in ', round(microtime(true) - $microtime, 5), ' seconds. Memory: ', round(memory_get_usage() / 1024 / 1024, 4), ' Mb
+Queries count: ', db::$query_count ,'
+Queries: ', print_r(db::$queries, true) ,'
+</pre>';
 }
 
 ?>
