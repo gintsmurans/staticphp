@@ -24,8 +24,14 @@
 
 class db
 {
-  private static $db_link;
+  public static $queries = null;
+  public static $query_count = null;
 
+  private static $db_link;
+  private static $last_statement;
+
+
+  # INIT FUNCTION
 
   public static function &init($config = null)
   {
@@ -36,21 +42,145 @@ class db
     }
 
     // Open new connection to DB
-    $db_link = new PDO($config['string'], $config['username'], $config['password']);
+    $db_link = new PDO($config['string'], $config['username'], $config['password'], array(
+      PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+      PDO::ATTR_CASE => PDO::CASE_NATURAL
+    ));
     
     // Set encoding
     $db_link->exec("SET NAMES UTF8;");
 
-    // Put PDO into exception error mode
-    $db_link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Allow buffered queries in  MySQL
-    $db_link->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, TRUE);
-
+    // Return db link reference for example if somebody needs to open new connection to a new database
     return $db_link;
   }
 
 
+
+  # READ FUNCTIONS
+
+  public static function query($query, $data = null)
+  {
+    if (!empty($query))
+    {
+      if (empty(self::$db_link))
+      {
+        throw new Exception('No connection to database');
+      }
+      else
+      {
+        // Do request
+        self::$last_statement = self::$db_link->prepare($query);
+        self::$last_statement->setFetchMode(PDO::FETCH_OBJ);
+        self::$last_statement->execute((array) $data);
+        
+        // Count Queries
+        if (g('config')->debug === true)
+        {
+          ++self::$query_count;
+          self::$queries[] = self::$last_statement->queryString;
+        }
+        
+        // Return last statement
+        return self::$last_statement;
+      }
+    }
+  }
+
+
+  public static function fetch($query, $data = array())
+  {
+    return self::query($query, $data)->fetch();
+  }
+
+
+  public static function fetchAll($query, $data = array())
+  {
+    return self::query($query, $data)->fetchAll();
+  }
+
+
+
+  # WRITE FUNCTIONS
+
+  public static function exec($query, $data = null)
+  {
+    if (!empty($query))
+    {
+      if (empty(self::$db_link))
+      {
+        throw new Exception('No connection to database');
+      }
+      else
+      {
+        // Create null return value
+        $prepare = null;
+
+        // Try execute query
+        try
+        {
+            self::$db_link->beginTransaction();
+                $prepare = self::query($query, (array) $data);
+            self::$db_link->commit();
+        }
+        catch(PDOException $e)
+        {
+            self::$db_link->rollback();
+            throw new Exception($e->getMessage());
+        }
+
+        return $prepare;
+      }
+    }
+  }
+
+
+  //
+  // Make set from array. Add "!" at start of the key to avoid escaping 
+  //
+  public static function make_set(&$data, $delimiter = ', ')
+  {
+    foreach ((array)$data as $key => $value)
+    {
+      if ($key[0] == '!')
+      {
+        $set[] = "`". substr($key, 1) ."` = {$value}";
+        unset($data[$key]);
+      }
+      else
+      {
+        $set[] = "`{$key}` = :{$key}";
+      }
+    }
+
+    return (empty($set) ? '' : implode($delimiter, $set));
+  }
+
+
+  public static function insert($table, $data)
+  {
+    $set = self::make_set($data);
+    if (!empty($set))
+    {
+      self::exec("INSERT INTO `{$table}` SET ". $set, $data);
+    }
+  }
+
+
+
+/*
+  public static function update($table, $data, $where = array(), $limit = '')
+  {
+    $set = self::make_set($data);
+    if (!empty($set))
+    {
+      self::exec("UPDATE `{$table}` SET ". $set . (empty($where) ? '': " WHERE ". self::make_set($where, ' AND ') ) . (empty($limit) ? '' : 'LIMIT '. $limit), array_merge($data, $where));
+    }
+  }
+*/
+
+
+  
+  # INFO FUNCTIONS
 
   public static function &db_link()
   {
@@ -59,111 +189,26 @@ class db
       return self::$db_link;
     }
   }
-
-
-
-  public static function query($query, $data = null)
+  
+  
+  public static function &last_statement()
   {
-    if (!empty($query))
+    if (!empty(self::$last_statement))
     {
-      if (is_null(self::$db_link))
-      {
-        throw new Exception('No connection to database');
-      }
-      else
-      {
-        // Convert to array if not
-        if (!is_array($data))
-        {
-          $data = (array) $data;
-        }
-
-        $prepare = self::$db_link->prepare($query);
-        $errorCode = self::$db_link->errorCode();
-
-        // Check if errorCode = empty
-        // This is for sqlite as it is not throwing any errors
-        if ($errorCode == '00000')
-        {
-          $prepare->setFetchMode(PDO::FETCH_OBJ);
-          $prepare->execute($data);
-          return $prepare;
-        }
-        else
-        {
-          $errorInfo = self::$db_link->errorInfo();
-          throw new Exception($errorInfo[2]);
-        }
-
-        return $prepare;
-      }
+      return self::$last_statement;
     }
   }
 
 
-
-  public static function exec($query, $data = null)
+  public static function last_query()
   {
-    if (!empty($query))
-    {
-      if (is_null(self::$db_link))
-      {
-        throw new Exception('No connection to database');
-      }
-      else
-      {
-        // Convert to array if not
-        if (!is_array($data))
-        {
-          $data = (array) $data;
-        }
-
-        // Create null return value
-        $prepare = null;
-
-        // Try execute query
-        try
-        {
-            self::$db_link->beginTransaction();
-                $prepare = self::query($query, $data);
-            self::$db_link->commit();
-        }
-        catch(PDOException $e)
-        {
-            self::$db_link->rollback();
-            throw new Exception($e->getMessage());
-        }
-        
-        return $prepare;
-      }
-    }
+    return empty(self::$last_statement) ? null : self::$last_statement->queryString;
   }
   
   
   public static function last_insert_id()
   {
     return self::$db_link->lastInsertId();
-  }
-
-
-
-  private static function make_set($data)
-  {
-    foreach ($data as $key => $value)
-    {
-      $set[] = "`{$key}` = :{$key}";
-    }
-
-    return (empty($set) ? '' : implode(', ', $set));
-  }
-  
-  public static function insert($table, $data)
-  {
-    $set = self::make_set($data);
-    if (!empty($set))
-    {
-      self::exec("INSERT INTO `{$table}` SET ". $set, $data);
-    }
   }
 }
 

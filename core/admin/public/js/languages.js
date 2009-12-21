@@ -67,46 +67,47 @@ $().ready(function(){
 
   // Add item
   $('#add_item_button').bind('click', function(){
-    var add = $('#add_item');
-    if ($.trim(add.val()) == '')
+    var add_ident = $('#add_ident');
+    if ($.trim(add_ident.val()) == '')
     {
-      add.focus();
+      add_ident.focus();
     }
     else
     {
-      show_loader('#add_item_handler');
-      $.post(AJAX_URL + 'languages/add_item', {ident: add.val(), scope: (current_scope ? current_scope : '')}, function(data){
+      show_loader('#add_item_img');
+      $.post(AJAX_URL + 'languages/add_item', $('#add_item_handle input, #add_item_handle textarea').serialize(), function(data){
         if (data.error)
         {
           alert(data.error);
-          add.select().focus();
         }
-        else if (data.ident)
+        else if (data.scope)
         {
-          add.val('');
-
-          html = '<tr>';
-          html += '<td class="hover delete" onclick="if (confirm(\''+ LANGUAGES_CONFIRM5 +'\')){ delete_item(\''+ data.ident +'\'); }"><img src="'+ BASE_URL +'css/images/delete.png" alt="" /></td>';
-          html += '<td class="hover" onclick="change(this, \''+ data.ident +'\', \'scope\');">'+ data.scope +'</td>';
+          html = '<tr id="item-'+ data.ident +'">';
+          html += '<td class="hover delete" align="center" onclick="if (confirm(\''+ LANGUAGES_CONFIRM5 +'\')){ delete_item(\''+ data.ident +'\'); }"><img src="'+ BASE_URL +'css/images/delete.png" alt="" /></td>';
+          html += '<td class="hover" align="center" onclick="change(this, \''+ data.ident +'\', \'scope\');">'+ data.scope +'</td>';
           html += '<td class="hover" onclick="change(this, \''+ data.ident +'\', \'ident\');">'+ data.ident +'</td>';
       
           for (var k in languages)
           {
-              html += '<td class="hover" onclick="change(this, \''+ data.ident +'\', \''+ languages[k] +'\');"></td>';
+              html += '<td class="hover" onclick="change(this, \''+ data.ident +'\', \''+ languages[k] +'\');">'+ (data[languages[k]] ? data[languages[k]] : '') +'</td>';
           }
           
           html += '</tr>';
           
-          $('#insert').before(html);
+          $('#add_item_handle').after(html).find('input,textarea').val('');
+		  $('#add_scope').val(current_scope);
+		  $('#item-'+ data.ident).css('background', '#faf189');
+
+		  add_ident.focus();
         }
         
-        show_loader('#add_item_handler');
+        show_loader('#add_item_img');
       }, 'json');
     }
   });
   
-  $('#add_item').bind('keyup', function(e){
-    if (e.keyCode == 13)
+  $('#add_item_handle input, #add_item_handle textarea').bind('keyup', function(e){
+    if (e.keyCode == 13 && e.ctrlKey)
     {
       $('#add_item_button').click();
     }
@@ -221,7 +222,7 @@ function change(td, ident, field)
         separator09 : { separator : false },
 
         increaseFontSize : { visible : false },
-        decreaseFontSize : { visible : false },
+        decreaseFontSize : { visible : false }
       }
     });
   }

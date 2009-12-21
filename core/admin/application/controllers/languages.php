@@ -28,17 +28,17 @@ class languages
       }
     }
 
-    if (empty(self::$vars['translations']))
-    {
-      self::$vars['translations'] = languages_model::get_languages();
-    }
+    //if (empty(self::$vars['translations']))
+    //{
+    // self::$vars['translations'] = languages_model::get_languages();
+    //}
     
     
     css(base_url('css/languages.css'), base_url('css/jquery.wysiwyg.css'));
     js(base_url('js/jquery.wysiwyg.js'), base_url('js/languages.js'), base_url('languages/base_js'));
     js('inline:
-      var languages = '. json_encode(array_slice(languages_model::$fields, 1)) .';
-      var current_scope = '. (empty($current_scope) ? 0 : $current_scope) .';
+      var languages = '. json_encode(languages_model::$fields) .';
+      var current_scope = \''. (empty($scope->scope) ? '' : $scope->scope) .'\';
     ');
   }
   
@@ -147,27 +147,32 @@ class languages
   
   public static function add_item()
   {
-    if (fv::ispost('ident'))
+    if (fv::ispost(array('add_scope', 'add_ident')))
     {
-      $_POST['ident'] = mb_strtoupper(str_replace('-', '_', fv::set_friendly($_POST['ident'])));
-      if (empty($_POST['ident']))
+      $_POST['add_ident'] = mb_strtoupper(str_replace('-', '_', fv::set_friendly($_POST['add_ident'])));
+      if (empty($_POST['add_ident']))
       {
         $output = array('error' => LANGUAGES_ERROR4);
       }
       else
       {
-        $result = languages_model::get_languages(array('ident' => $_POST['ident']));
+        $result = languages_model::get_languages(array('ident' => $_POST['add_ident']));
         if (!empty($result))
         {
           $output = array('error' => LANGUAGES_ERROR5);
         }
         else
         {
-          $data['ident'] = $_POST['ident'];
-          if (!empty($_POST['scope']))
-          {
-            $data['scope'] = $_POST['scope'];
-          }
+		  $data['scope'] = $_POST['add_scope'];
+          $data['ident'] = $_POST['add_ident'];
+		  foreach (g('config')->languages as $lang)
+		  {
+			if (!empty($_POST['add_lang_'. $lang]))
+			{
+			  $data[$lang] = $_POST['add_lang_'. $lang];
+			}
+		  }
+		  
           db::insert('languages', $data);
           $output = $data;
         }

@@ -22,7 +22,7 @@
   </div>
 
   <div id="translations">
-    <table class="info">
+    <table class="info" width="100%">
       <thead>
         <tr>
             <?php if (user_model::_access('languages', 'add_itema')): ?>
@@ -79,15 +79,24 @@
             <?php endforeach; ?>
         </tr>
       </thead>
-  
       <tbody>
+      	<?php if (user_model::_access('languages', 'add_item')): ?>
+      	<tr id="add_item_handle"<?php $class = 'tr1'; ?>>
+        	<td class="hover" align="center" id="add_item_button"><img src="<?php echo site_url('css/images/add.png'); ?>" alt="" id="add_item_img" /></td>
+            <td align="center"><input type="text" name="add_scope" id="add_scope"<?php if (!empty($current_scope)){ echo ' value="'. $current_scope .'"'; } ?> /></td>
+            <td align="center"><input type="text" name="add_ident" id="add_ident" /></td>
+            <?php foreach($languages as $lang): ?>
+            <td align="center"><textarea name="add_lang_<?php echo $lang; ?>" style="height: 50px; width: 200px;"></textarea></td>
+            <?php endforeach; ?>
+        </tr>
+        <?php endif; ?>
       <?php if (!empty($translations)): foreach($translations as $item): ?>
-        <tr id="item-<?php echo $item->ident; ?>"<?php if (empty($class) || $class == ''){ echo ''; $class = 'tr1'; }else{ echo ' class="'. $class .'"'; $class = ''; }?>>
-            <?php if (user_model::_access('languages', 'add_itema')): ?>
-            <td class="hover delete" onclick="if (confirm('<?php echo LANGUAGES_CONFIRM5; ?>')){ delete_item('<?php echo $item->ident; ?>'); }"><img src="<?php echo site_url('css/images/delete.png'); ?>" alt="" /></td>
+        <tr id="item-<?php echo $item->ident; ?>"<?php if ($class == ''){ echo ''; $class = 'tr1'; }else{ echo ' class="'. $class .'"'; $class = ''; }?>>
+            <?php if (user_model::_access('languages', 'delete_item')): ?>
+            <td class="hover delete" align="center" onclick="if (confirm('<?php echo LANGUAGES_CONFIRM5; ?>')){ delete_item('<?php echo $item->ident; ?>'); }"><img src="<?php echo site_url('css/images/delete.png'); ?>" alt="" /></td>
             <?php endif; ?>
 
-            <td class="hover"<?php if (user_model::_access('languages', 'edit_item')): ?> onclick="change(this, '<?php echo $item->ident; ?>', 'scope');"<?php endif; ?>><?php echo $item->scope; ?></td>
+            <td class="hover" align="center"<?php if (user_model::_access('languages', 'edit_item')): ?> onclick="change(this, '<?php echo $item->ident; ?>', 'scope');"<?php endif; ?>><?php echo $item->scope; ?></td>
             <td class="hover"<?php if (user_model::_access('languages', 'edit_item')): ?> onclick="change(this, '<?php echo $item->ident; ?>', 'ident');"<?php endif; ?>><?php echo $item->ident; ?></td>
   
             <?php foreach($languages as $lang): ?>
@@ -96,20 +105,6 @@
         </tr>
     <?php endforeach; endif; ?>
     </tbody>
-    
-    <?php if (user_model::_access('languages', 'add_item')): ?>
-    <tfoot>
-      <tr id="insert" class="<?php echo $class; ?>">
-          <td colspan="<?php echo count($languages) + 3; ?>" align="right">
-            <?php echo LANGUAGES_IDENT; ?>
-            <input type="text" id="add_item" />
-            <span id="add_item_handler">
-              <img src="<?php echo base_url('css/images/add.png'); ?>" /> <span id="add_item_button" class="aslink"><?php echo LANGUAGES_ADD_ITEM; ?></span>
-            </span>
-          </td>
-      </tr>
-    </tfoot>
-    <?php endif; ?>
     </table>
   </div>
 <?php endif; ?>

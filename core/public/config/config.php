@@ -22,9 +22,9 @@
 
 
 // DATABASE
-$config['db']['string'] = 'mysql:host=localhost;port=;unix_socket=;dbname='; // See PDO documentation: http://php.net/manual/en/pdo.construct.php
+$config['db']['string'] = 'mysql:host=localhost;port=8889;dbname=admin_test'; // See PDO documentation: http://php.net/manual/en/pdo.construct.php
 $config['db']['username'] = 'root';
-$config['db']['password'] = '';
+$config['db']['password'] = 'root';
 $config['db']['autoload'] = false;
 
 
@@ -93,5 +93,13 @@ $config['load_configs'] = array();
 // Load default language files
 // Loads them from application/languages/$current_language/ directory
 $config['load_languages'] = array('home');
+
+
+// HOOKS
+#$config['hooks'] = array(
+#  'pre_controller' => '',
+#  'post_controller' => ''
+#);
+
 
 ?>

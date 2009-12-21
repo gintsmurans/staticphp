@@ -84,6 +84,21 @@ class router
     }
 
 
+    public static function url_to_file($url)
+    {
+      // Explode $url
+      $tmp = explode('/', $url);
+
+      // Get class, method and file from $url
+      $data['method'] = array_pop($tmp);
+      $data['class'] = end($tmp);
+      $data['file'] = implode('/', $tmp);
+
+      // Unset $tmp and return array
+      unset($tmp);
+      return $data;
+    }
+
 
 
 
@@ -168,125 +183,150 @@ class router
     }
 
 
-    private static function load_controller()
+  private static function load_controller()
+  {
+    // Get routing settings
+    $routing = g('config')->routing;
+    
+    // Get controller, class, method from url
+    $tmp = router::url_to_file(&$routing['']);
+    
+    // Set default class and method
+    self::$class = $tmp['class'];
+    self::$method = $tmp['method'];
+    
+    
+    // If empty segments set file as class name
+    if (empty(self::$segments[0]))
     {
-      // Get routing settings
-      $routing = g('config')->routing;
-      
-  		// Explode default method
-  		$tmp = explode('/', $routing['']);
-  		$count = count($tmp);
-  		
-  		// Set default class and method
-	    self::$class = $tmp[$count - 2];
-      self::$method = $tmp[$count - 1];
-
-
-
-      // If empty segments set file as class name
-      if (empty(self::$segments[0]))
+      self::$file = $tmp['file'];
+    }
+    else
+    {
+      // Check config routing array
+      foreach((array)$routing as $key=>$item)
       {
-      	self::$file = implode('/', array_slice($tmp, 0, -1));
-      }
-      else
-      {
-        // Check config routing array
-        foreach((array)$routing as $key=>$item)
+        if (!empty($key) && !empty($item))
         {
-          if (!empty($key) && !empty($item))
+          $key = str_replace('/', '\\/', $key);
+          if (preg_match('/'.$key.'/', self::$url))
           {
-            $key = str_replace('/', '\\/', $key);
-            if (preg_match('/'.$key.'/', self::$url))
-            {
-              // Explode found segments
-              $tmp = explode('/', $item);
-              $count = count($tmp);
+            // Get controller, class, method from url
+            $tmp = router::url_to_file(&$item);
 
-                // Set file, class and method
-                self::$file = implode('/', array_slice($tmp, 0, -1));
-                self::$class = $tmp[$count - 2];
-                self::$method = $tmp[$count - 1];
-
-              unset($tmp);
-            }
+            // Set file, class and method
+            self::$class = $tmp['class'];
+            self::$method = $tmp['method'];
+            self::$file = $tmp['file'];
           }
         }
-
-
-        // If there was no corresponding records from routing array, try segments
-        if (empty(self::$file))
+      }
+    
+    
+      // If there was no corresponding records from routing array, try segments
+      if (empty(self::$file))
+      {
+        self::$file = self::$segments[0];
+        $mi = 1;
+        
+        // Check for subdirectory
+        if (is_dir(APP_PATH .'controllers'. DS . self::$file))
         {
-          self::$file = self::$segments[0];
-          $mi = 1;
-
-          // Check for subdirectory
-          if (is_dir(APP_PATH .'controllers'. DS . self::$file))
+          // Add set class name as segment[1]
+          if (!empty(self::$segments[1]))
           {
-            // Add set class name as segment[1]
-            if (!empty(self::$segments[1]))
-            {
-              self::$class = self::$segments[1];
-            }
-
-            // Add class name to self::$file
-            self::$file .= '/'.self::$class;
-
-            // Increase method index
-            ++$mi;
+            self::$class = self::$segments[1];
           }
           
-          // Add default class name to self::$file
-          else
-          {
-            self::$class = self::$file;
-          }
-
-          self::$method = (!empty(self::$segments[$mi]) ? self::$segments[$mi] : self::$method);
+          // Add class name to self::$file
+          self::$file .= '/'.self::$class;
+          
+          // Increase method index
+          ++$mi;
         }
-		}
+        
+        // Add default class name to self::$file
+        else
+        {
+          self::$class = self::$file;
+        }
+        
+        self::$method = (!empty(self::$segments[$mi]) ? self::$segments[$mi] : self::$method);
+      }
+    }
 
-
-		self::_load_controller(APP_PATH .'controllers' . DS . self::$file.'.php', self::$class, self::$method);
-        unset($mi, $routing);
+    // Load pre controllers hook
+    if (!empty(g('config')->hooks['pre_controller']))
+    {
+      load_hook(g('config')->hooks['pre_controller']);
     }
     
-    
-    
-    public static function _load_controller($File, $Class, $Method)
+    // Load controllers
+    self::_load_controller(APP_PATH .'controllers' . DS . self::$file.'.php', self::$class, self::$method);
+
+    // Load post controllers hook
+    if (!empty(g('config')->hooks['post_controller']))
     {
-      // Check for controller file and class name
-      if (is_file($File))
+      load_hook(g('config')->hooks['post_controller']);
+    }
+
+    // Unset
+    unset($tmp, $mi, $routing);
+  }
+    
+    
+    
+  public static function _load_controller($File, $Class, $Method)
+  {
+    // Check for $File
+    if (is_file($File))
+    {
+      include_once($File);
+
+      // Check for $Class
+      if (class_exists($Class))
       {
-        include_once($File);
-        if (class_exists($Class))
+        $methods = get_class_methods($Class);
+        // Check for $Method
+        if (in_array($Method, $methods) || in_array('__callStatic', $methods))
         {
-          $methods = get_class_methods($Class);
-          if (in_array($Method, $methods) || in_array('__callStatic', $methods))
+          // Call our contructor
+          if (in_array('_construct', $methods))
           {
-            // Call our contructor
-            if (in_array('__construct__', $methods))
-            {
-              call_user_func(array($Class, '__construct__'));
-            }
-            call_user_func(array($Class, $Method));
+            call_user_func(array($Class, '_construct'), &$Class, &$Method);
           }
-          else
-          {
-          	self::error('404', 'Not Found');
-          }
+          call_user_func(array($Class, $Method));
         }
         else
         {
-          throw new Exception('Can\'t load controller');
+          $error = 'Class was found, but could not find method';
         }
+      }
+      else
+      {
+        $error = 'File was included, but could not find class';
+      }
+    }
+    else
+    {
+      $error = 'Controller file was not found';
+    }
+
+    // Show error if there is any
+    if (!empty($error))
+    {
+      if (g('config')->debug === true)
+      {
+        throw new Exception('DEBUG: '. $error);
       }
       else
       {
         self::error('404', 'Not Found');
       }
-
-      unset($methods);
     }
+    
+    unset($methods);
+  }
 
 }
 

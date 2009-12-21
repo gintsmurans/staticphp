@@ -461,7 +461,7 @@ class fv
     {
       return false;
     }
-    echo ' value="'.(!empty($field) ? $field : '').'"';
+    echo ' value="'.(!empty($field) ? htmlspecialchars($field) : '').'"';
   }
 
   public static function set_select($name, $test = '')

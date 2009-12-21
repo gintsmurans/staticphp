@@ -43,6 +43,19 @@ function make_path_string($string)
 }
 
 
+function load_hook($hook)
+{
+  $tmp = router::url_to_file(&$hook);
+
+  $file = APP_PATH . $tmp['file'] .'.php';
+  if (!in_array($file, get_included_files()))
+  {
+    include $file;
+  }
+  call_user_func(array($tmp['class'], $tmp['method']));
+}
+
+
 function load_config($files)
 {
   foreach ((array) $files as $name)
@@ -95,19 +108,19 @@ function load($files, $vars = array(), $prefix = null)
   	// Check for file existance
   	switch(true)
   	{
-  		case is_file($file):
-  			// do nothing
-  		break;
-  
   		case is_file(APP_PATH.$file):
         $file = APP_PATH.$file;
+  		break;
+
+  		case is_file($file):
+  			// do nothing
   		break;
   
   		default:
   			throw new Exception('Can\'t load file: '.$file);
   		break;
   	}
-  
+
     include $file;
   }
 }
