@@ -1,3 +1,4 @@
+
 CREATE TABLE `languages` (
   `ident` varchar(50) NOT NULL default '',
   `scope` varchar(20) default NULL,
