@@ -1,23 +1,24 @@
 <?php
+
 /*
-    "StaticPHP Framework" - Simple PHP Framework
+  "StaticPHP Framework" - Simple PHP Framework
 
----------------------------------------------------------------------------------
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    any later version.
+  ---------------------------------------------------------------------------------
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
----------------------------------------------------------------------------------
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  ---------------------------------------------------------------------------------
 
-    Copyright (C) 2009  Gints Murāns <gm@mstuff.org>
+  Copyright (C) 2009  Gints Murāns <gm@gm.lv>
 */
 
 
@@ -28,26 +29,24 @@ $config['db']['password'] = 'root';
 $config['db']['autoload'] = false;
 
 
-
 // Debug IP
 $config['debug_ip'] = array('::1', '127.0.0.1');
+
 
 // Client IP, 
 $config['client_ip'] = $_SERVER['REMOTE_ADDR'];
 
 
-
 // Set debug
-$config['debug'] = false;
+$config['debug'] = true;
+
 
 // Print script execution time
-$config['timer'] = false;
-
+$config['timer'] = true;
 
 
 // Set base_url
 $config['base_url'] = 'auto';
-
 
 
 // Set paths
@@ -69,8 +68,9 @@ $config['url_prefixes'] = array('ajax');
 
 
 // Languages
-// Default language
-$config['lang_default'] = 'en';
+// Default language, set to false if you don't need language support
+$config['lang_support'] = false;
+
 
 // Redirect or not if language is not provided
 $config['lang_redirect'] = false;
@@ -92,14 +92,14 @@ $config['load_configs'] = array();
 
 // Load default language files
 // Loads them from application/languages/$current_language/ directory
-$config['load_languages'] = array('home');
+$config['load_languages'] = array();
 
 
 // HOOKS
+// Hook support is not fully supported
 #$config['hooks'] = array(
 #  'pre_controller' => '',
 #  'post_controller' => ''
 #);
-
 
 ?>

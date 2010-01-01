@@ -17,7 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---------------------------------------------------------------------------------
 
-    Copyright (C) 2009  Gints Murāns <gm@mstuff.org>
+    Copyright (C) 2009  Gints Murāns <gm@gm.lv>
 */
 
 

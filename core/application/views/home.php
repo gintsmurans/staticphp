@@ -1,6 +1,5 @@
-<?php load('views/header'); ?>
 
-        <h1>Welcome to the StaticPHP Framework test page</h1>
+        <h1>Welcome to the <a href="http://staticphp.com/" onclick="window.open(this.href); return false;">StaticPHP framework</a> start page</h1>
         
         <div class="content">
         
@@ -21,5 +20,3 @@
             </ol>
 
         </div>
-
-<?php load('views/footer'); ?>

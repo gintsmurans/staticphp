@@ -1,4 +1,5 @@
 <?php
+
 /*
   "StaticPHP Framework" - Simple PHP Framework
   
@@ -17,7 +18,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   ---------------------------------------------------------------------------------
   
-  Copyright (C) 2009  Gints Murāns <gm@mstuff.org>
+  Copyright (C) 2009  Gints Murāns <gm@gm.lv>
 */
 
 
@@ -52,7 +53,7 @@ foreach($config['load_configs'] as $tmp)
 $config['debug'] = ($config['debug'] || in_array($config['client_ip'], (array) $config['debug_ip']));
 
 // Include & init error handler class
-include SYS_PATH.'error_handler.php';
+include SYS_PATH.'eh.php';
 eh::init($config['debug']);
 
 
@@ -60,8 +61,12 @@ eh::init($config['debug']);
 include SYS_PATH.'helper.php';
 
 
-// Load all available languages
-include (is_dir($config['lang_path']) ? $config['lang_path'] : APP_PATH . $config['lang_path']) . '/config.php';
+// Load language config
+if ($config['lang_support'] === true)
+{
+  include APP_PATH . $config['lang_path'] . '/config.php';
+  $config['lang_default'] =& $config['languages'][0];
+}
 
 
 // Set config array within g() function
@@ -98,13 +103,16 @@ router::init();
 
 // If DEBUG output load time
 if (g('config')->timer === true)
-{
-echo '
-<pre style="border-top: 1px #DDD solid; padding-top: 4px;">
-Generated in ', round(microtime(true) - $microtime, 5), ' seconds. Memory: ', round(memory_get_usage() / 1024 / 1024, 4), ' Mb
-Queries count: ', db::$query_count ,'
-Queries: ', print_r(db::$queries, true) ,'
-</pre>';
+{  
+  echo '<pre style="border-top: 1px #DDD solid; padding-top: 4px;">';
+  echo 'Generated in ', round(microtime(true) - $microtime, 5), ' seconds. Memory: ', round(memory_get_usage() / 1024 / 1024, 4), ' MB';
+
+  if (class_exists('db', false))
+  {
+    echo 'Queries count: ', db::$query_count , "\n", 'Queries: ', print_r(db::$queries, true) ,'';
+  }
+
+  echo '</pre>';
 }
 
 ?>
