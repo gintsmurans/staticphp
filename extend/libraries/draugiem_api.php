@@ -18,7 +18,7 @@ class draugiem
 	
 	
 	// Private variables
-	private $api_domain = 'http://api.draugiem.lv/xml/';
+	private $api_domain = 'http://api.draugiem.lv/json/';
 	private $auth_url = 'https://api.draugiem.lv/authorize/';
 
 
@@ -82,8 +82,6 @@ class draugiem
       $args['apikey'] = $this->user_key;
     }
 
-    // print_r($args); die();
-
     // Build request data
     $opts = $this->_build_multipart($args);
 
@@ -99,7 +97,7 @@ class draugiem
 			$this->file = null;
 
       // Return data
-			return simplexml_load_string($return);
+			return json_decode($return);
     }
     catch(Exception $e)
     {

@@ -63,7 +63,7 @@ function load_config($files)
     include PUBLIC_PATH .'config/'. $name .'.php';
     if (!empty($config))
   	{
-  	 g()->{$name} = (object) $config;
+      g()->config = (object) array_merge((array) g()->config, (array) $config);
     }
   }
 }

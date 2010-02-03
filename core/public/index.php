@@ -29,12 +29,13 @@ $microtime = microtime(true);
 // Define
 define('DS', DIRECTORY_SEPARATOR);
 define('PUBLIC_PATH', dirname(__FILE__).DS);
+define('CONFIG_PATH', dirname(__FILE__).DS.'config'.DS);
 define('BASE_PATH', realpath(PUBLIC_PATH.'..'.DS).DS);
 
 
 // include config files
-include PUBLIC_PATH.'config/config.php';
-include PUBLIC_PATH.'config/routing.php';
+include CONFIG_PATH.'config.php';
+include CONFIG_PATH.'routing.php';
 
 
 // Define system paths
@@ -45,16 +46,17 @@ define('SYS_PATH', BASE_PATH.trim($config['sys_path'], '/\\').DS);
 // Autoload additional config files
 foreach($config['load_configs'] as $tmp)
 {
-  include PUBLIC_PATH.'config/'. $tmp .'.php';
+  include CONFIG_PATH.'/'. $tmp .'.php';
 }
 
 
 // Set debug
 $config['debug'] = ($config['debug'] || in_array($config['client_ip'], (array) $config['debug_ip']));
-
-// Include & init error handler class
-include SYS_PATH.'eh.php';
-eh::init($config['debug']);
+if ($config['debug'] === true)
+{
+	ini_set('error_reporting', E_ALL);
+	ini_set('display_errors', 1);
+}
 
 
 // Include system default helper

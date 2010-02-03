@@ -96,7 +96,7 @@ $config['load_languages'] = array();
 
 
 // HOOKS
-// Hook support is not fully supported
+// Hook support is not yet fully supported
 #$config['hooks'] = array(
 #  'pre_controller' => '',
 #  'post_controller' => ''

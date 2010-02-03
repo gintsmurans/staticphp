@@ -25,50 +25,55 @@
 
 class sessions
 {
-  public static function init()
+  public function __construct()
   {
     ini_set('session.save_handler', 'user');
     session_set_save_handler(
-      array('sessions', '_open'), 
-      array('sessions', '_close'), 
-      array('sessions', '_read'), 
-      array('sessions', '_write'), 
-      array('sessions', '_destroy'), 
-      array('sessions', '_gc')
+      array('sessions', 'open'), 
+      array('sessions', 'close'), 
+      array('sessions', 'read'), 
+      array('sessions', 'write'), 
+      array('sessions', 'destroy'), 
+      array('sessions', 'gc')
     );    
     session_start();
-  }  
+  }
   
-  public static function _open()
+  public function __destruct()
+  {
+    session_write_close();
+  }
+  
+  public static function open()
   {
     return true;
   }
 
-  public static function _close()
+  public static function close()
   {
     return true;
   }
 
-  public static function _read($id)
+  public static function read($id)
   {
     
     $res = db::query("SELECT `data` FROM `sessions` WHERE `id` = ?", $id)->fetch();
     return (empty($res->data) ? '' : $res->data);
   }
 
-  public static function _write($id, $data)
+  public static function write($id, $data)
   {
     db::exec("REPLACE INTO `sessions` VALUES (?, ?, ?)", array($id, $data, time()));
     return true;
   }
 
-  public static function _destroy($id)
+  public static function destroy($id)
   {
     db::exec("DELETE FROM `sessions` WHERE `id` = ?", $id);
     return true;
   }
 
-  public static function _gc($max)
+  public static function gc($max)
   {
     db::exec("DELETE FROM `sessions` WHERE `expires` <= ?", (time() - $max));
     return true;
