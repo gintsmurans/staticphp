@@ -29,7 +29,7 @@ class router
   public static $prefixes = array();
   public static $segments = array();
 
-  public static $file = null;    
+  public static $file = null;
   public static $class = null;
   public static $method = null;
 
@@ -42,16 +42,24 @@ class router
   }
 
 
-  public static function redirect($url = '', $site_url = true, $e301 = false)
+  public static function redirect($url = '', $site_url = true, $e301 = false, $type = 'http')
   {
-    if ($e301 === true)
+    switch ($type)
     {
-        header("HTTP/1.1 301 Moved Permanently");
+      case 'js':
+        echo '<script type="text/javascript"> window.location.href = \''.($site_url === false ? $url : site_url($url)).'\'; </script>';
+      break;
+      
+      default:
+        if ($e301 === true)
+        {
+            header("HTTP/1.1 301 Moved Permanently");
+        }
+        
+        header("Location: ".($site_url === false ? $url : site_url($url)));
+        header("Connection: close");
+      break;
     }
-    
-    header("Location: ".($site_url === false ? $url : site_url($url)));
-    header("Connection: close");
-
     exit;
   }
   
@@ -73,8 +81,8 @@ class router
   {
   	return (!empty(self::$segments[$index]) ? self::$segments[$index] : false);
   }
-  
-  
+
+
   public static function error($error_code, $error_string)
   {
   	header('HTTP/1.0 '. $error_code .' '. $error_string);
@@ -111,10 +119,10 @@ class router
     // Get urls
     $domain_url = 'http'.(isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '').'://'.$_SERVER['HTTP_HOST'].'/';
     $script_path = self::trim_slashes(dirname($_SERVER['SCRIPT_NAME']), true);
-    
+
     // Get request string        
     self::$url = urldecode(g('config')->request_uri);
-    
+
     // Replace directory in url
     self::$url = self::trim_slashes(preg_replace('/^\/?'.preg_quote($script_path, '/').'|\?.*/', '', self::$url), true);
     self::$full_url = self::$url . (empty(g('config')->query_string) ? '' : '?'. g('config')->query_string);
@@ -122,9 +130,10 @@ class router
     // Set config
     g('config')->domain_url = $domain_url;
     g('config')->base_url = (g('config')->base_url === 'auto' ? $domain_url.(!empty($script_path) ? $script_path.'/' : '') : g('config')->base_url);
+    g('vars')->base_url =& g('config')->base_url;
   }
-  
-  
+
+
   private static function split_segments()
   {
     self::$segments = explode('/', self::$url);
@@ -172,15 +181,15 @@ class router
   {
     // Get routing settings
     $routing = g('config')->routing;
-    
+
     // Get controller, class, method from url
     $tmp = router::url_to_file($routing['']);
-    
+
     // Set default class and method
     self::$class = $tmp['class'];
     self::$method = $tmp['method'];
-    
-    
+
+
     // If empty segments set file as class name
     if (empty(self::$segments[0]))
     {
@@ -206,14 +215,14 @@ class router
           }
         }
       }
-    
-    
+
+
       // If there was no corresponding records from routing array, try segments
       if (empty(self::$file))
       {
         self::$file = self::$segments[0];
         $mi = 1;
-        
+
         // Check for subdirectory
         if (is_dir(APP_PATH .'controllers'. DS . self::$file))
         {
@@ -222,14 +231,14 @@ class router
           {
             self::$class = self::$segments[1];
           }
-          
+
           // Add class name to self::$file
           self::$file .= '/'.self::$class;
-          
+
           // Increase method index
           ++$mi;
         }
-        
+
         // Add default class name to self::$file
         else
         {
@@ -245,7 +254,7 @@ class router
     {
       load_hook(g('config')->hooks['pre_controller']);
     }
-    
+
     // Load controllers
     self::_load_controller(APP_PATH .'controllers' . DS . self::$file.'.php', self::$class, self::$method);
 
@@ -258,15 +267,15 @@ class router
     // Unset
     unset($tmp, $mi, $routing);
   }
-    
-    
-    
+
+
+
   public static function _load_controller($File, $Class, $Method)
   {
     // Check for $File
     if (is_file($File))
     {
-      include_once($File);
+      include($File);
 
       // Check for $Class
       if (class_exists($Class))

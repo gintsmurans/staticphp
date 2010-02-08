@@ -23,10 +23,22 @@
 
 
 // DATABASE
-$config['db']['string'] = 'mysql:host=localhost;port=8889;dbname=admin_test'; // See PDO documentation: http://php.net/manual/en/pdo.construct.php
-$config['db']['username'] = 'root';
-$config['db']['password'] = 'root';
-$config['db']['autoload'] = false;
+$config['db']['default'] = array(
+  'string' => 'mysql:host=localhost;port=8889;dbname=admin_test', // See PDO documentation: http://php.net/manual/en/pdo.construct.php
+  'username' => 'root',
+  'password' => 'root',
+  'charset' => 'UTF8',
+);
+
+$config['db']['other'] = array(
+  'string' => 'mysql:host=localhost;port=8889;dbname=other', // See PDO documentation: http://php.net/manual/en/pdo.construct.php
+  'username' => 'root',
+  'password' => 'root',
+  'charset' => 'UTF8',
+);
+
+// String showing which DB configuration to load
+$config['db']['autoload'] = null;
 
 
 // Debug IP
@@ -34,7 +46,7 @@ $config['debug_ip'] = array('::1', '127.0.0.1');
 
 
 // Client IP, 
-$config['client_ip'] = $_SERVER['REMOTE_ADDR'];
+$config['client_ip'] =& $_SERVER['REMOTE_ADDR'];
 
 
 // Set debug

@@ -27,28 +27,30 @@ class db
   public static $queries = null;
   public static $query_count = null;
 
-  private static $db_link;
+  private static $db_links;
   private static $last_statement;
 
 
   # INIT FUNCTION
 
-  public static function &init($config = null)
+  public static function &init($scheme = 'default')
   {
-    if ($config === null)
+    if (!empty(self::$db_links[$scheme]))
     {
-      $config = g('config')->db;
-      $db_link =& self::$db_link;
+      return self::$db_links[$scheme];
     }
+
+    $config =& g('config')->db[$scheme];
+    $db_link =& self::$db_links[$scheme];
 
     // Open new connection to DB
     $db_link = new PDO($config['string'], $config['username'], $config['password'], array(
       PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
       PDO::ATTR_CASE => PDO::CASE_NATURAL
     ));
-    
+
     // Set encoding
-    $db_link->exec("SET NAMES UTF8;");
+    $db_link->exec('SET NAMES '.(empty($config['charset']) ? 'UTF8' : $config['charset']).';');
 
     // Return db link reference for example if somebody needs to open new connection to a new database
     return $db_link;
@@ -58,18 +60,20 @@ class db
 
   # READ FUNCTIONS
 
-  public static function query($query, $data = null)
+  public static function query($query, $data = null, $scheme = 'default')
   {
+    $db_link =& self::init($scheme);
+
     if (!empty($query))
     {
-      if (empty(self::$db_link))
+      if (empty($db_link))
       {
         throw new Exception('No connection to database');
       }
       else
       {
         // Do request
-        self::$last_statement = self::$db_link->prepare($query);
+        self::$last_statement = $db_link->prepare($query);
         self::$last_statement->setFetchMode(PDO::FETCH_OBJ);
         self::$last_statement->execute((array) $data);
         
@@ -77,7 +81,7 @@ class db
         if (g('config')->debug === true)
         {
           ++self::$query_count;
-          self::$queries[] = self::$last_statement->queryString;
+          self::$queries[$scheme][] = self::$last_statement->queryString;
         }
         
         // Return last statement
@@ -87,26 +91,28 @@ class db
   }
 
 
-  public static function fetch($query, $data = array())
+  public static function fetch($query, $data = array(), $scheme = 'default')
   {
-    return self::query($query, $data)->fetch();
+    return self::query($query, $data, $scheme)->fetch();
   }
 
 
-  public static function fetchAll($query, $data = array())
+  public static function fetchAll($query, $data = array(), $scheme = 'default')
   {
-    return self::query($query, $data)->fetchAll();
+    return self::query($query, $data, $scheme)->fetchAll();
   }
 
 
 
   # WRITE FUNCTIONS
 
-  public static function exec($query, $data = null)
+  public static function exec($query, $data = null, $scheme = 'default')
   {
+    $db_link =& self::init($scheme);
+
     if (!empty($query))
     {
-      if (empty(self::$db_link))
+      if (empty($db_link))
       {
         throw new Exception('No connection to database');
       }
@@ -118,13 +124,13 @@ class db
         // Try execute query
         try
         {
-          self::$db_link->beginTransaction();
+          $db_link->beginTransaction();
           $prepare = self::query($query, (array) $data);
-          self::$db_link->commit();
+          $db_link->commit();
         }
         catch(PDOException $e)
         {
-          self::$db_link->rollback();
+          $db_link->rollback();
           throw new Exception($e->getMessage());
         }
 
@@ -156,12 +162,12 @@ class db
   }
 
 
-  public static function insert($table, $data)
+  public static function insert($table, $data, $scheme = 'default')
   {
     $set = self::make_set($data);
     if (!empty($set))
     {
-      self::exec("INSERT INTO `{$table}` SET ". $set, $data);
+      self::exec("INSERT INTO `{$table}` SET ". $set, $data, $scheme);
     }
   }
 
@@ -182,12 +188,9 @@ class db
   
   # INFO FUNCTIONS
 
-  public static function &db_link()
+  public static function &db_link($scheme = 'default')
   {
-    if (!empty(self::$db_link))
-    {
-      return self::$db_link;
-    }
+    return self::$db_links[$scheme];
   }
   
   
@@ -206,9 +209,10 @@ class db
   }
   
   
-  public static function last_insert_id()
+  public static function last_insert_id($scheme = 'default')
   {
-    return self::$db_link->lastInsertId();
+    $db_link =& self::$db_links[$scheme];
+    return $db_link->lastInsertId();
   }
 }
 

@@ -22,19 +22,17 @@
 */
 
 
-function site_url($url = '', $prefix = '', $add_language = 'auto')
-{
-  $url002 = (!empty($prefix) ? Router::trim_slashes($prefix, true).'/' : '') . ($add_language === true || ($add_language === 'auto' && g('config')->lang_redirect === true) ? g('config')->language.'/' : '');
-  return g('config')->base_url . $url002 . Router::trim_slashes($url);
-}
-
-
-
 function base_url($url = '')
 {
-  return g('config')->base_url . Router::trim_slashes($url);
+  return g('config')->base_url . router::trim_slashes($url);
 }
 
+
+function site_url($url = '', $prefix = '', $add_language = 'auto')
+{
+  $url002 = (!empty($prefix) ? router::trim_slashes($prefix, true).'/' : '') . ($add_language === true || ($add_language === 'auto' && g('config')->lang_redirect === true) ? g('config')->language.'/' : '');
+  return g('config')->base_url . $url002 . router::trim_slashes($url);
+}
 
 
 function make_path_string($string)

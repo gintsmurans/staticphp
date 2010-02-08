@@ -76,11 +76,11 @@ g('config', $config);
 unset($config);
 
 
-// Init database, if autoload === true
-if (g('config')->db['autoload'] === true)
+// Init database, if autoload is set
+if (!empty(g('config')->db['autoload']))
 {
   include SYS_PATH.'db.php';
-  DB::init();
+  DB::init(g('config')->db['autoload']);
 }
 
 
@@ -111,7 +111,7 @@ if (g('config')->timer === true)
 
   if (class_exists('db', false))
   {
-    echo 'Queries count: ', db::$query_count , "\n", 'Queries: ', print_r(db::$queries, true) ,'';
+    echo "\n", 'Queries count: ', print_r(db::$query_count, true), "\n", 'Queries: ', print_r(db::$queries, true), '';
   }
 
   echo '</pre>';
