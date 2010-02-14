@@ -35,19 +35,11 @@ define('BASE_PATH', realpath(PUBLIC_PATH.'..'.DS).DS);
 
 // include config files
 include CONFIG_PATH.'config.php';
-include CONFIG_PATH.'routing.php';
 
 
 // Define system paths
 define('APP_PATH', BASE_PATH.trim($config['app_path'], '/\\').DS);
 define('SYS_PATH', BASE_PATH.trim($config['sys_path'], '/\\').DS);
-
-
-// Autoload additional config files
-foreach($config['load_configs'] as $tmp)
-{
-  include CONFIG_PATH.'/'. $tmp .'.php';
-}
 
 
 // Set debug
@@ -56,6 +48,17 @@ if ($config['debug'] === true)
 {
 	ini_set('error_reporting', E_ALL);
 	ini_set('display_errors', 1);
+}
+
+
+// Load routing
+include CONFIG_PATH.'routing.php';
+
+
+// Autoload additional config files
+foreach($config['load_configs'] as $tmp)
+{
+  include CONFIG_PATH.'/'. $tmp .'.php';
 }
 
 
@@ -72,7 +75,7 @@ if ($config['lang_support'] === true)
 
 
 // Set config array within g() function
-g('config', $config);
+g()->config = (object) $config;
 unset($config);
 
 
@@ -104,7 +107,7 @@ router::init();
 
 
 // If DEBUG output load time
-if (g('config')->timer === true)
+if (!empty(g()->config->timer))
 {  
   echo '<pre style="border-top: 1px #DDD solid; padding-top: 4px;">';
   echo 'Generated in ', round(microtime(true) - $microtime, 5), ' seconds. Memory: ', round(memory_get_usage() / 1024 / 1024, 4), ' MB';

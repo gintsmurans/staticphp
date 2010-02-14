@@ -126,7 +126,7 @@ function load($files, $vars = array(), $prefix = null)
 
 
 
-function &g($var = null, $set = null)
+function &g($var = null)
 {
 	// Our static object
 	static $vars;
@@ -142,12 +142,6 @@ function &g($var = null, $set = null)
   {
     $vars->{$var} = (object)null;
   }
-
-	// Set $set
-	if ($set !== null)
-	{
-		$vars->{$var} = (object)$set;
-	}
 
 	// Return	
 	if (isset($vars->{$var}))

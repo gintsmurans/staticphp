@@ -41,12 +41,8 @@ $config['db']['other'] = array(
 $config['db']['autoload'] = null;
 
 
-// Debug IP
-$config['debug_ip'] = array('::1', '127.0.0.1');
-
-
-// Client IP, 
-$config['client_ip'] =& $_SERVER['REMOTE_ADDR'];
+// Set base_url
+$config['base_url'] = 'auto';
 
 
 // Set debug
@@ -57,8 +53,12 @@ $config['debug'] = true;
 $config['timer'] = true;
 
 
-// Set base_url
-$config['base_url'] = 'auto';
+// Debug IP
+$config['debug_ip'] = array('::1', '127.0.0.1');
+
+
+// Client IP, 
+$config['client_ip'] =& $_SERVER['REMOTE_ADDR'];
 
 
 // Set paths
