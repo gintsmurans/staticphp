@@ -1,5 +1,4 @@
 <?php
-
 /*
   "StaticPHP Framework" - Simple PHP Framework
   
@@ -20,7 +19,6 @@
   
   Copyright (C) 2009  Gints Murāns <gm@gm.lv>
 */
-
 
 class cache
 {

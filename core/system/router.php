@@ -311,7 +311,7 @@ class router
     {
       if (g('config')->debug === true)
       {
-        throw new Exception('DEBUG: '. $error);
+        throw new Exception($error);
       }
       else
       {

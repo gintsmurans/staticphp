@@ -44,11 +44,8 @@ define('SYS_PATH', BASE_PATH.trim($config['sys_path'], '/\\').DS);
 
 // Set debug
 $config['debug'] = ($config['debug'] || in_array($config['client_ip'], (array) $config['debug_ip']));
-if ($config['debug'] === true)
-{
-	ini_set('error_reporting', E_ALL);
-	ini_set('display_errors', 1);
-}
+ini_set('error_reporting', E_ALL);
+ini_set('display_errors', (int) $config['debug']);
 
 
 // Load routing
