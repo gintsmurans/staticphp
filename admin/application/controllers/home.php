@@ -3,7 +3,7 @@
 class home
 {
 
-  public static function __construct__()
+  public static function _construct()
   {
 
   }

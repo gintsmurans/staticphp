@@ -97,7 +97,7 @@ class user_model
     // Check for user
     if (empty($_SESSION['user']))
     {
-      $_SESSION['login_redirect'] = site_url(router::$full_url);
+      $_SESSION['login_redirect'] = base_url(router::$segments_full_uri);
       router::redirect('login');
     }
 

@@ -7,7 +7,7 @@ class login
 
   private static $vars = array();
 
-  public static function __construct__()
+  public static function _construct()
   {
     load_lang('admin_login');
   }

@@ -24,9 +24,9 @@
 
 // DATABASE
 $config['db']['default'] = array(
-  'string' => 'mysql:host=localhost;port=8889;dbname=admin_test', // See PDO documentation: http://php.net/manual/en/pdo.construct.php
+  'string' => 'mysql:host=localhost;unix_socket=/var/mysql/mysql.sock;dbname=cars', // See PDO documentation: http://php.net/manual/en/pdo.construct.php
   'username' => 'root',
-  'password' => 'root',
+  'password' => '',
   'charset' => 'UTF8',
 );
 
@@ -38,11 +38,11 @@ $config['db']['other'] = array(
 );
 
 // String showing which DB configuration to load
-$config['db']['autoload'] = null;
+$config['db']['autoload'] = false;
 
 
 // Set base_url
-$config['base_url'] = 'auto';
+$config['base_uri'] = 'auto';
 
 
 // Set debug
@@ -61,31 +61,47 @@ $config['debug_ip'] = array('::1', '127.0.0.1');
 $config['client_ip'] =& $_SERVER['REMOTE_ADDR'];
 
 
-// Set paths
-$config['sys_path'] = 'system';
-$config['app_path'] = 'application';
-$config['lang_path'] = 'languages';
-
-
 // Set where requested uri and query string will be taken from
+// Most cases these values should work by default
 $config['request_uri'] =& $_SERVER['REQUEST_URI'];
 $config['query_string'] =& $_SERVER['QUERY_STRING'];
+$config['script_name'] =& $_SERVER['SCRIPT_NAME'];
 
 
 // URL prefixes can be useful when for example identifying ajax requests, 
 // they will be stored in config variable and can be checked with Router::have_prefix('ajax') === true
 // they must be in correct sequence. For example, if url is /ajax/test/en/open/29, where ajax and test is prefixes, 
 // then array should look like this - array('ajax', 'test'), anyway url can look like /test/en/open/29, too.
-$config['url_prefixes'] = array('ajax');
+$config['uri_prefixes'] = array('ajax');
 
 
 // Languages
 // Default language, set to false if you don't need language support
-$config['lang_support'] = false;
-
+$config['lang_support'] = true;
 
 // Redirect or not if language is not provided
-$config['lang_redirect'] = false;
+$config['lang_redirect'] = true;
+
+// Country key - try to match this value to the key in countries/language array. 
+// Set to false, if you dont want to check against keys
+$config['lang_key'] = false;
+
+// This will be the reference to the active language array
+$config['lang_active'] = NULL;
+
+// Available languages
+// If defined, languages before this will be ignored
+// Keys can be regular expression, but will not be quoted
+// First match will be used, if there is no match, first item in array will be used
+$config['lang_available'] = array(
+	array(
+		'key' => '',
+    'name' => '',
+		'directory' => '',
+		'languages' => array('en'),
+	),
+);
+
 
 
 // Autoload

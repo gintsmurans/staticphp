@@ -4,7 +4,7 @@ class users
 {
   private static $vars = array();
 
-  public static function __construct__()
+  public static function _construct()
   {
     user_model::check_access();
     self::$vars['access'] = user_model::generate_access_list();

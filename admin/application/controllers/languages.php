@@ -7,7 +7,7 @@ class languages
 
 
 
-  public static function __construct__()
+  public static function _construct()
   {  
     user_model::check_access();
     

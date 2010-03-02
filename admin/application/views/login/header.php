@@ -3,7 +3,7 @@
 	<head>
 		<title><?php echo BASE_PAGE_TITLE; ?></title>
 		<style>@import '<?php echo base_url('css/style.css'); ?>'; <?php css(); ?> </style>
-		<script type="text/javascript" src="<?php echo site_url('js/jquery-1.2.6.js'); ?>"></script>
+		<script type="text/javascript" src="<?php echo base_url('js/jquery-1.2.6.js'); ?>"></script>
 		<script type="text/javascript" src="<?php echo site_url('home/base_js'); ?>"></script>
 		<?php js(); ?>
 	</head>

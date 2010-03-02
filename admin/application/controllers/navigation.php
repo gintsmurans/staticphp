@@ -4,7 +4,7 @@ class navigation
 {
   public static $vars = array();
   
-  public static function __construct__()
+  public static function _construct()
   {
     // Check user access
     user_model::check_access();
@@ -50,7 +50,7 @@ class navigation
       if (!empty($model->name))
       {
         load('controllers/'. $model->name);
-        call_user_func(array($model->name, '__construct__'));
+        call_user_func(array($model->name, '_construct'));
       }
     }
 

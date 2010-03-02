@@ -4,7 +4,7 @@ class jbrowser
 {
   public static $vars = array();
 
-  public static function __construct__()
+  public static function _construct()
   {
     user_model::check_access();
 
