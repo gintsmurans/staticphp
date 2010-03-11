@@ -27,11 +27,13 @@ function base_url($url = '')
   return router::$base_uri . router::trim_slashes($url);
 }
 
-function site_url($url = '', $prefix = '', $add_language = 'auto')
+// prefix == NULL add router::$prefixes
+// prefix == false add nothing
+// prefix != empty add it
+function site_url($url = '', $prefix = NULL, $current_prefix = true)
 {
-  $url002  = empty(router::$prefixes_uri) ? '' : router::$prefixes_uri . '/';
-  $url002 .= empty($prefix) ? '' : router::trim_slashes($prefix, true) . '/';
-	$url002 .= ($add_language === true || ($add_language === 'auto' && g('config')->lang_support === true) ? router::$lang_current['current'] . '/' : '');
+  $url002  = !empty($prefix) ? router::trim_slashes($prefix, true) . '/' : '';
+  $url002 .= !empty($current_prefix) && !empty(router::$prefixes_uri) ? router::$prefixes_uri . '/' : '';
   return router::$base_uri . $url002 . router::trim_slashes($url);
 }
 
@@ -66,62 +68,53 @@ function load_config($files)
   {
     include PUBLIC_PATH .'config/'. $name .'.php';
     if (!empty($config))
-  	{
+    {
       g()->config = (object) array_merge((array) g()->config, (array) $config);
     }
   }
 }
 
-function load_lang($files)
-{
-	$dir = APP_PATH . 'languages/' . (empty(router::$lang_current['directory']) ? '' : router::$lang_current['directory'] . '/') . router::$lang_current['current'] .'/';
-  foreach ((array) $files as $file)
-  {
-    include $dir . $file . '_lang.php';
-  }
-}
-
 function load($files, $vars = array(), $prefix = null)
 {
-	// Check for global template variables
-	if (!empty(g()->vars))
-	{
+  // Check for global template variables
+  if (!empty(g()->vars))
+  {
     $vars = array_merge($vars, (array) g()->vars);
-	}
-	
-  // Extract vars	
+  }
+  
+  // Extract vars 
   if (!empty($vars) && is_array($vars))
   {
-  	if (!empty($prefix))
-  	{
-  		extract($vars, EXTR_PREFIX_ALL, $prefix);
-  	}
-  	else
-  	{
-  		extract($vars);
-  	}
+    if (!empty($prefix))
+    {
+      extract($vars, EXTR_PREFIX_ALL, $prefix);
+    }
+    else
+    {
+      extract($vars);
+    }
   }
 
   foreach ((array) $files as $file)
   {
     // Make filename
-  	$file = rtrim(make_path_string($file), DS).'.php';
+    $file = rtrim(make_path_string($file), DS).'.php';
   
-  	// Check for file existance
-  	switch(true)
-  	{
-  		case is_file(APP_PATH.$file):
+    // Check for file existance
+    switch(true)
+    {
+      case is_file(APP_PATH.$file):
         $file = APP_PATH.$file;
-  		break;
+      break;
 
-  		case is_file($file):
-  			// do nothing
-  		break;
+      case is_file($file):
+        // do nothing
+      break;
   
-  		default:
-  			throw new Exception('Can\'t load file: '.$file);
-  		break;
-  	}
+      default:
+        throw new Exception('Can\'t load file: '.$file);
+      break;
+    }
 
     include $file;
   }
@@ -132,14 +125,14 @@ function load($files, $vars = array(), $prefix = null)
 
 function &g($var = null)
 {
-	// Our static object
-	static $vars;
+  // Our static object
+  static $vars;
 
-	// Init vars object
-	if ($vars === null)
-	{
-		$vars = (object)null;
-	}
+  // Init vars object
+  if ($vars === null)
+  {
+    $vars = (object)null;
+  }
 
   // Set $var
   if (!empty($var) && empty($vars->{$var}))
@@ -147,15 +140,15 @@ function &g($var = null)
     $vars->{$var} = (object)null;
   }
 
-	// Return	
-	if (isset($vars->{$var}))
-	{
-		return $vars->{$var};
-	}
-	else
-	{
-		return $vars;
-	}
+  // Return 
+  if (isset($vars->{$var}))
+  {
+    return $vars->{$var};
+  }
+  else
+  {
+    return $vars;
+  }
 }
 
 
@@ -166,7 +159,7 @@ function __autoload($class_name)
   if ($class_name === 'db')
   {
     include_once SYS_PATH.'db.php';
-    DB::init();
+    db::init();
   }
 }
 

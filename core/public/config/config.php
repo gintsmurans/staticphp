@@ -75,34 +75,6 @@ $config['script_name'] =& $_SERVER['SCRIPT_NAME'];
 $config['uri_prefixes'] = array('ajax');
 
 
-// Languages
-// Default language, set to false if you don't need language support
-$config['lang_support'] = true;
-
-// Redirect or not if language is not provided
-$config['lang_redirect'] = true;
-
-// Country key - try to match this value to the key in countries/language array. 
-// Set to false, if you dont want to check against keys
-$config['lang_key'] = false;
-
-// This will be the reference to the active language array
-$config['lang_active'] = NULL;
-
-// Available languages
-// If defined, languages before this will be ignored
-// Keys can be regular expression, but will not be quoted
-// First match will be used, if there is no match, first item in array will be used
-$config['lang_available'] = array(
-	array(
-		'key' => '',
-    'name' => '',
-		'directory' => '',
-		'languages' => array('en'),
-	),
-);
-
-
 
 // Autoload
 // Put filenames without "php" extension

@@ -35,8 +35,6 @@ class router
   public static $domain_uri = NULL;
   public static $base_uri = NULL;
 
-  public static $lang_current = NULL;
-
   public static $file = null;
   public static $class = null;
   public static $method = null;
@@ -86,16 +84,16 @@ class router
   
   public static function segment($index)
   {
-  	return (!empty(self::$segments[$index]) ? self::$segments[$index] : false);
+    return (!empty(self::$segments[$index]) ? self::$segments[$index] : false);
   }
 
 
   public static function error($error_code, $error_string)
   {
-  	header('HTTP/1.0 '. $error_code .' '. $error_string);
-  	load('views/E'. $error_code);
+    header('HTTP/1.0 '. $error_code .' '. $error_string);
+    load('views/E'. $error_code);
 
-  	exit;
+    exit;
   }
 
 
@@ -116,14 +114,14 @@ class router
 
 
 
-
-
-// ------------ PRIVATE METHODS ----------------------
-
-
-  private static function split_segments()
+  public static function split_segments($force = false)
   {
     global $config;
+    
+    if ($force == false && !empty(self::$domain_uri))
+    {
+      return;
+    }
 
     // Get some config variables
     $uri = urldecode($config->request_uri);
@@ -136,15 +134,31 @@ class router
     // Replace script_path in uri
     $uri = self::trim_slashes(preg_replace('/^\/?'.preg_quote($script_path, '/').'/', '', $uri), true);
 
+
+    // Check config routing array
+    foreach($config->routing as $key => &$item)
+    {
+      if (!empty($key) && !empty($item))
+      {
+        $key = str_replace('/', '\\/', $key);
+        $tmp = preg_replace('/'.$key.'/', $item, $uri);
+        if ($tmp !== $uri)
+        {
+          $uri = $tmp;
+        }
+      }
+    }
+
+
     // Set segments_full_uri
-    self::$segments_full_uri = $uri . (empty($config->query_string) ? '' : '?'. $config->query_string);
+    self::$segments_full_uri = $uri; // . (empty($config->query_string) ? '' : '?'. $config->query_string);
 
     // Explode segments
-    self::$segments = self::$segments_full = explode('/', $uri);
+    self::$segments_full = self::$segments = explode('/', $uri);
 
 
     // Get URI prefixes
-    foreach($config->uri_prefixes as $item)
+    foreach($config->uri_prefixes as &$item)
     {
       if (isset(self::$segments[0]) && self::$segments[0] == $item)
       {
@@ -155,75 +169,31 @@ class router
     self::$prefixes_uri = implode('/', self::$prefixes);
 
 
-    // Language support
-    if ($config->lang_support === true)
-    {
-      // Set current country as first from array
-      self::$lang_current = &reset($config->lang_available);
-
-      // Search for current country
-      if (!empty($config->lang_key))
-      {
-        foreach ($config->lang_available as &$item)
-        {
-          if (preg_match('/'. $item['key'] .'/', $config->lang_key))
-          {
-            self::$lang_current = &$item;
-            break;
-          }
-        }
-      }
-      
-      // Set current language as the first one
-      self::$lang_current['current'] = self::$lang_current['languages'][0];
-
-      // Search for current language
-      if (!empty(self::$segments[0]) && in_array(self::$segments[0], self::$lang_current['languages']))
-      {
-        self::$lang_current['current'] = self::$segments[0];
-        array_shift(self::$segments);
-      }
-      else
-      {
-        if ($config->lang_redirect === true)
-        {
-          self::redirect(site_url(self::$segments_full_uri), false, true);
-        }
-      }
-
-      // Autoload language files from config
-      foreach($config->load_languages as $tmp)
-      {
-        load_lang($tmp);
-      }
-    }
-
-
     // Set URI
     self::$segments_uri = implode('/', self::$segments);
 
 
     // Set global template variables
-    g('vars')->base_url = &self::$base_uri;
+    g()->vars['base_url'] = &self::$base_uri;
 
 
     // Unset local variables
-    unset($uri, $script_path, $tmp);
+    unset($uri, $script_path, $tmp, $item, $key);
   }
 
 
+
+  // ------------ PRIVATE METHODS ----------------------
+
   private static function load_controller()
   {
-    // Get routing settings
-    $routing = g('config')->routing;
-
     // Get controller, class, method from URI
-    $tmp = router::uri_to_file($routing['']);
+    $tmp = router::uri_to_file(g('config')->routing['']);
+
 
     // Set default class and method
     self::$class = $tmp['class'];
     self::$method = $tmp['method'];
-
 
     // If empty segments set file as class name
     if (empty(self::$segments[0]))
@@ -232,56 +202,32 @@ class router
     }
     else
     {
-      // Check config routing array
-      foreach((array)$routing as $key=>$item)
-      {
-        if (!empty($key) && !empty($item))
-        {
-          $key = str_replace('/', '\\/', $key);
-          if (preg_match('/'.$key.'/', self::$segments_uri))
-          {
-            // Get controller, class, method from URI
-            $tmp = router::uri_to_file($item);
+      self::$file = self::$segments[0];
+      $mi = 1;
 
-            // Set file, class and method
-            self::$class = $tmp['class'];
-            self::$method = $tmp['method'];
-            self::$file = $tmp['file'];
-          }
+      // Check for subdirectory
+      if (is_dir(APP_PATH .'controllers'. DS . self::$file))
+      {
+        // Add set class name as segment[1]
+        if (!empty(self::$segments[1]))
+        {
+          self::$class = self::$segments[1];
         }
+
+        // Add class name to self::$file
+        self::$file .= '/'.self::$class;
+
+        // Increase method index
+        ++$mi;
       }
 
-
-      // If there was no corresponding records from routing array, try segments
-      if (empty(self::$file))
+      // Add default class name to self::$file
+      else
       {
-        self::$file = self::$segments[0];
-        $mi = 1;
-
-        // Check for subdirectory
-        if (is_dir(APP_PATH .'controllers'. DS . self::$file))
-        {
-          // Add set class name as segment[1]
-          if (!empty(self::$segments[1]))
-          {
-            self::$class = self::$segments[1];
-          }
-
-          // Add class name to self::$file
-          self::$file .= '/'.self::$class;
-
-          // Increase method index
-          ++$mi;
-        }
-
-        // Add default class name to self::$file
-        else
-        {
-          self::$class = self::$file;
-        }
-        
-        self::$method = (!empty(self::$segments[$mi]) ? self::$segments[$mi] : self::$method);
+        self::$class = self::$file;
       }
+
+      self::$method = (!empty(self::$segments[$mi]) ? self::$segments[$mi] : self::$method);
     }
 
     // Load pre controllers hook
@@ -294,7 +240,7 @@ class router
     //load_hook('post_controller');
 
     // Unset
-    unset($tmp, $mi, $routing);
+    unset($tmp, $mi);
   }
 
 
@@ -304,17 +250,17 @@ class router
     // Check for $File
     if (is_file($File))
     {
-      include($File);
+      include $File;
 
       // Check for $Class
       if (class_exists($Class))
       {
-        $methods = get_class_methods($Class);
+        $methods = array_flip(get_class_methods($Class));
         // Check for $Method
-        if (in_array($Method, $methods) || in_array('__callStatic', $methods))
+        if (isset($methods[$Method]) || isset($methods['__callStatic']))
         {
           // Call our contructor
-          if (in_array('_construct', $methods))
+          if (isset($methods['_construct']))
           {
             call_user_func(array($Class, '_construct'), $Class, $Method);
           }
@@ -322,17 +268,17 @@ class router
         }
         else
         {
-          $error = 'Class was found, but could not find method';
+          $error = 'Class was found, but could not find method: ' . $Method;
         }
       }
       else
       {
-        $error = 'File was included, but could not find class';
+        $error = 'File was included, but could not find class: ' . $Class;
       }
     }
     else
     {
-      $error = 'Controller file was not found';
+      $error = 'Controller file was not found: ' . $File;
     }
 
     // Show error if there is any

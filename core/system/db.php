@@ -33,27 +33,34 @@ class db
 
   # INIT FUNCTION
 
-  public static function &init($scheme = 'default')
+  public static function init($scheme = 'default')
   {
+    // Don't make a new connection if already connected to the scheme
     if (!empty(self::$db_links[$scheme]))
     {
       return self::$db_links[$scheme];
     }
 
-    $config =& g('config')->db[$scheme];
-    $db_link =& self::$db_links[$scheme];
+    // Set default scheme
+    if (empty(self::$db_links['default']))
+    {
+      self::$db_links['default'] = &self::$db_links[$scheme];
+    }
+
+    // Get config
+    $config = &g('config')->db[$scheme];
 
     // Open new connection to DB
-    $db_link = new PDO($config['string'], $config['username'], $config['password'], array(
+    self::$db_links[$scheme] = new PDO($config['string'], $config['username'], $config['password'], array(
       PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
       PDO::ATTR_CASE => PDO::CASE_NATURAL
     ));
 
-    // Set encoding
-    $db_link->exec('SET NAMES '.(empty($config['charset']) ? 'UTF8' : $config['charset']).';');
-
-    // Return db link reference for example if somebody needs to open new connection to a new database
-    return $db_link;
+    // Set encoding - for mysql
+    if (!empty($config['charset']))
+    {
+      self::$db_links[$scheme]->exec('SET NAMES '. $config['charset'] .';');
+    }
   }
 
 
@@ -62,7 +69,7 @@ class db
 
   public static function query($query, $data = null, $scheme = 'default')
   {
-    $db_link =& self::init($scheme);
+    $db_link = &self::init($scheme);
 
     if (!empty($query))
     {
@@ -108,7 +115,7 @@ class db
 
   public static function exec($query, $data = null, $scheme = 'default')
   {
-    $db_link =& self::init($scheme);
+    $db_link = &self::init($scheme);
 
     if (!empty($query))
     {
@@ -141,24 +148,46 @@ class db
 
 
   //
-  // Make set from array. Add "!" at start of the key to avoid escaping 
+  // Make update from array. Add "!" at start of the key to avoid escaping 
   //
-  public static function make_set(&$data, $delimiter = ', ')
+  public static function make_update(&$data, $delimiter = ', ')
   {
     foreach ((array)$data as $key => $value)
     {
       if ($key[0] == '!')
       {
-        $set[] = "`". substr($key, 1) ."` = {$value}";
+        $set[] = substr($key, 1) ." = {$value}";
         unset($data[$key]);
       }
       else
       {
-        $set[] = "`{$key}` = :{$key}";
+        $set[] = "{$key} = :{$key}";
       }
     }
 
     return (empty($set) ? '' : implode($delimiter, $set));
+  }
+
+
+  //
+  // Make insert from array. Add "!" at start of the key to avoid escaping 
+  //  
+  public static function make_insert(&$data)
+  {
+    foreach ((array)$data as $key => $value)
+    {
+      if ($key[0] == '!')
+      {
+        $values[] = $value;
+        unset($data[$key]);
+      }
+      else
+      {
+        $values[] = ':' . $key;
+      }
+    }
+
+    return '('. implode(',', array_keys((array)$data)) .') VALUES ('. implode(',', $values) .')';
   }
 
 
@@ -167,7 +196,7 @@ class db
     $set = self::make_set($data);
     if (!empty($set))
     {
-      self::exec("INSERT INTO `{$table}` SET ". $set, $data, $scheme);
+      self::exec("INSERT INTO {$table} SET ". $set, $data, $scheme);
     }
   }
 
@@ -179,7 +208,7 @@ class db
     $set = self::make_set($data);
     if (!empty($set))
     {
-      self::exec("UPDATE `{$table}` SET ". $set . (empty($where) ? '': " WHERE ". self::make_set($where, ' AND ') ) . (empty($limit) ? '' : 'LIMIT '. $limit), array_merge($data, $where));
+      self::exec("UPDATE {$table} SET ". $set . (empty($where) ? '': " WHERE ". self::make_set($where, ' AND ') ) . (empty($limit) ? '' : 'LIMIT '. $limit), array_merge($data, $where));
     }
   }
 */
@@ -211,7 +240,7 @@ class db
   
   public static function last_insert_id($scheme = 'default')
   {
-    $db_link =& self::$db_links[$scheme];
+    $db_link = &self::$db_links[$scheme];
     return $db_link->lastInsertId();
   }
 }
