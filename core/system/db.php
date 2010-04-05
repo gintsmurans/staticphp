@@ -1,27 +1,5 @@
 <?php
 
-/*
-  "StaticPHP Framework" - Simple PHP Framework
-  
-  ---------------------------------------------------------------------------------
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  any later version.
-  
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-  
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  ---------------------------------------------------------------------------------
-  
-  Copyright (C) 2009  Gints Murāns <gm@gm.lv>
-*/
-
-
 class db
 {
   public static $queries = null;
@@ -83,14 +61,14 @@ class db
         self::$last_statement = $db_link->prepare($query);
         self::$last_statement->setFetchMode(PDO::FETCH_OBJ);
         self::$last_statement->execute((array) $data);
-        
+
         // Count Queries
         if (g('config')->debug === true)
         {
           ++self::$query_count;
           self::$queries[$scheme][] = self::$last_statement->queryString;
         }
-        
+
         // Return last statement
         return self::$last_statement;
       }
@@ -147,8 +125,11 @@ class db
   }
 
 
+
+  # HELPER FUNCTIONS
+
   //
-  // Make update from array. Add "!" at start of the key to avoid escaping 
+  // Make update from array. Add "!" at start of the key to avoid escaping
   //
   public static function make_update(&$data, $delimiter = ', ')
   {
@@ -170,8 +151,8 @@ class db
 
 
   //
-  // Make insert from array. Add "!" at start of the key to avoid escaping 
-  //  
+  // Make insert from array. Add "!" at start of the key to avoid escaping
+  //
   public static function make_insert(&$data)
   {
     foreach ((array)$data as $key => $value)
@@ -183,7 +164,7 @@ class db
       }
       else
       {
-        $values[] = ':' . $key;
+        $values[] = ':'.$key;
       }
     }
 
@@ -191,38 +172,15 @@ class db
   }
 
 
-  public static function insert($table, $data, $scheme = 'default')
-  {
-    $set = self::make_set($data);
-    if (!empty($set))
-    {
-      self::exec("INSERT INTO {$table} SET ". $set, $data, $scheme);
-    }
-  }
 
-
-
-/*
-  public static function update($table, $data, $where = array(), $limit = '')
-  {
-    $set = self::make_set($data);
-    if (!empty($set))
-    {
-      self::exec("UPDATE {$table} SET ". $set . (empty($where) ? '': " WHERE ". self::make_set($where, ' AND ') ) . (empty($limit) ? '' : 'LIMIT '. $limit), array_merge($data, $where));
-    }
-  }
-*/
-
-
-  
   # INFO FUNCTIONS
 
   public static function &db_link($scheme = 'default')
   {
     return self::$db_links[$scheme];
   }
-  
-  
+
+
   public static function &last_statement()
   {
     if (!empty(self::$last_statement))
@@ -236,8 +194,8 @@ class db
   {
     return empty(self::$last_statement) ? null : self::$last_statement->queryString;
   }
-  
-  
+
+
   public static function last_insert_id($scheme = 'default')
   {
     $db_link = &self::$db_links[$scheme];

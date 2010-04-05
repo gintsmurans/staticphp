@@ -1,5 +1,12 @@
 <?php
 
+/*
+  You can use file prefixes:
+  1. i: - will be used as inline
+  2. b: - link will be prepended with base_url
+  3. s: - link will be prepended with site_url
+  4. [none] - link will be shown as it is
+*/
 
 function css()
 {
@@ -18,7 +25,7 @@ function css()
       foreach (g('config')->css as $key => $item)
       {
         $key = str_replace('/', '\\/', $key);
-        if (preg_match('/'.$key.'/', router::$url))
+        if (preg_match('/'.$key.'/', router::$segments_uri))
         {
           $files = array_merge($files, (array) $item);
         }
@@ -69,7 +76,7 @@ function js()
       foreach (g('config')->js as $key => $item)
       {
         $key = str_replace('/', '\\/', $key);
-        if (preg_match('/'.$key.'/', router::$url))
+        if (preg_match('/'.$key.'/', router::$segments_uri))
         {
           $files = array_merge($files, (array) $item);
         }
