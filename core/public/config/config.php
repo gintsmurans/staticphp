@@ -2,7 +2,7 @@
 
 // DATABASE
 $config['db']['default'] = array(
-  'string' => 'mysql:host=localhost;unix_socket=/var/mysql/mysql.sock;dbname=cars', // See PDO documentation: http://php.net/manual/en/pdo.construct.php
+  'string' => 'mysql:host=localhost;unix_socket=/var/mysql/mysql.sock;dbname=', // See PDO documentation: http://php.net/manual/en/pdo.construct.php
   'username' => 'root',
   'password' => '',
   'charset' => 'UTF8',
