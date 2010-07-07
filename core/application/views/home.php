@@ -1,5 +1,5 @@
 
-        <h1>Welcome to the <a href="http://staticphp.com/" onclick="window.open(this.href); return false;">StaticPHP framework</a> start page</h1>
+        <h1>Welcome to the <a href="http://github.com/gintsmurans/staticphpc" target="_blank">StaticPHP framework</a> start page</h1>
         
         <div class="content">
         
