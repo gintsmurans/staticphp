@@ -1,12 +1,4 @@
 
-CREATE TABLE `languages` (
-  `ident` varchar(50) NOT NULL default '',
-  `scope` varchar(20) default NULL,
-  `en` longtext COMMENT 'en',
-  `lv` longtext COMMENT 'lv',
-  UNIQUE KEY `ident` (`ident`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL auto_increment,

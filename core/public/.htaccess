@@ -1,7 +1,4 @@
 
-php_value register_globals  0
-
-
 <IfModule mod_rewrite.c>
     RewriteEngine On
     

@@ -13,9 +13,9 @@ class router
   public static $domain_uri = NULL;
   public static $base_uri = NULL;
 
-  public static $file = null;
-  public static $class = null;
-  public static $method = null;
+  public static $file = NULL;
+  public static $class = NULL;
+  public static $method = NULL;
 
 
   public static function init()
@@ -25,44 +25,44 @@ class router
   }
 
 
-  public static function redirect($uri = '', $site_uri = true, $e301 = false, $type = 'http')
+  public static function redirect($uri = '', $site_uri = TRUE, $e301 = FALSE, $type = 'http')
   {
     switch ($type)
     {
       case 'js':
-        echo '<script type="text/javascript"> window.location.href = \''.($site_uri === false ? $uri : site_url($uri)).'\'; </script>';
+        echo '<script type="text/javascript"> window.location.href = \''.($site_uri === FALSE ? $uri : site_url($uri)).'\'; </script>';
       break;
       
       default:
-        if ($e301 === true)
+        if ($e301 === TRUE)
         {
             header("HTTP/1.1 301 Moved Permanently");
         }
         
-        header("Location: ".($site_uri === false ? $uri : site_url($uri)));
+        header("Location: ".(empty($site_uri) ? $uri : site_url($uri)));
         header("Connection: close");
       break;
     }
     exit;
   }
-  
-  
+
+
   public static function have_prefix($p)
   {
     return (isset(self::$prefixes[$p]));
   }
-  
-  
-  public static function trim_slashes($s, $booth = false)
+
+
+  public static function trim_slashes($s, $booth = FALSE)
   {
     $s = str_replace('\\', '/', $s);
-    return ($booth == true ? trim($s, '/') : ltrim($s, '/'));
+    return (empty($booth) ? ltrim($s, '/') : trim($s, '/'));
   }
-  
-  
+
+
   public static function segment($index)
   {
-    return (!empty(self::$segments[$index]) ? self::$segments[$index] : false);
+    return (empty(self::$segments[$index]) ? NULL : self::$segments[$index]);
   }
 
 
@@ -70,7 +70,6 @@ class router
   {
     header('HTTP/1.0 '. $error_code .' '. $error_string);
     load('views/E'. $error_code);
-
     exit;
   }
 
@@ -84,42 +83,37 @@ class router
     $data['method'] = array_pop($tmp);
     $data['class'] = end($tmp);
     $data['file'] = implode('/', $tmp);
-
-    // Unset $tmp and return array
-    unset($tmp);
     return $data;
   }
 
 
-
-  public static function split_segments($force = false)
+  public static function split_segments($force = FALSE)
   {
     global $config;
     
-    if ($force == false && !empty(self::$domain_uri))
+    if (empty($force) && !empty(self::$domain_uri))
     {
       return;
     }
 
     // Get some config variables
     $uri = urldecode($config->request_uri);
-    $script_path = self::trim_slashes(dirname($config->script_name), true);
+    $script_path = self::trim_slashes(dirname($config->script_name), TRUE);
 
     // Set some variables
     self::$domain_uri = 'http'.(isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '').'://'.$_SERVER['HTTP_HOST'].'/';
     self::$base_uri = ($config->base_uri === 'auto' ? self::$domain_uri . (!empty($script_path) ? $script_path.'/' : '') : $config->base_uri);
 
     // Replace script_path in uri
-    $uri = self::trim_slashes(preg_replace('/^\/?'.preg_quote($script_path, '/').'/', '', $uri), true);
-
+    $uri = self::trim_slashes(empty($script_path) ? $uri : str_replace('/' . $script_path, '', $uri), TRUE);
 
     // Check config routing array
     foreach($config->routing as $key => &$item)
     {
       if (!empty($key) && !empty($item))
       {
-        $key = str_replace('/', '\\/', $key);
-        $tmp = preg_replace('/'.$key.'/', $item, $uri);
+        $key = str_replace('#', '\\#', $key);
+        $tmp = preg_replace('#'.$key.'#', $item, $uri);
         if ($tmp !== $uri)
         {
           $uri = $tmp;
@@ -127,13 +121,14 @@ class router
       }
     }
 
-
     // Set segments_full_uri
-    self::$segments_full_uri = $uri; // . (empty($config->query_string) ? '' : '?'. $config->query_string);
+    self::$segments_full_uri = $uri;
+
+    // Remove query string
+    $uri = preg_replace('/^(.*?)\?.*/', '$1', $uri);
 
     // Explode segments
     self::$segments_full = self::$segments = explode('/', $uri);
-
 
     // Get URI prefixes
     foreach($config->uri_prefixes as &$item)
@@ -144,19 +139,15 @@ class router
         self::$prefixes[$item] = $item;
       }
     }
-    self::$prefixes_uri = implode('/', self::$prefixes);
 
+		// Set URI prefixes uri
+    self::$prefixes_uri = implode('/', self::$prefixes);
 
     // Set URI
     self::$segments_uri = implode('/', self::$segments);
 
-
-    // Set global template variables
-    g()->vars['base_url'] = &self::$base_uri;
-
-
-    // Unset local variables
-    unset($uri, $script_path, $tmp, $item, $key);
+    // Define BASE_URL
+		define('BASE_URL', self::$base_uri);
   }
 
 
@@ -165,9 +156,10 @@ class router
 
   private static function load_controller()
   {
+		global $config;
+
     // Get controller, class, method from URI
     $tmp = router::uri_to_file(g('config')->routing['']);
-
 
     // Set default class and method
     self::$class = $tmp['class'];
@@ -208,14 +200,17 @@ class router
       self::$method = (!empty(self::$segments[$mi]) ? self::$segments[$mi] : self::$method);
     }
 
-    // Load pre controllers hook
-    //load_hook('pre_controller');
+    // Load pre controller hook
+    if (!empty($config->before_controller))
+		{
+			foreach($config->before_controller as $tmp)
+			{
+				call_user_func($tmp);
+			}
+		}
 
     // Load controllers
     self::_load_controller(APP_PATH .'controllers' . DS . self::$file.'.php', self::$class, self::$method);
-
-    // Load post controllers hook
-    //load_hook('post_controller');
 
     // Unset
     unset($tmp, $mi);
@@ -262,7 +257,7 @@ class router
     // Show error if there is any
     if (!empty($error))
     {
-      if (g('config')->debug === true)
+      if (g('config')->debug === TRUE)
       {
         throw new Exception($error);
       }

@@ -2,52 +2,51 @@
 
 class db
 {
-  public static $queries = null;
-  public static $query_count = null;
+  public static $queries = NULL;
+  public static $query_count = NULL;
 
+	private static $debug = FALSE;
   private static $db_links;
   private static $last_statement;
 
 
-  # INIT FUNCTION
-
-  public static function init($scheme = 'default')
+  // -- INIT
+  public static function init($name = 'default', $params = array(), $debug = FALSE)
   {
-    // Don't make a new connection if already connected to the scheme
-    if (!empty(self::$db_links[$scheme]))
+    // Don't make a new connection if there is one connected with the name
+    if (!empty(self::$db_links[$name]))
     {
-      return self::$db_links[$scheme];
+      return self::$db_links[$name];
     }
 
-    // Set default scheme
+    // Set default connection
     if (empty(self::$db_links['default']))
     {
-      self::$db_links['default'] = &self::$db_links[$scheme];
+      self::$db_links['default'] = &self::$db_links[$name];
     }
 
-    // Get config
-    $config = &g('config')->db[$scheme];
+		// Set debug
+		self::$debug = $debug;
 
     // Open new connection to DB
-    self::$db_links[$scheme] = new PDO($config['string'], $config['username'], $config['password'], array(
+    self::$db_links[$name] = new PDO($params['string'], $params['username'], $params['password'], array(
       PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
       PDO::ATTR_CASE => PDO::CASE_NATURAL
     ));
 
     // Set encoding - for mysql
-    if (!empty($config['charset']))
+    if (!empty($params['charset']))
     {
-      self::$db_links[$scheme]->exec('SET NAMES '. $config['charset'] .';');
+      self::$db_links[$name]->exec('SET NAMES '. $params['charset'] .';');
     }
   }
 
 
 
-  # READ FUNCTIONS
-
-  public static function query($query, $data = null, $scheme = 'default')
+	// -- QUERY
+  public static function query($query, $data = NULL, $name = 'default')
   {
-    $db_link = &self::init($scheme);
+    $db_link = &self::init($name);
 
     if (!empty($query))
     {
@@ -63,10 +62,10 @@ class db
         self::$last_statement->execute((array) $data);
 
         // Count Queries
-        if (g('config')->debug === true)
+        if (self::$debug === TRUE)
         {
           ++self::$query_count;
-          self::$queries[$scheme][] = self::$last_statement->queryString;
+          self::$queries[$name][] = self::$last_statement->queryString;
         }
 
         // Return last statement
@@ -76,24 +75,27 @@ class db
   }
 
 
-  public static function fetch($query, $data = array(), $scheme = 'default')
-  {
-    return self::query($query, $data, $scheme)->fetch();
-  }
 
-
-  public static function fetchAll($query, $data = array(), $scheme = 'default')
+	// -- Fetch wrapper
+  public static function fetch($query, $data = array(), $name = 'default')
   {
-    return self::query($query, $data, $scheme)->fetchAll();
+    return self::query($query, $data, $name)->fetch();
   }
 
 
 
-  # WRITE FUNCTIONS
-
-  public static function exec($query, $data = null, $scheme = 'default')
+	// -- FetchAll wrapper
+  public static function fetchAll($query, $data = array(), $name = 'default')
   {
-    $db_link = &self::init($scheme);
+    return self::query($query, $data, $name)->fetchAll();
+  }
+
+
+
+	// -- Exec
+  public static function exec($query, $data = NULL, $name = 'default')
+  {
+    $db_link = &self::init($name);
 
     if (!empty($query))
     {
@@ -103,8 +105,8 @@ class db
       }
       else
       {
-        // Create null return value
-        $prepare = null;
+        // Create NULL return value
+        $prepare = NULL;
 
         // Try execute query
         try
@@ -126,23 +128,29 @@ class db
 
 
 
-  # HELPER FUNCTIONS
-
-  //
-  // Make update from array. Add "!" at start of the key to avoid escaping
-  //
+	// -- Make update string from and array. Add "!" at start of the key to avoid escaping. Can be also used for WHERE statements, when delimeter is set to ' AND '.
   public static function make_update(&$data, $delimiter = ', ')
   {
     foreach ((array)$data as $key => $value)
     {
+			$c = '=';
+			$expl = explode(' ', $key);
+			if (count($expl) > 1)
+			{
+				unset($data[$key]);
+				$key = $expl[0];
+				$c = $expl[1];
+				$data[$key] = $value;
+			}
+			
       if ($key[0] == '!')
       {
-        $set[] = substr($key, 1) ." = {$value}";
+        $set[] = substr($key, 1) ." {$c} {$value}";
         unset($data[$key]);
       }
       else
       {
-        $set[] = "{$key} = :{$key}";
+        $set[] = "{$key} $c :{$key}";
       }
     }
 
@@ -150,37 +158,37 @@ class db
   }
 
 
-  //
-  // Make insert from array. Add "!" at start of the key to avoid escaping
-  //
+
+	// -- Make insert string from and array. Add "!" at start of the key to avoid escaping
   public static function make_insert(&$data)
   {
     foreach ((array)$data as $key => $value)
     {
       if ($key[0] == '!')
       {
-        $values[] = $value;
+        $values[substr($key, 1)] = $value;
         unset($data[$key]);
       }
       else
       {
-        $values[] = ':'.$key;
+        $values[$key] = ':'.$key;
       }
     }
 
-    return '('. implode(',', array_keys((array)$data)) .') VALUES ('. implode(',', $values) .')';
+    return '('. implode(',', array_keys((array)$values)) .') VALUES ('. implode(',', $values) .')';
   }
 
 
 
-  # INFO FUNCTIONS
-
-  public static function &db_link($scheme = 'default')
+	// -- Return link to the database connection for raw actions on it
+  public static function &db_link($name = 'default')
   {
-    return self::$db_links[$scheme];
+    return self::$db_links[$name];
   }
 
 
+
+	// -- Return the last query statement
   public static function &last_statement()
   {
     if (!empty(self::$last_statement))
@@ -190,16 +198,28 @@ class db
   }
 
 
+
+	// -- Return the last query executed
   public static function last_query()
   {
-    return empty(self::$last_statement) ? null : self::$last_statement->queryString;
+    return empty(self::$last_statement) ? NULL : self::$last_statement->queryString;
   }
 
 
-  public static function last_insert_id($scheme = 'default')
+
+	// -- Return the last insert id is created into database
+  public static function last_insert_id($sql = FALSE, $name = 'default')
   {
-    $db_link = &self::$db_links[$scheme];
-    return $db_link->lastInsertId();
+		if (empty($sql))
+		{
+			$db_link = &self::$db_links[$name];
+			return $db_link->lastInsertId();
+		}
+		else
+		{
+			$res = self::query('SELECT LAST_INSERT_ID() as id');
+			return (empty($res->id) ? NULL : $res->id);
+		}
   }
 }
 

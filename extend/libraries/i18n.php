@@ -1,10 +1,28 @@
 <?php
 
+/*
+	Internationalization class
+	--
+	i18n::$country - current country
+	i18n::$countries - all available countries
+	i18n::$currnet - array holding current country settings
+	i18n::$language - current language
+*/
+
 class i18n
 {
-  public static $country = NULL;
+	public static $country = NULL;
+	public static $countries = NULL;
+	public static $current = NULL;
   public static $language = NULL;
-  public static $lang_current = NULL;
+
+	private static $l = array();
+
+
+	public static function make_hash()
+	{
+		return sha1(self::$country . self::$language);
+	}
 
   public static function init()
   {
@@ -14,14 +32,14 @@ class i18n
     router::split_segments();
 
 
-    // ============================== COUNTRY ===============================
-
-    self::$lang_current = &reset($config->lang_available);
+    // COUNTRY
+		self::$countries = $config->lang_available;
+    self::$current = &reset(self::$countries);
 
     // Search for current country in URI
-    if (isset(router::$segments[0]) && isset($config->lang_available[router::$segments[0]]))
+    if (isset(router::$segments[0]) && isset(self::$countries[router::$segments[0]]))
     {
-      self::$lang_current = &$config->lang_available[router::$segments[0]];
+      self::$current = &self::$countries[router::$segments[0]];
       self::$country = router::$segments[0];
 
       array_push(router::$prefixes, router::$segments[0]);
@@ -31,11 +49,11 @@ class i18n
     // Search for current country in lang_key
     if (!empty($config->lang_key))
     {
-      foreach ($config->lang_available as $key => &$item)
+      foreach (self::$countries as $key => &$item)
       {
         if (preg_match('/'. $key .'/', $config->lang_key))
         {
-          self::$lang_current = &$item;
+          self::$current = &$item;
           self::$country = $key;
 
           array_push(router::$prefixes, $key);
@@ -48,110 +66,151 @@ class i18n
     // Redirect country
     if (empty(self::$country) && !empty($config->lang_country_redirect))
     {
-      array_push(router::$prefixes, key($config->lang_available));
-      $redirect = true;
+      array_push(router::$prefixes, key(self::$countries));
+      $redirect = TRUE;
     }
 
 
-    // ============================== LANGUAGES ===============================
-
-    self::$lang_current['current'] = self::$lang_current['languages'][0];
+    // LANGUAGES
+    self::$language = self::$current['languages'][0];
 
     // Search for current language
-    if (!empty(router::$segments[0]) && in_array(router::$segments[0], self::$lang_current['languages']))
+    if (!empty(router::$segments[0]) && in_array(router::$segments[0], self::$current['languages']))
     {
-      self::$lang_current['current'] = router::$segments[0];
+      self::$language = router::$segments[0];
       array_shift(router::$segments);
     }
     elseif (!empty($config->lang_redirect))
     {
-      $redirect = true;
+      $redirect = TRUE;
     }
 
 
-    // ============================== FINAL ==============================
-
-    self::$language = &self::$lang_current['current'];
-
+    // FINAL
     // Set country and language as prefixes
-    array_push(router::$prefixes, self::$lang_current['current']);
+    array_push(router::$prefixes, self::$language);
     router::$prefixes_uri = implode('/', router::$prefixes);
     router::$segments_uri = implode('/', router::$segments);
-
 
     // Redirect to current language
     if (!empty($redirect))
     {
-      router::redirect(site_url(router::$segments_uri), false, true);
+      router::redirect(site_url(router::$segments_uri), FALSE, TRUE);
     }
 
-    // Autoload language files from config
-    foreach($config->lang_load as &$item)
-    {
-      self::load($item);
-    }
+		// Load languages
+		self::load();
   }
 
 
   public static function load()
   {
+		// Cache directory
     $dir1 = APP_PATH . 'cache/';
-    foreach (func_get_args() as $scope)
-    {
-      // Make hashes and paths
-      $hash = sha1(self::$country . self::$language . $scope);
-      $dir2 = $dir1 . substr($hash, -2, 2) . '/' . substr($hash, -4, 2). '/';
-      $file = $dir2 . $hash;
 
-      // Check if needs to update the cache
-      $res1 = ini_get('apc.enabled') ? apc_fetch($hash) : db::fetch('SELECT * FROM cache WHERE id = ?', $hash);
+		// Make hashes and paths
+		$hash = self::make_hash();
+		$dir2 = $dir1 . substr($hash, -2, 2) . '/' . substr($hash, -4, 2). '/';
+		$file = $dir2 . $hash . '.php';
 
-      if (empty($res1))
-      {
-        $contents = "<?php\n\n";
+		// Check if needs to update the cache
+		$res1 = ini_get('apc.enabled') ? apc_fetch($hash) : db::fetch('SELECT * FROM cache WHERE id = ? AND server_id = ?', array($hash, g('config')->server_id));
+		if (!empty(g('config')->debug) || empty($res1))
+		{
+			try
+			{
+				$res2 = db::fetchAll('SELECT id, '. self::$current['code'] .'_'. self::$language .' as lang FROM i18n ORDER BY id');
+			}
+			catch(Exception $e)
+			{
+				$res2 = db::fetchAll('SELECT id, "" as lang FROM i18n ORDER BY id');
+			}
 
-        $res2 = db::fetchAll('
-          SELECT t1.id, t1.ident, t1.default, t2.'. self::$language .' as lang
-          FROM i18n as t1
-          LEFT JOIN '. self::$lang_current['table'] .' as t2
-            ON t2.id = t1.id
-          WHERE t1.scope = ?
-          ORDER BY ident
-        ', array($scope));
+			if (!empty($res2))
+			{
+				$contents = "<?php\n\n# Country: ". self::$country ."\n# Language: ". self::$language ."\n\n";
 
-        foreach ($res2 as $item)
-        {
-          if (empty($item->lang))
-          {
-            $item->lang = $item->default;
-          }
-          $item->lang = str_replace("'", "\\'", $item->lang);
-          $contents .= "define('{$item->ident}', '{$item->lang}');\n";
-        }
+				// Walk through the result
+				foreach ($res2 as $item)
+				{
+					$item->id = str_replace("'", "\\'", $item->id);
+					$item->lang = str_replace("'", "\\'", $item->lang);
+					$contents .= "\$l['{$item->id}'] = '{$item->lang}';\n";
+				}
 
-        // Create directories
-        if (!is_dir($dir2))
-        {
-          mkdir($dir2, 0777, true);
-        }
+				// Create directories
+				if (!is_dir($dir2))
+				{
+					mkdir($dir2, 0777, TRUE);
+				}
 
-        // Put contents to the file
-        file_put_contents($file, $contents);
+				// Put contents to the file
+				file_put_contents($file, $contents);
 
-        // Save cached status
-        ini_get('apc.enabled') ? apc_store($hash, 1) : db::query('INSERT INTO cache (id, value) VALUES (?, 1)', $hash);
-      }
+				// Save cached status
+				if (empty(g('config')->debug))
+				{
+					ini_get('apc.enabled') ? apc_store($hash, 1) : db::query('INSERT INTO cache (id, server_id, type, value) VALUES (?, ?, ?, 1)', array($hash, g('config')->server_id, 'i18n'));
+				}
+			}
+		}
 
-      // Load file from the cache and return result from database
-      include $file;
-    }
+		// Load file from the cache
+		if (is_file($file))
+		{
+			include $file;
+			if (isset($l))
+			{
+				self::$l = array_merge(self::$l, $l);
+				unset($l);
+			}
+		}
   }
 
 
-  public static function item($ident, $replace = array())
+  public static function item($ident, $replace = array(), $escape = NULL)
   {
     return empty($replace) ? constant($ident) : str_replace(array_keys($replace), $replace, constant($ident));
   }
+	
+	public static function _($text, $replace = array(), $escape = NULL)
+	{
+		// If debug is enabled do some dirty stuff
+		if (!empty($config->debug) && isset(self::$l[$text]))
+		{
+			db::query('UPDATE i18n SET last_access = NOW() WHERE id = ?', array($text));
+		}
+		elseif (!isset(self::$l[$text]))
+		{
+			db::query('INSERT INTO i18n (id) VALUES (?)', $text);
+			self::$l[$text] = $text;
+
+			// Clear cache
+			$hash = self::make_hash();
+			ini_get('apc.enabled') ? apc_delete($hash) : db::query("DELETE FROM cache WHERE type = 'i18n'");
+		}
+
+		// Set text to translation if is not empty
+		if (!empty(self::$l[$text]))
+		{
+			$text = self::$l[$text];
+		}
+
+		// Do some output escaping, if pointed
+		switch ($escape)
+		{
+			case 'js':
+				$text = str_replace(array("'", "\r", "\n"), array("\\'", '', ''), $text);
+			break;
+			
+			case 'input':
+				$text = str_replace('"', '&quot;', $text);
+			break;
+		}
+
+		// Return text, replace if necessary
+		return empty($replace) ? $text : str_replace(array_keys($replace), $replace, $text);
+	}
 }
 
 ?>

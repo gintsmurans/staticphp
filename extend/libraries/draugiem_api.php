@@ -1,5 +1,12 @@
 <?php
 
+//
+// Draugiem.lv API Client
+//
+// Copyright 2009 Gints MurÄns. All Rights Reserved.
+//
+
+
 class draugiem
 {
 
@@ -61,8 +68,6 @@ class draugiem
     // Increase call count
     ++$this->call_count;
 
-
-
     // Add action
     $args['action'] = $name;
 
@@ -76,14 +81,15 @@ class draugiem
     }
 
     // Build request data
-    $opts = $this->_build_multipart($args);
+    // $opts = $this->_build_multipart($args);
+    $opts = $this->_build_simple($args);
 
 		// Create context and open connection to server
 		$context = stream_context_create($opts);
 
 		try
 		{
-		  // Get remote xml file
+		  // Get remote file
 		  $return = file_get_contents($this->api_domain, false, $context);
 
 			// Set file to null
@@ -98,6 +104,27 @@ class draugiem
     }
 	}
 
+
+  /*
+  * Create simple request array
+  *
+  * @param array $args Array of data to send to the api server
+  * @return array stream_context_create array
+  */
+	private function _build_simple($args)
+	{
+    $data = http_build_query($args);
+    $opts = array(
+      'http'=>array(
+        'method' => 'POST',
+        'user_agent' => 'Draugiem API Simple Request, v2.0',
+        'header' => 'Content-type: application/x-www-form-urlencoded' . "\r\n" .
+                    'Content-Length: ' . strlen($data) . "\r\n",
+        'content' => $data
+      )
+    );
+    return $opts;
+	}
 
 
   /*
@@ -150,7 +177,7 @@ class draugiem
     $opts = array(
       'http'=>array(
         'method' => 'POST',
-        'user_agent' => 'CC API Multipart Request, v2.0',
+        'user_agent' => 'Draugiem API Multipart Request, v2.0',
         'header' => 'Content-type: multipart/form-data, boundary=' . $b . "\r\n" .
         'Content-Length: ' . strlen($data) . "\r\n",
         'content' => $data

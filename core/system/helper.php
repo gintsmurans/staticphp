@@ -1,22 +1,23 @@
 <?php
 
+// - Get base uri
 function base_url($url = '')
 {
   return router::$base_uri . router::trim_slashes($url);
 }
 
-// prefix == NULL add router::$prefixes
-// prefix == false add nothing
-// prefix != empty add it
-function site_url($url = '', $prefix = NULL, $current_prefix = true)
+
+// -- Get site uri
+function site_url($url = '', $prefix = NULL, $current_prefix = TRUE)
 {
-  $url002  = !empty($prefix) ? router::trim_slashes($prefix, true) . '/' : '';
+  $url002  = !empty($prefix) ? router::trim_slashes($prefix, TRUE) . '/' : '';
   $url002 .= !empty($current_prefix) && !empty(router::$prefixes_uri) ? router::$prefixes_uri . '/' : '';
   return router::$base_uri . $url002 . router::trim_slashes($url);
 }
 
 
 
+// -- Convert / and \ to systems directory separator
 function make_path_string($string)
 {
   return str_replace(array('/', '\\'), DS, $string);
@@ -24,22 +25,7 @@ function make_path_string($string)
 
 
 
-function load_hook($hook)
-{
-  if (!empty(g('config')->hooks[$hook]))
-  {
-    $tmp = g('config')->hooks[$hook];
-    $tmp = router::uri_to_file($tmp);
-
-    $file = APP_PATH . $tmp['file'] .'.php';
-    if (!in_array($file, get_included_files()))
-    {
-      include $file;
-    }
-    call_user_func(array($tmp['class'], $tmp['method']));
-  }
-}
-
+// -- Load config file from public/config
 function load_config($files)
 {
   foreach ((array) $files as $name)
@@ -52,7 +38,9 @@ function load_config($files)
   }
 }
 
-function load($files, $vars = array(), $prefix = null)
+
+// -- Load any file wihin applications or full path toa file
+function load($files, $vars = array(), $prefix = NULL)
 {
   // Check for global template variables
   if (!empty(g()->vars))
@@ -79,7 +67,7 @@ function load($files, $vars = array(), $prefix = null)
     $file = rtrim(make_path_string($file), DS).'.php';
   
     // Check for file existance
-    switch(true)
+    switch(TRUE)
     {
       case is_file(APP_PATH.$file):
         $file = APP_PATH.$file;
@@ -101,43 +89,45 @@ function load($files, $vars = array(), $prefix = null)
 
 
 
-function &g($var = null)
+// -- Function for storing global parameters
+function &g($var = NULL)
 {
   // Our static object
   static $vars;
 
   // Init vars object
-  if ($vars === null)
+  if ($vars === NULL)
   {
-    $vars = (object)null;
+    $vars = (object)NULL;
   }
 
   // Set $var
-  if (!empty($var) && empty($vars->{$var}))
+  if (!empty($var) && !isset($vars->{$var}))
   {
-    $vars->{$var} = (object)null;
+    $vars->{$var} = (object)NULL;
   }
 
-  // Return 
-  if (isset($vars->{$var}))
-  {
-    return $vars->{$var};
-  }
-  else
-  {
-    return $vars;
-  }
+  // Return
+	if (empty($var))
+	{
+		return $vars;
+	}
+	else
+	{
+		return $vars->{$var};
+	}
 }
 
 
 
-// AUTOLOAD DB
+// -- Autoload classes, currently only support for db is available (because of not-to-have-a-messy-code)
 function __autoload($class_name)
 {
-  if ($class_name === 'db')
+	global $config;
+  if ($class_name === 'db' && !empty($config->db[$config->db['autoload']]))
   {
-    include_once SYS_PATH.'db.php';
-    db::init();
+    include_once SYS_PATH . 'db.php';
+    db::init($config->db['autoload'], $config->db[$config->db['autoload']], $config->debug);
   }
 }
 

@@ -5,4 +5,4 @@ CREATE TABLE `sessions` (
   `expires` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `expires` (`expires`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=innoDB DEFAULT CHARSET=utf8;

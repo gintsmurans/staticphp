@@ -3,35 +3,33 @@
 /*
   !!!! NOT A FINAL VERSION, ONLY A DRAFT !!!!
   
-  Image manupalution
+  Image manipulation
   Simple usage:
-    
+
     image::open('file');
-    image::resize(300, 400, true, 'file.jpg');
+    image::resize(300, 400, TRUE, 'file.jpg');
 */
 
 class image
 {
-  private static $im = null;
-  private static $memory_limit = null;
+  public static $im = NULL;
+  private static $memory_limit = NULL;
 
 
   public static function open($in)
   {
     if (!is_file($in))
     {
-      return false;
+      return FALSE;
     }
     
-    // Try to get image dimensions
-    try
-    {
-      list(self::$im['width'], self::$im['height']) = getimagesize($in);
-    }
-    catch(Exception $e)
-    {
-      return false;
-    }
+    // Get image dimensions
+    list(self::$im['width'], self::$im['height']) = getimagesize($in);
+		
+		if (empty(self::$im['width']) || empty(self::$im['height']))
+		{
+			return FALSE;
+		}
 
     // Set memory limit to 128M
     $memory_limit = ini_get('memory_limit');
@@ -39,8 +37,8 @@ class image
 
     // Create image from string
     self::$im['im'] = imagecreatefromstring(file_get_contents($in));
-    
-    return true;
+		
+		return TRUE;
   }
 
 
@@ -58,27 +56,27 @@ class image
 
   public static function resave($in, $out, $type = 'jpeg', $quality = '100')
   {
-    switch (true)
+    switch (TRUE)
     {
       case (empty($in) && empty(self::$im)):
       case (!function_exists('image'.$type)):
-      case (!empty($in) && self::open($in) == false):
-        return false;
+      case (!empty($in) && self::open($in) == FALSE):
+        return FALSE;
       break;
 
       default:
         call_user_func('image'.$type, self::$im['im'], $out, $quality);
-        return true;
+        return TRUE;
       break;
     }
   }
 
 
-  public static function resize($new_width, $new_height, $crop = false, $out = null)
+  public static function resize($new_width, $new_height, $crop = FALSE, $stretch = FALSE, $out = NULL)
   {
     if (empty(self::$im))
     {
-      return false;
+      return FALSE;
     }
     
     // Set default new image sizes
@@ -89,13 +87,13 @@ class image
     $crop_x = 0;
     $crop_y = 0;
 
-    switch (true)
+    switch (TRUE)
     {
-      case ($crop == false && self::$im['width'] > self::$im['height']):
+      case ($crop == FALSE && self::$im['width'] > self::$im['height']):
         $im2_height = ceil($new_width * (self::$im['height'] / self::$im['width']));
       break;
 
-      case ($crop == false && self::$im['width'] < self::$im['height']):
+      case ($crop == FALSE && self::$im['width'] < self::$im['height']):
         $im2_width = ceil($new_height * (self::$im['width'] / self::$im['height']));
       break;
 
@@ -110,26 +108,27 @@ class image
       break;
     }
 
-    // Create image handler for resized picture
-    $im2 = imagecreatetruecolor($im2_width - $crop_x, $im2_height - $crop_y);
-
-    imagecopyresampled($im2, self::$im['im'], (-1 * ($crop_x / 2)), (-1 * ($crop_y / 2)), 0, 0, $im2_width, $im2_height, self::$im['width'], self::$im['height']);
+		if ($stretch == FALSE && $im2_width > self::$im['width'] && $im2_height > self::$im['height'])
+		{
+			$im2 = imagecreateTRUEcolor(self::$im['width'], self::$im['height']);
+			imagecopyresampled($im2, self::$im['im'], 0, 0, 0, 0, self::$im['width'], self::$im['height'], self::$im['width'], self::$im['height']);
+		}
+		else
+		{
+			$im2 = imagecreateTRUEcolor($im2_width - $crop_x, $im2_height - $crop_y);
+			imagecopyresampled($im2, self::$im['im'], (-1 * ($crop_x / 2)), (-1 * ($crop_y / 2)), 0, 0, $im2_width, $im2_height, self::$im['width'], self::$im['height']);
+		}
 
     if (!empty($out))
     {
       // Output image to file
       imagejpeg($im2, $out, 100);
     }
-    else
-    {
-    
-    }
-    
-    
+
     // Destroy image objects
     imagedestroy($im2);
 
-    return true;
+    return TRUE;
   }
 }
 
