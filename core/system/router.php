@@ -104,8 +104,9 @@ class router
     self::$domain_uri = 'http'.(isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '').'://'.$_SERVER['HTTP_HOST'].'/';
     self::$base_uri = ($config->base_uri === 'auto' ? self::$domain_uri . (!empty($script_path) ? $script_path.'/' : '') : $config->base_uri);
 
-    // Replace script_path in uri
+    // Replace script_path in uri and remove query string
     $uri = self::trim_slashes(empty($script_path) ? $uri : str_replace('/' . $script_path, '', $uri), TRUE);
+    $uri = preg_replace('/\?.*/', '', $uri);
 
     // Check config routing array
     foreach($config->routing as $key => &$item)
@@ -122,10 +123,7 @@ class router
     }
 
     // Set segments_full_uri
-    self::$segments_full_uri = $uri;
-
-    // Remove query string
-    $uri = preg_replace('/^(.*?)\?.*/', '$1', $uri);
+    self::$segments_full_uri = $uri . (empty($config->query_string) ? '' : '?'. $config->query_string);
 
     // Explode segments
     self::$segments_full = self::$segments = explode('/', $uri);
