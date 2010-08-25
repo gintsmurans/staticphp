@@ -3,7 +3,7 @@
     <head>
         <title>StaticPHP</title>
         <style type="text/css">
-            @import '<?php echo base_url('css/style.css'); ?>';
+            @import '<?php echo BASE_URL; ?>css/style.css';
         </style>
     </head>
     <body>

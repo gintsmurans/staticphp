@@ -18,6 +18,7 @@ class router
   public static $method = NULL;
 
 
+  # Init router
   public static function init()
   {
     self::split_segments();
@@ -25,6 +26,30 @@ class router
   }
 
 
+  # Get base uri
+  function base_url($url = '')
+  {
+    return router::$base_uri . router::trim_slashes($url);
+  }
+
+
+  # Get site uri
+  function site_url($url = '', $prefix = NULL, $current_prefix = TRUE)
+  {
+    $url002  = !empty($prefix) ? router::trim_slashes($prefix, TRUE) . '/' : '';
+    $url002 .= !empty($current_prefix) && !empty(router::$prefixes_uri) ? router::$prefixes_uri . '/' : '';
+    return router::$base_uri . $url002 . router::trim_slashes($url);
+  }
+  
+    
+  # Convert / and \ to systems directory separator
+  function make_path_string($string)
+  {
+    return str_replace(array('/', '\\'), DS, $string);
+  }
+
+
+  # Redirect
   public static function redirect($uri = '', $site_uri = TRUE, $e301 = FALSE, $type = 'http')
   {
     switch ($type)
@@ -47,12 +72,14 @@ class router
   }
 
 
+  # Have prefix
   public static function have_prefix($p)
   {
     return (isset(self::$prefixes[$p]));
   }
 
 
+  # Trim slahses
   public static function trim_slashes($s, $booth = FALSE)
   {
     $s = str_replace('\\', '/', $s);
@@ -60,12 +87,14 @@ class router
   }
 
 
+  # Return segment in uri by $index
   public static function segment($index)
   {
     return (empty(self::$segments[$index]) ? NULL : self::$segments[$index]);
   }
 
 
+  # Show http error 
   public static function error($error_code, $error_string)
   {
     header('HTTP/1.0 '. $error_code .' '. $error_string);
@@ -74,6 +103,7 @@ class router
   }
 
 
+  # Convert uri to file path
   public static function uri_to_file($uri)
   {
     // Explode $uri
@@ -87,29 +117,28 @@ class router
   }
 
 
+  # Split segments
   public static function split_segments($force = FALSE)
   {
-    global $config;
-    
     if (empty($force) && !empty(self::$domain_uri))
     {
       return;
     }
 
     // Get some config variables
-    $uri = urldecode($config->request_uri);
-    $script_path = self::trim_slashes(dirname($config->script_name), TRUE);
+    $uri = urldecode(load::$config['request_uri']);
+    $script_path = self::trim_slashes(dirname(load::$config['script_name']), TRUE);
 
     // Set some variables
     self::$domain_uri = 'http'.(isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '').'://'.$_SERVER['HTTP_HOST'].'/';
-    self::$base_uri = ($config->base_uri === 'auto' ? self::$domain_uri . (!empty($script_path) ? $script_path.'/' : '') : $config->base_uri);
+    self::$base_uri = (load::$config['base_uri'] === 'auto' ? self::$domain_uri . (!empty($script_path) ? $script_path.'/' : '') : load::$config['base_uri']);
 
     // Replace script_path in uri and remove query string
     $uri = self::trim_slashes(empty($script_path) ? $uri : str_replace('/' . $script_path, '', $uri), TRUE);
     $uri = preg_replace('/\?.*/', '', $uri);
 
     // Check config routing array
-    foreach($config->routing as $key => &$item)
+    foreach(load::$config['routing'] as $key => &$item)
     {
       if (!empty($key) && !empty($item))
       {
@@ -123,13 +152,13 @@ class router
     }
 
     // Set segments_full_uri
-    self::$segments_full_uri = $uri . (empty($config->query_string) ? '' : '?'. $config->query_string);
+    self::$segments_full_uri = $uri . (empty(load::$config['query_string']) ? '' : '?'. load::$config['query_string']);
 
     // Explode segments
     self::$segments_full = self::$segments = explode('/', $uri);
 
     // Get URI prefixes
-    foreach($config->uri_prefixes as &$item)
+    foreach(load::$config['uri_prefixes'] as &$item)
     {
       if (isset(self::$segments[0]) && self::$segments[0] == $item)
       {
@@ -154,10 +183,8 @@ class router
 
   private static function load_controller()
   {
-		global $config;
-
     // Get controller, class, method from URI
-    $tmp = router::uri_to_file(g('config')->routing['']);
+    $tmp = router::uri_to_file(load::$config['routing']['']);
 
     // Set default class and method
     self::$class = $tmp['class'];
@@ -199,9 +226,9 @@ class router
     }
 
     // Load pre controller hook
-    if (!empty($config->before_controller))
+    if (!empty(load::$config['before_controller']))
 		{
-			foreach($config->before_controller as $tmp)
+			foreach(load::$config['before_controller'] as $tmp)
 			{
 				call_user_func($tmp);
 			}
@@ -255,7 +282,7 @@ class router
     // Show error if there is any
     if (!empty($error))
     {
-      if (g('config')->debug === TRUE)
+      if (!empty(load::$config['debug']))
       {
         throw new Exception($error);
       }

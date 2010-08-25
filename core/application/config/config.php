@@ -1,19 +1,5 @@
 <?php
 
-// DATABASE
-$config['db']['default'] = array(
-  'string' => 'mysql:host=localhost;unix_socket=/var/mysql/mysql.sock;dbname=', // See PDO documentation: http://php.net/manual/en/pdo.construct.php
-  'username' => 'root',
-  'password' => '',
-  'charset' => 'UTF8',
-  'persistent' => TRUE,
-);
-
-
-// String showing which DB configuration to load by default, set to FALSE or NULL if not needed
-$config['db']['autoload'] = FALSE;
-
-
 // Set base_uri, use 'auto' for auto detection
 $config['base_uri'] = 'auto';
 
@@ -51,13 +37,14 @@ $config['uri_prefixes'] = array('ajax');
 // -- Autoload
 // Set filenames without ".php" extension
 
-// Loads from application directory
-// You can put a full path/to/file too, only without .php
-$config['load_files'] = array('helpers/system');
-
-
 // Load additional config files from public/config directory
 $config['load_configs'] = array();
+
+// Load libraries, config files with the same name will be loaded automatically
+$config['load_libraries'] = array();
+
+// Load helpers from application/helpers
+$config['load_helpers'] = array('system');
 
 
 // -- HOOKS
