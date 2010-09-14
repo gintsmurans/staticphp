@@ -1,7 +1,7 @@
 <?php
 
 // Routing, each next item overrides current one
-// format: 'current URI - regular expression'[without starting slash] => 'new URI - regular expression'
+// format: 'current URL - regular expression'[without starting slash] => 'new URL - regular expression'
 // Leave first one for default controller
 $config['routing'] = array(
 

@@ -35,13 +35,13 @@ ini_set('error_reporting', E_ALL);
 ini_set('display_errors', (int) load::$config['debug']);
 
 
-// Autoload additional files
+// Autoload libraries
 if (!empty(load::$config['load_libraries']))
 {
   load::library(load::$config['load_libraries']);
 }
 
-// Autoload additional files
+// Autoload helpers
 if (!empty(load::$config['load_helpers']))
 {
   load::helper(load::$config['load_helpers']);
@@ -57,12 +57,6 @@ if (!empty(load::$config['timer']))
 {  
   echo '<pre style="border-top: 1px #DDD solid; padding-top: 4px;">';
   echo 'Generated in ', round(microtime(true) - $microtime, 5), ' seconds. Memory: ', round(memory_get_usage() / 1024 / 1024, 4), ' MB';
-
-  //if (class_exists('db', false))
-  //{
-    //echo "\n", 'Queries count: ', print_r(db::$query_count, true), "\n", 'Queries: ', print_r(db::$queries, true), '';
-  //}
-
   echo '</pre>';
 }
 

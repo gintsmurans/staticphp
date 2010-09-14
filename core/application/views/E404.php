@@ -1,5 +1,5 @@
-<?php load('views/header'); ?>
+<?php load::view('header'); ?>
 
-        <h1>404 Not Found</h1>
+  <h1>404 Not Found</h1>
 
-<?php load('views/footer'); ?>
+<?php load::view('footer'); ?>

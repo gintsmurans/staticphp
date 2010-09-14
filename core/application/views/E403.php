@@ -1,5 +1,5 @@
-<?php load('views/header'); ?>
+<?php load::view('header'); ?>
 
-        <h1>403 Forbidden</h1>
+  <h1>403 Forbidden</h1>
 
-<?php load('views/footer'); ?>
+<?php load::view('footer'); ?>

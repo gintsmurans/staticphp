@@ -3,12 +3,12 @@
 class router
 {
   public static $prefixes = array();
-  public static $prefixes_uri = NULL;
+  public static $prefixes_url = NULL;
 
-  public static $segments = array();
-  public static $segments_uri = NULL;
-  public static $segments_full = array();
-  public static $segments_full_uri = NULL;
+  public static $segments = array();	
+  public static $segments_url = NULL;
+  public static $segments_full_url = NULL;
+	public static $segments_requested = array();
 
   public static $domain_uri = NULL;
   public static $base_uri = NULL;
@@ -27,35 +27,35 @@ class router
 
 
   # Get base uri
-  function base_url($url = '')
+  public static function base_uri($url = '')
   {
     return router::$base_uri . router::trim_slashes($url);
   }
 
 
   # Get site uri
-  function site_url($url = '', $prefix = NULL, $current_prefix = TRUE)
+  public static function site_uri($url = '', $prefix = NULL, $current_prefix = TRUE)
   {
     $url002  = !empty($prefix) ? router::trim_slashes($prefix, TRUE) . '/' : '';
-    $url002 .= !empty($current_prefix) && !empty(router::$prefixes_uri) ? router::$prefixes_uri . '/' : '';
+    $url002 .= !empty($current_prefix) && !empty(router::$prefixes_url) ? router::$prefixes_url . '/' : '';
     return router::$base_uri . $url002 . router::trim_slashes($url);
   }
   
     
   # Convert / and \ to systems directory separator
-  function make_path_string($string)
+  public static function make_path_string($string)
   {
     return str_replace(array('/', '\\'), DS, $string);
   }
 
 
   # Redirect
-  public static function redirect($uri = '', $site_uri = TRUE, $e301 = FALSE, $type = 'http')
+  public static function redirect($url = '', $site_uri = TRUE, $e301 = FALSE, $type = 'http')
   {
     switch ($type)
     {
       case 'js':
-        echo '<script type="text/javascript"> window.location.href = \''.($site_uri === FALSE ? $uri : site_url($uri)).'\'; </script>';
+        echo '<script type="text/javascript"> window.location.href = \''.($site_uri === FALSE ? $url : router::site_uri($url)).'\'; </script>';
       break;
       
       default:
@@ -64,7 +64,7 @@ class router
             header("HTTP/1.1 301 Moved Permanently");
         }
         
-        header("Location: ".(empty($site_uri) ? $uri : site_url($uri)));
+        header("Location: ".(empty($site_uri) ? $url : router::site_uri($url)));
         header("Connection: close");
       break;
     }
@@ -87,7 +87,7 @@ class router
   }
 
 
-  # Return segment in uri by $index
+  # Return segment in url by $index
   public static function segment($index)
   {
     return (empty(self::$segments[$index]) ? NULL : self::$segments[$index]);
@@ -98,18 +98,18 @@ class router
   public static function error($error_code, $error_string)
   {
     header('HTTP/1.0 '. $error_code .' '. $error_string);
-    load('views/E'. $error_code);
+    load::view('E'. $error_code);
     exit;
   }
 
 
-  # Convert uri to file path
-  public static function uri_to_file($uri)
+  # Convert url to file path
+  public static function url_to_file($url)
   {
-    // Explode $uri
-    $tmp = explode('/', $uri);
+    // Explode $url
+    $tmp = explode('/', $url);
 
-    // Get class, method and file from $uri
+    // Get class, method and file from $url
     $data['method'] = array_pop($tmp);
     $data['class'] = end($tmp);
     $data['file'] = implode('/', $tmp);
@@ -146,35 +146,41 @@ class router
         $tmp = preg_replace('#'.$key.'#', $item, $uri);
         if ($tmp !== $uri)
         {
+					self::$segments_requested = explode('/', $uri);
           $uri = $tmp;
         }
       }
     }
 
-    // Set segments_full_uri
-    self::$segments_full_uri = $uri . (empty(load::$config['query_string']) ? '' : '?'. load::$config['query_string']);
+    // Set segments_full_url
+    self::$segments_full_url = $uri . (empty(load::$config['query_string']) ? '' : '?'. load::$config['query_string']);
 
     // Explode segments
-    self::$segments_full = self::$segments = explode('/', $uri);
+    self::$segments = explode('/', $uri);
 
-    // Get URI prefixes
-    foreach(load::$config['uri_prefixes'] as &$item)
+    // Get URL prefixes
+    foreach(load::$config['url_prefixes'] as &$item)
     {
       if (isset(self::$segments[0]) && self::$segments[0] == $item)
       {
         array_shift(self::$segments);
         self::$prefixes[$item] = $item;
       }
+
+      if (isset(self::$segments_requested[0]) && self::$segments_requested[0] == $item)
+      {
+        array_shift(self::$segments_requested);
+      }
     }
 
-		// Set URI prefixes uri
-    self::$prefixes_uri = implode('/', self::$prefixes);
+		// Set URL prefixes url
+    self::$prefixes_url = implode('/', self::$prefixes);
 
-    // Set URI
-    self::$segments_uri = implode('/', self::$segments);
+    // Set URL
+    self::$segments_url = implode('/', self::$segments);
 
-    // Define BASE_URL
-		define('BASE_URL', self::$base_uri);
+    // Define base_uri
+		define('BASE_URI', self::$base_uri);
   }
 
 
@@ -183,8 +189,8 @@ class router
 
   private static function load_controller()
   {
-    // Get controller, class, method from URI
-    $tmp = router::uri_to_file(load::$config['routing']['']);
+    // Get controller, class, method from URL
+    $tmp = router::url_to_file(load::$config['routing']['']);
 
     // Set default class and method
     self::$class = $tmp['class'];
