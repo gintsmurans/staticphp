@@ -14,8 +14,9 @@ class load
     {
       return self::$config[$name];
     }
-    
-    return NULL;
+
+    $empty = FALSE;
+    return $empty;
   }
 
 
