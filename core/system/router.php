@@ -5,7 +5,7 @@ class router
   public static $prefixes = array();
   public static $prefixes_url = NULL;
 
-  public static $segments = array();	
+  public static $segments = array();
   public static $segments_url = NULL;
   public static $segments_full_url = NULL;
 	public static $segments_requested = array();
@@ -40,8 +40,8 @@ class router
     $url002 .= !empty($current_prefix) && !empty(router::$prefixes_url) ? router::$prefixes_url . '/' : '';
     return router::$base_uri . $url002 . router::trim_slashes($url);
   }
-  
-    
+
+
   # Convert / and \ to systems directory separator
   public static function make_path_string($string)
   {
@@ -57,13 +57,13 @@ class router
       case 'js':
         echo '<script type="text/javascript"> window.location.href = \''.($site_uri === FALSE ? $url : router::site_uri($url)).'\'; </script>';
       break;
-      
+
       default:
         if ($e301 === TRUE)
         {
             header("HTTP/1.1 301 Moved Permanently");
         }
-        
+
         header("Location: ".(empty($site_uri) ? $url : router::site_uri($url)));
         header("Connection: close");
       break;
@@ -94,7 +94,7 @@ class router
   }
 
 
-  # Show http error 
+  # Show http error
   public static function error($error_code, $error_string)
   {
     header('HTTP/1.0 '. $error_code .' '. $error_string);
@@ -259,7 +259,9 @@ class router
       // Check for $Class
       if (class_exists($Class))
       {
+        // Get all methods in class
         $methods = array_flip(get_class_methods($Class));
+
         // Check for $Method
         if (isset($methods[$Method]) || isset($methods['__callStatic']))
         {
@@ -297,7 +299,7 @@ class router
         self::error('404', 'Not Found');
       }
     }
-    
+
     unset($methods);
   }
 }

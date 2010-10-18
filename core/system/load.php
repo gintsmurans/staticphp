@@ -85,7 +85,7 @@ class load
     {
       $filename = APP_PATH .'config/'. $name .'.php';
       if (is_file($filename))
-      {  
+      {
         include $filename;
         if (!empty($config))
         {

@@ -10,7 +10,6 @@ define('PUBLIC_PATH', dirname(__FILE__) . DS);
 define('BASE_PATH', dirname(PUBLIC_PATH) . DS);
 define('SYS_PATH', BASE_PATH . 'system' . DS);
 define('APP_PATH', BASE_PATH . 'application' . DS);
-define('CONFIG_PATH', PUBLIC_PATH . 'config' . DS);
 
 
 // Load all core clases
@@ -53,8 +52,8 @@ router::init();
 
 
 // Output load time, if allowed
-if (!empty(load::$config['timer']))
-{  
+if (!empty(load::$config['timer']) && !empty(load::$config['debug']))
+{
   echo '<pre style="border-top: 1px #DDD solid; padding-top: 4px;">';
   echo 'Generated in ', round(microtime(true) - $microtime, 5), ' seconds. Memory: ', round(memory_get_usage() / 1024 / 1024, 4), ' MB';
   echo '</pre>';

@@ -6,7 +6,7 @@ class home
   private static $data = array();
 
 
-  # This is called every time controller loads    
+  # This is called every time controller loads
   public static function _construct()
   {
 
@@ -22,7 +22,7 @@ class home
     // Load view
     // Pass array (key => value) as second parameter, to get variables available in your view
     load::view(array('header', 'home', 'footer'), self::$data);
-  }    
+  }
 }
 
 ?>
