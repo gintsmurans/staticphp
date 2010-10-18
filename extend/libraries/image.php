@@ -14,8 +14,8 @@ class image
 {
   public static $im = NULL;
   private static $memory_limit = NULL;
-
-
+  
+  
   public static function open($in)
   {
     if (!is_file($in))
@@ -23,24 +23,37 @@ class image
       return FALSE;
     }
     
-    // Get image dimensions
-    list(self::$im['width'], self::$im['height']) = getimagesize($in);
-		
-		if (empty(self::$im['width']) || empty(self::$im['height']))
-		{
-			return FALSE;
-		}
-
-    // Set memory limit to 128M
-    $memory_limit = ini_get('memory_limit');
-    ini_set('memory_limit', '128M');
-
-    // Create image from string
-    self::$im['im'] = imagecreatefromstring(file_get_contents($in));
-		
-		return TRUE;
+    return self::open_str(file_get_contents($in));
   }
-
+  
+  
+  public static function open_str($str)
+  {
+    if (empty($str))
+    {
+      return FALSE;
+    }
+    
+    // Set memory limit to 128M
+    self::$memory_limit = ini_get('memory_limit');
+    ini_set('memory_limit', '128M');
+    
+    // Create image from string
+    self::$im['im'] = imagecreatefromstring($str);
+    
+    // Get image dimensions
+    self::$im['width'] = imagesx(self::$im['im']);
+    self::$im['height'] = imagesy(self::$im['im']);
+    
+    // Check if image has any dimensions, else destroy image and return false;
+    if (empty(self::$im['width']) || empty(self::$im['height']))
+    {
+      self::close();
+      return FALSE;
+    }
+    
+    return TRUE;
+  }
 
   public static function close()
   {
