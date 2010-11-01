@@ -246,7 +246,14 @@ class router
       include $file;
 
       // Get all methods in class
-      $methods = array_flip(get_class_methods($class));
+      try
+      {
+        $methods = array_flip(get_class_methods($class));
+      }
+      catch(Exception $e)
+      {
+        // Do nothing
+      }
 
       // Call our contructor
       if (isset($methods['_construct']))
