@@ -10,15 +10,11 @@
 
 function css()
 {
-	global $config;
-
   static $files = array();
   
   if (func_num_args() > 0)
   {
-    $tmp = func_get_args();
-    $files = array_merge($files, $tmp);
-    unset($tmp);
+    $files = $files + func_get_args();
   }
   else
   {
@@ -32,23 +28,23 @@ function css()
         break;
 
         case '!:':
-          echo "  @import '". substr($file, 2) ."';  ";
+          echo "  @import '", substr($file, 2), "';  ";
         break;
 
         case 's:':
-					if (isset($config->css_version))
+					if (isset(load::$config['css_version']))
 					{
-						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . $config->css_version;
+						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . load::$config['css_version'];
 					}
-          echo "  @import '". site_url(substr($file, 2)) ."';  ";
+          echo "  @import '", router::site_uri(substr($file, 2)), "';  ";
         break;
 
         default:
-					if (isset($config->css_version))
+					if (isset(load::$config['css_version']))
 					{
-						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . $config->css_version;
+						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . load::$config['css_version'];
 					}
-          echo "  @import '". base_url($file) ."';  ";
+          echo "  @import '", BASE_URI, $file, "';  ";
         break;
       }
       echo '</style>';
@@ -59,15 +55,11 @@ function css()
 
 function js()
 {
-	global $config;
-
   static $files = array();
   
   if (func_num_args() > 0)
   {
-    $tmp = func_get_args();
-    $files = array_merge($files, $tmp);
-    unset($tmp);
+    $files = $files + func_get_args();
   }
   else
   {
@@ -76,27 +68,27 @@ function js()
       switch (substr($file, 0, 2))
       {
         case 'i:':
-          echo '<script type="text/javascript">'. substr($file, 2) .'</script>';
+          echo '<script type="text/javascript">', substr($file, 2), '</script>';
         break;
 
         case '!:':
-          echo '<script type="text/javascript" src="'. substr($file, 2) .'"></script>'."\n";
+          echo '<script type="text/javascript" src="', substr($file, 2), '"></script>',"\n";
         break;
 
         case 's:':
-					if (isset($config->js_version))
+					if (isset(load::$config['js_version']))
 					{
-						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . $config->js_version;
+						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . load::$config['js_version'];
 					}
-          echo '<script type="text/javascript" src="'. site_url(substr($file, 2)) .'"></script>'."\n";
+          echo '<script type="text/javascript" src="', router::site_url(substr($file, 2)), '"></script>', "\n";
         break;
 
         default:
-					if (isset($config->js_version))
+					if (isset(load::$config['js_version']))
 					{
-						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . $config->js_version;
+						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . load::$config['js_version'];
 					}
-          echo '<script type="text/javascript" src="'. base_url($file) .'"></script>'."\n";
+          echo '<script type="text/javascript" src="', BASE_URI, $file, '"></script>',"\n";
         break;
       }
     }

@@ -10,13 +10,7 @@ class load
   # Get config variable
   public static function &get($name)
   {
-    if (isset(self::$config[$name]))
-    {
-      return self::$config[$name];
-    }
-
-    $empty = FALSE;
-    return $empty;
+    return self::$config[$name];
   }
 
 
@@ -81,17 +75,10 @@ class load
   # Load config files
   public static function config($files)
   {
+    $config =& self::$config;
     foreach ((array) $files as $name)
     {
-      $filename = APP_PATH .'config/'. $name .'.php';
-      if (is_file($filename))
-      {
-        include $filename;
-        if (!empty($config))
-        {
-          self::$config += (array) $config;
-        }
-      }
+      include APP_PATH .'config/'. $name .'.php';
     }
   }
 
@@ -101,12 +88,7 @@ class load
   {
     foreach ((array) $files as $name)
     {
-      $filename = APP_PATH .'libraries/'. $name .'.php';
-      if (is_file($filename))
-      {
-        include $filename;
-        self::config($name);
-      }
+      include APP_PATH .'libraries/'. $name .'.php';
     }
   }
 
@@ -122,12 +104,7 @@ class load
 
     foreach ((array) $files as $file)
     {
-      // Make filename
-      $filename = APP_PATH . 'views/' . $file . '.php';
-      if (is_file($filename))
-      {
-        include $filename;
-      }
+      include APP_PATH . 'views/' . $file . '.php';
     }
   }
 
@@ -137,14 +114,9 @@ class load
   {
     foreach ((array) $files as $name)
     {
-      $filename = APP_PATH .'helpers/'. $name .'.php';
-      if (is_file($filename))
-      {
-        include $filename;
-      }
+      include APP_PATH .'helpers/'. $name .'.php';
     }
   }
-
 }
 
 ?>

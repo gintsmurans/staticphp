@@ -29,16 +29,16 @@ class router
   # Get base uri
   public static function base_uri($url = '')
   {
-    return router::$base_uri . router::trim_slashes($url);
+    return router::$base_uri . $url;
   }
 
 
   # Get site uri
   public static function site_uri($url = '', $prefix = NULL, $current_prefix = TRUE)
   {
-    $url002  = !empty($prefix) ? router::trim_slashes($prefix, TRUE) . '/' : '';
+    $url002  = !empty($prefix) ? trim($prefix, '/') . '/' : '';
     $url002 .= !empty($current_prefix) && !empty(router::$prefixes_url) ? router::$prefixes_url . '/' : '';
-    return router::$base_uri . $url002 . router::trim_slashes($url);
+    return router::$base_uri . $url002 . $url;
   }
 
 
@@ -55,7 +55,7 @@ class router
     switch ($type)
     {
       case 'js':
-        echo '<script type="text/javascript"> window.location.href = \''.($site_uri === FALSE ? $url : router::site_uri($url)).'\'; </script>';
+        echo '<script type="text/javascript"> window.location.href = \'', ($site_uri === FALSE ? $url : router::site_uri($url)), '\'; </script>';
       break;
 
       default:
@@ -76,14 +76,6 @@ class router
   public static function have_prefix($p)
   {
     return (isset(self::$prefixes[$p]));
-  }
-
-
-  # Trim slahses
-  public static function trim_slashes($s, $booth = FALSE)
-  {
-    $s = str_replace('\\', '/', $s);
-    return (empty($booth) ? ltrim($s, '/') : trim($s, '/'));
   }
 
 
@@ -127,14 +119,14 @@ class router
 
     // Get some config variables
     $uri = urldecode(load::$config['request_uri']);
-    $script_path = self::trim_slashes(dirname(load::$config['script_name']), TRUE);
+    $script_path = trim(dirname(load::$config['script_name']), '/');
 
     // Set some variables
     self::$domain_uri = 'http'.(isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '').'://'.$_SERVER['HTTP_HOST'].'/';
     self::$base_uri = (load::$config['base_uri'] === 'auto' ? self::$domain_uri . (!empty($script_path) ? $script_path.'/' : '') : load::$config['base_uri']);
 
     // Replace script_path in uri and remove query string
-    $uri = self::trim_slashes(empty($script_path) ? $uri : str_replace('/' . $script_path, '', $uri), TRUE);
+    $uri = trim(empty($script_path) ? $uri : str_replace('/' . $script_path, '', $uri), '/');
     $uri = preg_replace('/\?.*/', '', $uri);
 
     // Check config routing array
@@ -242,49 +234,41 @@ class router
 
     // Load controllers
     self::_load_controller(APP_PATH .'controllers' . DS . self::$file.'.php', self::$class, self::$method);
-
-    // Unset
-    unset($tmp, $mi);
   }
 
 
 
-  public static function _load_controller($File, $Class, $Method)
+  public static function _load_controller($file, $class, $method)
   {
     // Check for $File
-    if (is_file($File))
+    if (is_file($file))
     {
-      include $File;
+      include $file;
 
-      // Check for $Class
-      if (class_exists($Class))
+      // Get all methods in class
+      $methods = array_flip(get_class_methods($class));
+
+      // Call our contructor
+      if (isset($methods['_construct']))
       {
-        // Get all methods in class
-        $methods = array_flip(get_class_methods($Class));
+        call_user_func(array($class, '_construct'), $class, $method);
+        # $class::_construct($class, $method);
+      }
 
-        // Check for $Method
-        if (isset($methods[$Method]) || isset($methods['__callStatic']))
-        {
-          // Call our contructor
-          if (isset($methods['_construct']))
-          {
-            call_user_func(array($Class, '_construct'), $Class, $Method);
-          }
-          call_user_func(array($Class, $Method));
-        }
-        else
-        {
-          $error = 'Class was found, but could not find method: ' . $Method;
-        }
+      // Check for $Method
+      if (isset($methods[$method]) || isset($methods['__callStatic']))
+      {
+        call_user_func(array($class, $method));
+        # $class::$method();
       }
       else
       {
-        $error = 'File was included, but could not find class: ' . $Class;
+        $error = 'Class or method could not be found: ' . $method;
       }
     }
     else
     {
-      $error = 'Controller file was not found: ' . $File;
+      $error = 'Controller file was not found: ' . $file;
     }
 
     // Show error if there is any
