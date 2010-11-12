@@ -90,7 +90,7 @@ class router
   public static function error($error_code, $error_string)
   {
     header('HTTP/1.0 '. $error_code .' '. $error_string);
-    load::view('base/E'. $error_code);
+    load::view('errors/E'. $error_code);
     exit;
   }
 
