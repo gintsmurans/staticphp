@@ -173,6 +173,7 @@ class router
 
     // Define base_uri
 		define('BASE_URI', self::$base_uri);
+		define('MODULE_URI', BASE_URI . 'modules/');
   }
 
 
@@ -188,40 +189,34 @@ class router
     self::$class = $tmp['class'];
     self::$method = $tmp['method'];
 
-    // If empty segments set file as class name
-    if (empty(self::$segments[0]))
-    {
-      self::$file = $tmp['file'];
-    }
-    else
-    {
-      self::$file = self::$segments[0];
-      $mi = 1;
-
-      // Check for subdirectory
-      if (is_dir(BASE_PATH .'modules'. DS . self::$file . DS . self::$file))
-      {
-        // Add set class name as segment[1]
-        if (!empty(self::$segments[1]))
-        {
-          self::$class = self::$segments[1];
-        }
-
-        // Add class name to self::$file
-        self::$file .= '/'.self::$class;
-
-        // Increase method index
-        ++$mi;
-      }
-
-      // Add default class name to self::$file
-      else
-      {
-        self::$class = self::$file;
-      }
-
-      self::$method = (!empty(self::$segments[$mi]) ? self::$segments[$mi] : self::$method);
-    }
+		switch (TRUE)
+		{
+			case (!empty(self::$segments[1]) && is_file(BASE_PATH .'modules'. DS . self::$segments[0] . DS . self::$segments[1] . '.php')):
+				self::$class = self::$segments[1];
+				self::$file = self::$segments[0] . DS . self::$segments[1];
+				if (!empty(self::$segments[2]))
+				{
+					self::$method = self::$segments[2];
+				}
+			break;
+			
+			case (!empty(self::$segments[0])):
+				self::$class = self::$segments[0];
+				self::$file = self::$segments[0];
+				if (!is_file(BASE_PATH .'modules'. DS . self::$segments[0] . '.php'))
+				{
+					self::$file .= DS . self::$segments[0];
+				}
+				if (!empty(self::$segments[1]))
+				{
+					self::$method = self::$segments[1];
+				}
+			break;
+			
+			default:
+				self::$file = $tmp['file'] . DS . $tmp['file'];
+			break;
+		}
 
     // Load pre controller hook
     if (!empty(load::$config['before_controller']))
@@ -233,7 +228,7 @@ class router
 		}
 
     // Load controllers
-    self::_load_controller(BASE_PATH .'modules'. DS . self::$file .DS. self::$file .'.php', self::$class, self::$method);
+    self::_load_controller(BASE_PATH .'modules'. DS . self::$file .'.php', self::$class, self::$method);
   }
 
 

@@ -1,26 +1,16 @@
+Changed structure of StaticPHP
 
-Copyright 2010 Gints Murāns. All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification, are
-permitted provided that the following conditions are met:
-
-  1. Redistributions of source code must retain the above copyright notice, this list of
-     conditions and the following disclaimer.
-  
-  2. Redistributions in binary form must reproduce the above copyright notice, this list
-     of conditions and the following disclaimer in the documentation and/or other materials
-     provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY Gints Murāns ``AS IS'' AND ANY EXPRESS OR IMPLIED
-WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
-FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL Gints Murāns OR
-CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-The views and conclusions contained in the software and documentation are those of the
-authors and should not be interpreted as representing official policies, either expressed
-or implied, of Gints Murāns.
+core/
+  cache/ - Directory for all kind of file cache
+  config/ - Contains configurations files. Calling load::config('filename'); will load configuration file with filename "filename.php"
+  helpers/ - Helpers directory mostly used for different functions. system.php helper is like a startup script for sending ehaders, initializing database connections, etc. Load using load::helper('filename');
+  libraries/ - Holds php classes, that are widely used in application. For example, image manipulation class should be placed here. Load using load::library('filename').
+  modules/ - Modules of the site. Below are some examples
+    test1.php - Class will be used requesting  example.com/test1/method
+    test2/
+	test2.php - Will be used requesting example.com/test2/method
+	test3.php - Will be used requesting example.com/test2/test3/method
+  .htaccess - Access file for apache
+  index.php - Application main/loader file
+  load.php - Class for loading files and holding configuration values
+  router.php - Router class. It determines correct controller and method to load and some other methods like router::redirect()

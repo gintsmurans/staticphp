@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors', 1);
 
 // Set microtime
 $microtime = microtime(true);
@@ -8,6 +7,7 @@ $microtime = microtime(true);
 // Define paths
 define('DS', DIRECTORY_SEPARATOR);
 define('BASE_PATH', dirname(__FILE__) . DS);
+
 
 // Load all core clases
 include BASE_PATH . 'load.php'; // Load
