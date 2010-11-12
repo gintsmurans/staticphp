@@ -173,7 +173,6 @@ class router
 
     // Define base_uri
 		define('BASE_URI', self::$base_uri);
-		define('MODULE_URI', BASE_URI . 'modules/');
   }
 
 
@@ -217,6 +216,11 @@ class router
 				self::$file = $tmp['file'] . DS . $tmp['file'];
 			break;
 		}
+		
+		// Define module path and uri
+		$tmp = dirname(self::$file);
+		define('MODULE_PATH', BASE_PATH . 'modules/' . $tmp . DS);
+		define('MODULE_URI', BASE_URI . 'modules/' . $tmp . DS);
 
     // Load pre controller hook
     if (!empty(load::$config['before_controller']))
