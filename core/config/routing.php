@@ -6,7 +6,7 @@
 $config['routing'] = array(
 
   // Default Controller and Method names
-  '' => 'home/index',
+  '' => 'base/index',
   
   // Rest of the routing
 );

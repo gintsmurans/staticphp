@@ -90,7 +90,7 @@ class router
   public static function error($error_code, $error_string)
   {
     header('HTTP/1.0 '. $error_code .' '. $error_string);
-    load::view('E'. $error_code);
+    load::view('base/E'. $error_code);
     exit;
   }
 
@@ -199,7 +199,7 @@ class router
       $mi = 1;
 
       // Check for subdirectory
-      if (is_dir(APP_PATH .'controllers'. DS . self::$file))
+      if (is_dir(BASE_PATH .'modules'. DS . self::$file . DS . self::$file))
       {
         // Add set class name as segment[1]
         if (!empty(self::$segments[1]))
@@ -233,7 +233,7 @@ class router
 		}
 
     // Load controllers
-    self::_load_controller(APP_PATH .'controllers' . DS . self::$file.'.php', self::$class, self::$method);
+    self::_load_controller(BASE_PATH .'modules'. DS . self::$file .DS. self::$file .'.php', self::$class, self::$method);
   }
 
 

@@ -1,4 +1,5 @@
 <?php
+ini_set('display_errors', 1);
 
 // Set microtime
 $microtime = microtime(true);
@@ -6,15 +7,11 @@ $microtime = microtime(true);
 
 // Define paths
 define('DS', DIRECTORY_SEPARATOR);
-define('PUBLIC_PATH', dirname(__FILE__) . DS);
-define('BASE_PATH', dirname(PUBLIC_PATH) . DS);
-define('SYS_PATH', BASE_PATH . 'system' . DS);
-define('APP_PATH', BASE_PATH . 'application' . DS);
-
+define('BASE_PATH', dirname(__FILE__) . DS);
 
 // Load all core clases
-include SYS_PATH . 'load.php'; // Load
-include SYS_PATH . 'router.php'; // Router
+include BASE_PATH . 'load.php'; // Load
+include BASE_PATH . 'router.php'; // Router
 
 
 // Load default config and routing

@@ -5,7 +5,7 @@ $config['base_uri'] = 'auto';
 
 
 // Set debug
-$config['debug'] = FALSE;
+$config['debug'] = TRUE;
 
 
 // Print script execution time

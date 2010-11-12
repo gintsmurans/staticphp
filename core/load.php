@@ -78,7 +78,7 @@ class load
     $config =& self::$config;
     foreach ((array) $files as $name)
     {
-      include APP_PATH .'config/'. $name .'.php';
+      include BASE_PATH .'config/'. $name .'.php';
     }
   }
 
@@ -88,7 +88,7 @@ class load
   {
     foreach ((array) $files as $name)
     {
-      include APP_PATH .'libraries/'. $name .'.php';
+      include BASE_PATH .'libraries/'. $name .'.php';
     }
   }
 
@@ -104,7 +104,7 @@ class load
 
     foreach ((array) $files as $file)
     {
-      include APP_PATH . 'views/' . $file . '.php';
+      include BASE_PATH . 'modules/' . $file . '.tpl.php';
     }
   }
 
@@ -114,7 +114,7 @@ class load
   {
     foreach ((array) $files as $name)
     {
-      include APP_PATH .'helpers/'. $name .'.php';
+      include BASE_PATH .'helpers/'. $name .'.php';
     }
   }
 }
