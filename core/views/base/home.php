@@ -6,8 +6,6 @@
   <ol>
     <li>BASE_URI: <strong><?php echo BASE_URI; ?></strong></li>
     <li>router::site_uri(): <strong><?php echo router::site_uri(); ?></strong></li>
-    <li>MODULE_URI: <strong><?php echo MODULE_URI; ?></strong></li>
-    <li>MODULE_PATH: <strong><?php echo MODULE_PATH; ?></strong></li>
   </ol>
 
   <strong>This page files (edit them to change this page):</strong>

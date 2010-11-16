@@ -104,7 +104,7 @@ class load
 
     foreach ((array) $files as $file)
     {
-      include BASE_PATH . 'modules/' . $file . '.tpl.php';
+      include BASE_PATH . 'views/' . $file . '.php';
     }
   }
 

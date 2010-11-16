@@ -190,7 +190,7 @@ class router
 
 		switch (TRUE)
 		{
-			case (!empty(self::$segments[1]) && is_file(BASE_PATH .'modules'. DS . self::$segments[0] . DS . self::$segments[1] . '.php')):
+			case (!empty(self::$segments[1]) && is_file(BASE_PATH .'controllers'. DS . self::$segments[0] . DS . self::$segments[1] . '.php')):
 				self::$class = self::$segments[1];
 				self::$file = self::$segments[0] . DS . self::$segments[1];
 				if (!empty(self::$segments[2]))
@@ -202,7 +202,7 @@ class router
 			case (!empty(self::$segments[0])):
 				self::$class = self::$segments[0];
 				self::$file = self::$segments[0];
-				if (!is_file(BASE_PATH .'modules'. DS . self::$segments[0] . '.php'))
+				if (!is_file(BASE_PATH .'controllers'. DS . self::$segments[0] . '.php'))
 				{
 					self::$file .= DS . self::$segments[0];
 				}
@@ -213,15 +213,10 @@ class router
 			break;
 			
 			default:
-				self::$file = $tmp['file'] . DS . $tmp['file'];
+				self::$file = $tmp['file'];
 			break;
 		}
 		
-		// Define module path and uri
-		$tmp = dirname(self::$file);
-		define('MODULE_PATH', BASE_PATH . 'modules/' . $tmp . DS);
-		define('MODULE_URI', BASE_URI . 'modules/' . $tmp . DS);
-
     // Load pre controller hook
     if (!empty(load::$config['before_controller']))
 		{
@@ -232,7 +227,7 @@ class router
 		}
 
     // Load controllers
-    self::_load_controller(BASE_PATH .'modules'. DS . self::$file .'.php', self::$class, self::$method);
+    self::_load_controller(BASE_PATH .'controllers'. DS . self::$file .'.php', self::$class, self::$method);
   }
 
 
