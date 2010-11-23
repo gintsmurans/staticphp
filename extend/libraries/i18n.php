@@ -133,8 +133,8 @@ class i18n
 				// Walk through the result
 				foreach ($res2 as $item)
 				{
-					$item->id = str_replace("'", "\\'", $item->id);
-					$item->lang = str_replace("'", "\\'", $item->lang);
+					$item->id = str_replace("'", "\\'", stripslashes($item->id));
+					$item->lang = str_replace("'", "\\'", stripslashes($item->lang));
 					$contents .= "\$l['{$item->id}'] = '{$item->lang}';\n";
 				}
 
