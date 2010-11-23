@@ -6,7 +6,8 @@ $microtime = microtime(true);
 
 // Define paths
 define('DS', DIRECTORY_SEPARATOR);
-define('BASE_PATH', dirname(dirname(__FILE__)) . DS);
+define('PUBLIC_PATH', dirname(__FILE__) . DS);
+define('BASE_PATH', dirname(PUBLIC_PATH) . DS);
 
 
 // Load all core clases

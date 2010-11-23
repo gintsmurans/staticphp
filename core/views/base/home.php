@@ -10,9 +10,9 @@
 
   <strong>This page files (edit them to change this page):</strong>
   <ol>
-    <li>Controller: <strong><?php echo BASE_PATH . 'modules/base/base.php'; ?></strong></li>
+    <li>Controller: <strong><?php echo BASE_PATH . 'controllers/base.php'; ?></strong></li>
     <li>View: <strong><?php echo __FILE__; ?></strong></li>
-    <li>CSS: <strong><?php echo BASE_PATH . 'modules/base/style.css'; ?></strong></li>
+    <li>CSS: <strong><?php echo PUBLIC_PATH . 'modules/base/style.css'; ?></strong></li>
   </ol>
 
   <div>&nbsp;</div>
