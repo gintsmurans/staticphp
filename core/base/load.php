@@ -3,6 +3,7 @@
 class load
 {
   public static $config = array();
+  public static $env = 'dev';
 
 
 // ------------------ CONFIG -----------------------
@@ -78,7 +79,7 @@ class load
     $config =& self::$config;
     foreach ((array) $files as $name)
     {
-      include BASE_PATH .'config/'. $name .'.php';
+      include BASE_PATH .'config/'. self::$env .'/'. $name .'.php';
     }
   }
 

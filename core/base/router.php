@@ -123,7 +123,7 @@ class router
 
     // Set some variables
     self::$domain_uri = 'http'.(isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '').'://'.$_SERVER['HTTP_HOST'].'/';
-    self::$base_uri = (load::$config['base_uri'] === 'auto' ? self::$domain_uri . (!empty($script_path) ? $script_path.'/' : '') : load::$config['base_uri']);
+    self::$base_uri = (empty(load::$config['base_uri']) ? self::$domain_uri . (!empty($script_path) ? $script_path.'/' : '') : load::$config['base_uri']);
 
     // Replace script_path in uri and remove query string
     $uri = trim(empty($script_path) ? $uri : str_replace('/' . $script_path, '', $uri), '/');

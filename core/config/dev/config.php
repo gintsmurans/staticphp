@@ -1,7 +1,7 @@
 <?php
 
-// Set base_uri, use 'auto' for auto detection
-$config['base_uri'] = 'auto';
+// Set base_uri, leave empty for auto detection
+$config['base_uri'] = NULL;
 
 
 // Set debug

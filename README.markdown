@@ -6,8 +6,12 @@ Directory structure
 -------------------
 
 * __core/__
-  * __cache/__ - Directory for all kind of file caches.
+  * __base__ - 
+    * __load.php__ - Class for loading files and holding configuration values.
+    * __router.php__ - Router class. It determines correct controller and method to load and some other methods like router::redirect().    
   * __config/__ - Contains configurations files. Calling load::config('filename'); will load configuration file with filename "filename.php".
+    * __dev/__ - Default environment for config files. Change it in config/env.php file.
+    * __env.php__ - Set which environment config files to load.
   * __controllers/__ - Controller files, below are some examples.
     * __test1.php__ - Class will be used requesting example.com/test1[/method].
     * __test2/__
@@ -21,5 +25,3 @@ Directory structure
     * __index.php__ - Application main/loader file.
   * __views/__ - Directory for templates
     * __errors__ - Error templates. for example E404.php for 404 Not Found errors.
-  * __load.php__ - Class for loading files and holding configuration values.
-  * __router.php__ - Router class. It determines correct controller and method to load and some other methods like router::redirect().

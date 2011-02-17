@@ -15,6 +15,11 @@ include BASE_PATH . 'base/load.php'; // Load
 include BASE_PATH . 'base/router.php'; // Router
 
 
+// Load config environment defination file
+include BASE_PATH . 'config/env.php';
+load::$env = $env;
+
+
 // Load default config and routing
 load::config(array('config', 'routing'));
 
