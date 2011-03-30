@@ -9,8 +9,4 @@ $config['db']['default'] = array(
   'persistent' => TRUE,
 );
 
-
-// String showing which DB configuration to load by default, set to FALSE or NULL if not needed
-$config['db']['autoload'] = FALSE;
-
 ?>

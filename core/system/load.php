@@ -3,7 +3,6 @@
 class load
 {
   public static $config = array();
-  public static $env = 'dev';
 
 
 // ------------------ CONFIG -----------------------
@@ -79,17 +78,27 @@ class load
     $config =& self::$config;
     foreach ((array) $files as $name)
     {
-      include BASE_PATH .'config/'. self::$env .'/'. $name .'.php';
+      include BASE_PATH .'config/'. $name .'.php';
+
+      // Override values by environment config
+      if (!empty(self::$config['env']))
+      {
+        $filename = BASE_PATH .'config/'. self::$config['env'] .'/'. $name .'.php';
+        if (is_file($filename))
+        {
+          include $filename;
+        }
+      }
     }
   }
 
 
-  # Load libraries
-  public static function library($files)
+  # Load models
+  public static function model($files)
   {
     foreach ((array) $files as $name)
     {
-      include BASE_PATH .'libraries/'. $name .'.php';
+      include BASE_PATH .'models/'. $name .'.php';
     }
   }
 

@@ -198,7 +198,7 @@ class router
 					self::$method = self::$segments[2];
 				}
 			break;
-			
+
 			case (!empty(self::$segments[0])):
 				self::$class = self::$segments[0];
 				self::$file = self::$segments[0];
@@ -211,12 +211,12 @@ class router
 					self::$method = self::$segments[1];
 				}
 			break;
-			
+
 			default:
 				self::$file = $tmp['file'];
 			break;
 		}
-		
+
     // Load pre controller hook
     if (!empty(load::$config['before_controller']))
 		{

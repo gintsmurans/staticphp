@@ -15,9 +15,8 @@ include BASE_PATH . 'base/load.php'; // Load
 include BASE_PATH . 'base/router.php'; // Router
 
 
-// Load config environment defination file
-include BASE_PATH . 'config/env.php';
-load::$env = $env;
+// Load default config file
+include BASE_PATH . 'config/config.php';
 
 
 // Load default config and routing
@@ -37,10 +36,10 @@ ini_set('error_reporting', E_ALL);
 ini_set('display_errors', (int) load::$config['debug']);
 
 
-// Autoload libraries
-if (!empty(load::$config['load_libraries']))
+// Autoload models
+if (!empty(load::$config['load_models']))
 {
-  load::library(load::$config['load_libraries']);
+  load::model(load::$config['load_models']);
 }
 
 // Autoload helpers

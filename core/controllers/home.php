@@ -21,7 +21,7 @@ class home
 
     // Load view
     // Pass array (key => value) as second parameter, to get variables available in your view
-    load::view(array('home/header', 'home/home', 'home/footer'), self::$data);
+    load::view(array('header', 'home/index', 'footer'), self::$data);
   }
 }
 

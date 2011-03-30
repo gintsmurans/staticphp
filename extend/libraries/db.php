@@ -5,14 +5,22 @@ class db
   public static $queries = NULL;
   public static $query_count = NULL;
 
-	private static $debug = FALSE;
   private static $db_links;
   private static $last_statement;
 
 
   // -- INIT
-  public static function init($name = 'default', $params = array(), $debug = FALSE)
+  public static function init($name = 'default')
   {
+    // Check if there is such configuration
+    if (empty(load::$config['db'][$name]))
+    {
+      return FALSE;
+    }
+
+    // Set params
+    $params = load::$config['db'][$name];
+
     // Don't make a new connection if there is one connected with the name
     if (!empty(self::$db_links[$name]))
     {
@@ -25,13 +33,11 @@ class db
       self::$db_links['default'] = &self::$db_links[$name];
     }
 
-		// Set debug
-		self::$debug = $debug;
-
     // Open new connection to DB
     self::$db_links[$name] = new PDO($params['string'], $params['username'], $params['password'], array(
       PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-      PDO::ATTR_CASE => PDO::CASE_NATURAL
+      PDO::ATTR_CASE => PDO::CASE_NATURAL,
+      PDO::ATTR_PERSISTENT => $params['persistent']
     ));
 
     // Set encoding - for mysql
@@ -62,7 +68,7 @@ class db
         self::$last_statement->execute((array) $data);
 
         // Count Queries
-        if (self::$debug === TRUE)
+        if (!empty(load::$config['debug']))
         {
           ++self::$query_count;
           self::$queries[$name][] = self::$last_statement->queryString;
