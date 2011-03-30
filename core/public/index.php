@@ -11,8 +11,8 @@ define('BASE_PATH', dirname(PUBLIC_PATH) . DS);
 
 
 // Load all core clases
-include BASE_PATH . 'base/load.php'; // Load
-include BASE_PATH . 'base/router.php'; // Router
+include BASE_PATH . 'system/load.php'; // Load
+include BASE_PATH . 'system/router.php'; // Router
 
 
 // Load default config file
