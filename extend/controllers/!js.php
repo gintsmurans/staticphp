@@ -18,12 +18,12 @@ class js
 {
   public static function index()
   {
-  	$filename = PUBLIC_PATH.implode('/', router::$segments);
-  	
-    if (!empty(Router::$segments[1]) && is_file($filename))
+  	$filename = implode('/', router::$segments);
+
+    if (!empty(router::$segments[1]) && is_file($filename))
     {
       // Disable timer output
-      g('config')->timer = false;
+      load::$config['timer'] = FALSE;
       
       // Set header and include js file
       header('Content-type: text/javascript; charset=utf-8');

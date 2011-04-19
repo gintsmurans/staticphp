@@ -5,6 +5,7 @@ class filesystem
 	// How many directory levels create
 	public static $levels = array(2 /* Levels deep */, 2 /* Directory name length */);
 
+
 	// Return random hash
 	public static function random_hash()
 	{

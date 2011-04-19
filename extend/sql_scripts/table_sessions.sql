@@ -1,8 +1,8 @@
 
-CREATE TABLE `sessions` (
-  `id` varchar(42) NOT NULL default '',
-  `data` blob,
-  `expires` int(11) NOT NULL,
-  PRIMARY KEY  (`id`),
-  KEY `expires` (`expires`)
+CREATE TABLE "sessions" (
+  "id" varchar(42) NOT NULL,
+  "data" blob,
+  "expires" int(11) NOT NULL,
+  PRIMARY KEY  ("id"),
+  KEY "expires" ("expires")
 ) ENGINE=innoDB DEFAULT CHARSET=utf8;

@@ -2,10 +2,10 @@
 
 /*
   !!!! NOT A FINAL VERSION, ONLY A DRAFT !!!!
-  
-  Image manipulation
-  Simple usage:
 
+  Very basic image manipulations
+
+  Simple usage:
     image::open('file');
     image::resize(300, 400, TRUE, 'file.jpg');
 */
@@ -14,44 +14,44 @@ class image
 {
   public static $im = NULL;
   private static $memory_limit = NULL;
-  
-  
+
+
   public static function open($in)
   {
     if (!is_file($in))
     {
       return FALSE;
     }
-    
+
     return self::open_str(file_get_contents($in));
   }
-  
-  
+
+
   public static function open_str($str)
   {
     if (empty($str))
     {
       return FALSE;
     }
-    
+
     // Set memory limit to 128M
     self::$memory_limit = ini_get('memory_limit');
     ini_set('memory_limit', '128M');
-    
+
     // Create image from string
     self::$im['im'] = imagecreatefromstring($str);
-    
+
     // Get image dimensions
     self::$im['width'] = imagesx(self::$im['im']);
     self::$im['height'] = imagesy(self::$im['im']);
-    
+
     // Check if image has any dimensions, else destroy image and return false;
     if (empty(self::$im['width']) || empty(self::$im['height']))
     {
       self::close();
       return FALSE;
     }
-    
+
     return TRUE;
   }
 
@@ -91,11 +91,11 @@ class image
     {
       return FALSE;
     }
-    
+
     // Set default new image sizes
     $im2_height = $new_height;
     $im2_width = $new_width;
-    
+
     // Crop
     $crop_x = 0;
     $crop_y = 0;

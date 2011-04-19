@@ -27,6 +27,7 @@ $config['client_ip'] =& $_SERVER['REMOTE_ADDR'];
 // Set where requested uri and query string will be taken from
 // In most cases these values should work by default
 $config['request_uri'] =& $_SERVER['REQUEST_URI'];
+$config['query_string'] =& $_SERVER['QUERY_STRING'];
 $config['script_name'] =& $_SERVER['SCRIPT_NAME'];
 
 

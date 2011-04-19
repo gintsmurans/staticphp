@@ -3,7 +3,7 @@
 //
 // Draugiem.lv API Client
 //
-// Copyright 2009 Gints MurÄns. All Rights Reserved.
+// Copyright 2009 Gints Murans. All Rights Reserved.
 //
 
 
@@ -15,8 +15,8 @@ class draugiem
 	public $api_key = null;
 	public $user_key = null;
 	public $call_count = 0;
-	
-	
+
+
 	// Private variables
 	private $api_domain = 'http://api.draugiem.lv/json/';
 	private $auth_url = 'https://api.draugiem.lv/authorize/';
@@ -26,12 +26,12 @@ class draugiem
 	private $file = null;
 
 
-	/** 
+	/**
 	* Init php client
 	*
 	* @param string $api_key your api_key
 	* @param string $user_key session key returned by user auth
-	*/ 
+	*/
 	public function __construct($api_id, $api_key, $user_key = null)
 	{
     $this->api_id = $api_id;

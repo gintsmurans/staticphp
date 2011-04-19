@@ -1,10 +1,8 @@
 <?php
 
-// Send some headers
-header('Content-type: text/html; charset=utf-8');
+// This is the right place to set various system startup options, for example to return default headers or start a session.
 
-// Start a session
-#session_start();
-#new sessions();
+// Send content type and charset header
+header('Content-type: text/html; charset=utf-8');
 
 ?>

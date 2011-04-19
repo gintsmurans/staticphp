@@ -17,7 +17,10 @@ class home
   public static function index()
   {
     // Enable timer output
-    load::set('timer', true);
+    load::set('timer', TRUE);
+
+    // Same as
+    load::$config['timer'] = TRUE;
 
     // Load view
     // Pass array (key => value) as second parameter, to get variables available in your view

@@ -27,3 +27,6 @@ Directory structure
     * __router.php__ - Router class. It determines correct controller and method to load and some other methods like router::redirect().    
   * __views/__ - Directory for templates
     * __errors__ - Error templates. for example E404.php for 404 Not Found errors.
+
+
+*Files starting with "!" are not tested, updated and most probably are not working at all, but that mostly should apply for extend directory files.*

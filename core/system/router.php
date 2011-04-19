@@ -188,18 +188,24 @@ class router
     self::$class = $tmp['class'];
     self::$method = $tmp['method'];
 
+    // Controller and method count, this number is needed because of subdirectory controllers and possibility to have and have not method provided
+    $count = 0;
+
 		switch (TRUE)
 		{
 			case (!empty(self::$segments[1]) && is_file(BASE_PATH .'controllers'. DS . self::$segments[0] . DS . self::$segments[1] . '.php')):
+        $count = 2;
 				self::$class = self::$segments[1];
 				self::$file = self::$segments[0] . DS . self::$segments[1];
 				if (!empty(self::$segments[2]))
 				{
+				  $count = 3;
 					self::$method = self::$segments[2];
 				}
 			break;
 
 			case (!empty(self::$segments[0])):
+        $count = 1;
 				self::$class = self::$segments[0];
 				self::$file = self::$segments[0];
 				if (!is_file(BASE_PATH .'controllers'. DS . self::$segments[0] . '.php'))
@@ -208,6 +214,7 @@ class router
 				}
 				if (!empty(self::$segments[1]))
 				{
+				  $count = 2;
 					self::$method = self::$segments[1];
 				}
 			break;
@@ -216,6 +223,9 @@ class router
 				self::$file = $tmp['file'];
 			break;
 		}
+
+    // Remove controller and method from segments
+		array_splice(self::$segments, 0, $count);
 
     // Load pre controller hook
     if (!empty(load::$config['before_controller']))
