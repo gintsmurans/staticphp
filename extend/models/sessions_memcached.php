@@ -1,14 +1,16 @@
 <?php
 
 /*
-  Memcached sessions, extends sessions class as backup.
-  Session classes are not static because of php 5.3 behaviour in destructing classes.
+  Memcached sessions, extends sessions class as backup. Session classes are not static because of php 5.3 behaviour in destructing classes.
 */
+
+namespace models;
 
 class sessions_memcached extends sessions
 {
   private $memcached = NULL;
   private $avoid_db = FALSE;
+
 
   public function __construct(&$memcached, $avoid_db = FALSE)
   {
@@ -16,6 +18,7 @@ class sessions_memcached extends sessions
     $this->avoid_db = $avoid_db;
     parent::__construct();
   }
+
 
   public function read($id)
   {

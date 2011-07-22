@@ -5,6 +5,8 @@
   Session classes are not static because of php 5.3 behaviour in destructing classes.
 */
 
+namespace models;
+
 class sessions_apc extends sessions
 {
   private $avoid_db = FALSE;

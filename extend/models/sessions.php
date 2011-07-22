@@ -5,6 +5,8 @@
   For table structure look in extend/db_scripts/table_sessions.sql
 */
 
+namespace models;
+
 class sessions
 {
   public $prefix = NULL;

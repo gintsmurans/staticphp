@@ -118,12 +118,15 @@ class router
     }
 
     // Get some config variables
-    $uri = urldecode(load::$config['request_uri']);
+    $uri = load::$config['request_uri'];
     $script_path = trim(dirname(load::$config['script_name']), '/');
 
     // Set some variables
-    self::$domain_uri = 'http'.(isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '').'://'.$_SERVER['HTTP_HOST'].'/';
-    self::$base_uri = (empty(load::$config['base_uri']) ? self::$domain_uri . (!empty($script_path) ? $script_path.'/' : '') : load::$config['base_uri']);
+    if (!empty($_SERVER['HTTP_HOST']))
+    {
+      self::$domain_uri = 'http'.(isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '').'://'.$_SERVER['HTTP_HOST'].'/';
+      self::$base_uri = (empty(load::$config['base_uri']) ? self::$domain_uri . (!empty($script_path) ? $script_path.'/' : '') : load::$config['base_uri']);
+    }
 
     // Replace script_path in uri and remove query string
     $uri = trim(empty($script_path) ? $uri : str_replace('/' . $script_path, '', $uri), '/');
@@ -242,7 +245,7 @@ class router
 
 
 
-  public static function _load_controller($file, $class, $method)
+  public static function _load_controller($file, &$class, &$method)
   {
     // Check for $File
     if (is_file($file))
@@ -258,7 +261,7 @@ class router
       // Call our contructor
       if (isset($methods['_construct']))
       {
-        call_user_func(array($class, '_construct'), $class, $method);
+        call_user_func(array($class, '_construct'), &$class, &$method);
         # $class::_construct($class, $method);
       }
 

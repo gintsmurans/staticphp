@@ -79,16 +79,6 @@ class load
     foreach ((array) $files as $name)
     {
       include BASE_PATH .'config/'. $name .'.php';
-
-      // Override values by environment config
-      if (!empty(self::$config['env']))
-      {
-        $filename = BASE_PATH .'config/'. self::$config['env'] .'/'. $name .'.php';
-        if (is_file($filename))
-        {
-          include $filename;
-        }
-      }
     }
   }
 
@@ -104,7 +94,7 @@ class load
 
 
   # Load a views
-  function view($files, $data = array())
+  function view($files, $data = array(), $return = FALSE)
   {
     // Check for global template variables
     if (!empty(self::$config['view_data']))
@@ -112,9 +102,24 @@ class load
       $data = $data + (array) self::$config['view_data'];
     }
 
+    // Return it
+    if (!empty($return))
+    {
+      ob_start();
+    }
+
+    // Include view files
     foreach ((array) $files as $file)
     {
       include BASE_PATH . 'views/' . $file . '.php';
+    }
+
+    // Return it
+    if (!empty($return))
+    {
+      $contents = ob_get_contents();
+      ob_end_clean();
+      return $contents;
     }
   }
 
@@ -127,6 +132,14 @@ class load
       include BASE_PATH .'helpers/'. $name .'.php';
     }
   }
+}
+
+
+// Autoload models
+function __autoload($classname)
+{
+  $classname = ltrim(substr($classname, strrpos($classname, '\\')), '\\');
+  load::model($classname);
 }
 
 ?>

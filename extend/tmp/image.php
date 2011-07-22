@@ -3,12 +3,14 @@
 /*
   !!!! NOT A FINAL VERSION, ONLY A DRAFT !!!!
 
-  Very basic image manipulations
+  Very basic image manipulations using gd
 
   Simple usage:
     image::open('file');
     image::resize(300, 400, TRUE, 'file.jpg');
 */
+
+namespace models;
 
 class image
 {

@@ -6,6 +6,7 @@
 // Copyright 2009 Gints Murans. All Rights Reserved.
 //
 
+namespace models;
 
 class draugiem
 {

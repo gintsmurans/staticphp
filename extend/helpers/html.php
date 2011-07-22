@@ -1,5 +1,7 @@
 <?php
 
+namespace html;
+
 /*
   Queue css and js files
 
@@ -10,13 +12,13 @@
     4. default - link will prepended with base_url
 */
 
-function html_css()
+function css()
 {
   static $files = array();
 
   if (func_num_args() > 0)
   {
-    $files = $files + func_get_args();
+    $files = array_merge($files, func_get_args());
   }
   else
   {
@@ -34,17 +36,17 @@ function html_css()
         break;
 
         case 's:':
-					if (isset(load::$config['css_version']))
+					if (isset(\load::$config['html_css_version']))
 					{
-						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . load::$config['css_version'];
+						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . \load::$config['html_css_version'];
 					}
           echo "  @import '", router::site_uri(substr($file, 2)), "';  ";
         break;
 
         default:
-					if (isset(load::$config['css_version']))
+					if (isset(\load::$config['html_css_version']))
 					{
-						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . load::$config['css_version'];
+						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . \load::$config['html_css_version'];
 					}
           echo "  @import '", BASE_URI, $file, "';  ";
         break;
@@ -55,13 +57,13 @@ function html_css()
 }
 
 
-function html_js()
+function js()
 {
   static $files = array();
 
   if (func_num_args() > 0)
   {
-    $files = $files + func_get_args();
+    $files = array_merge($files, func_get_args());
   }
   else
   {
@@ -78,17 +80,17 @@ function html_js()
         break;
 
         case 's:':
-					if (isset(load::$config['js_version']))
+					if (isset(\load::$config['html_js_version']))
 					{
-						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . load::$config['js_version'];
+						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . \load::$config['html_js_version'];
 					}
           echo '<script type="text/javascript" src="', router::site_url(substr($file, 2)), '"></script>', "\n";
         break;
 
         default:
-					if (isset(load::$config['js_version']))
+					if (isset(\load::$config['html_js_version']))
 					{
-						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . load::$config['js_version'];
+						$file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . \load::$config['html_js_version'];
 					}
           echo '<script type="text/javascript" src="', BASE_URI, $file, '"></script>', "\n";
         break;
@@ -100,33 +102,59 @@ function html_js()
 
 
 // Return html dropdown
-function html_dropdown($items, $selected = NULL, $addons = NULL, $add_empty = FALSE, $as_value = NULL, $as_text = NULL)
+function dropdown($items, $selected = NULL, $addons = NULL, $add_empty = FALSE, $as_value = NULL, $as_text = NULL, $grouped = FALSE)
 {
-  $select = '<select'. (!empty($addons['']) ? ' ' . $addons[''] : '') .'>';
+  $select = (empty($grouped) ? '<select'. (!empty($addons['']) ? ' ' . $addons[''] : '') .'>' : '');
 
+  // Add empty option
   if (!empty($add_empty))
   {
-    $select .= '<option value=""></option>';
+    $value = key($add_empty);
+    $select .= '<option value="'. set_input_value($value) .'"';
+    if (!empty($addons[$value]))
+    {
+      $select .= ' '. $addons[$value];
+    }
+    if (is_array($selected) && in_array($value, $selected) || $selected == $value)
+    {
+      $select .= ' selected="selected"';
+    }
+    $select .= '>'. reset($add_empty) .'</option>';
   }
 
+  // Loop through options
   foreach ($items as $value => $text)
   {
+    // If grouped dropdown
+    if (is_array($text))
+    {
+      $select .= '<optgroup label="'. $value .'">';
+      $select .= dropdown($text, $selected, $addons, FALSE, $as_value, $as_text, TRUE);
+      $select .= '</optgroup>';
+      continue;
+    }
+
     $value = (empty($as_value) ? $value : $text->{$as_value});
     $text = (empty($as_text) ? $text : $text->{$as_text});
 
-    $select .= '<option value="'. $value .'"';
+    $select .= '<option value="'. set_input_value($value) .'"';
     if (!empty($addons[$value]))
     {
       $select .= ' ' . $addons[$value];
     }
 
-    if ($selected == $value)
+    if (is_array($selected) && in_array($value, $selected) || $selected == $value)
     {
       $select .= ' selected="selected"';
     }
     $select .= '>'. $text .'</option>';
   }
-  $select .= '</select>';
+
+
+  if (empty($grouped))
+  {
+    $select .= '</select>';
+  }
 
   return $select;
 }
@@ -134,23 +162,37 @@ function html_dropdown($items, $selected = NULL, $addons = NULL, $add_empty = FA
 
 
 // Set value for inputs
-function html_set_input_value($value)
+function set_input_value($value)
 {
   return str_replace('"', '&quot;', $value);
 }
 
 
 // Set selected for html select element
-function html_set_selected($current, $needle)
+function set_selected($current, $needle)
 {
-    return ($current == $needle ? ' selected="selected"' : NULL);
+  // Check in the array
+  if (is_array($current))
+  {
+    return (isset($current[$needle]) || in_array($needle, $current) ? ' selected="selected"' : NULL);
+  }
+
+  // Else just compare them
+  return ($current == $needle ? ' selected="selected"' : NULL);
 }
 
 
 // Set checked for html checbox elements
-function html_set_checked($current, $needle)
+function set_checked($current, $needle)
 {
-    return ($current == $needle ? ' checked="checked"' : NULL);
+  // Check in the array
+  if (is_array($current))
+  {
+    return (isset($current[$needle]) || in_array($needle, $current) ? ' checked="checked"' : NULL);
+  }
+
+  // Else just compare them
+  return ($current == $needle ? ' checked="checked"' : NULL);
 }
 
 ?>

@@ -56,9 +56,9 @@ router::init();
 // Output load time, if allowed
 if (!empty(load::$config['timer']) && !empty(load::$config['debug']))
 {
-  echo '<pre style="border-top: 1px #DDD solid; padding-top: 4px;">';
-  echo 'Generated in ', round(microtime(true) - $microtime, 5), ' seconds. Memory: ', round(memory_get_usage() / 1024 / 1024, 4), ' MB';
-  echo '</pre>';
+  echo '<pre style="border-top: 1px #DDD solid; padding-top: 4px;">', "\n";
+  echo 'Generated in ', round(microtime(true) - $microtime, 5), ' seconds. Memory: ', round(memory_get_usage() / 1024 / 1024, 4), ' MB', "\n";
+  echo '</pre>', "\n";
 }
 
 ?>

@@ -30,6 +30,8 @@
     <div><input type="text" name="test[]"<?php fv::set_input(array('test', 0)); ?> /></div>
 */
 
+namespace models;
+
 class fv
 {
 

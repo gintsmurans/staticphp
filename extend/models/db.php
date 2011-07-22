@@ -1,9 +1,11 @@
 <?php
 
+namespace models;
+
 class db
 {
   public static $queries = NULL;
-  public static $query_count = NULL;
+  public static $query_count = 0;
 
   private static $db_links;
   private static $last_statement;
@@ -13,13 +15,13 @@ class db
   public static function init($name = 'default')
   {
     // Check if there is such configuration
-    if (empty(load::$config['db']['pdo'][$name]))
+    if (empty(\load::$config['db']['pdo'][$name]))
     {
       return FALSE;
     }
 
     // Set params
-    $params = load::$config['db']['pdo'][$name];
+    $params = \load::$config['db']['pdo'][$name];
 
     // Don't make a new connection if there is one connected with the name
     if (!empty(self::$db_links[$name]))
@@ -34,15 +36,15 @@ class db
     }
 
     // Open new connection to DB
-    self::$db_links[$name] = new PDO($params['string'], $params['username'], $params['password'], array(
-      PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-      PDO::ATTR_CASE => PDO::CASE_NATURAL,
-      PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
-      PDO::ATTR_PERSISTENT => $params['persistent']
+    self::$db_links[$name] = new \PDO($params['string'], $params['username'], $params['password'], array(
+      \PDO::ATTR_ERRMODE => (empty(\load::$config['debug']) ? \PDO::ERRMODE_SILENT : \PDO::ERRMODE_EXCEPTION),
+      \PDO::ATTR_CASE => \PDO::CASE_NATURAL,
+      \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
+      \PDO::ATTR_PERSISTENT => $params['persistent']
     ));
 
     // Set encoding - for mysql only
-    if (!empty($params['charset']) && self::$db_links[$name]->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql')
+    if (!empty($params['charset']) && self::$db_links[$name]->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'mysql')
     {
       self::$db_links[$name]->exec('SET NAMES '. $params['charset'] .';');
     }
@@ -62,7 +64,7 @@ class db
 
     if (empty($db_link))
     {
-      throw new Exception('No connection to database');
+      throw new \Exception('No connection to database');
     }
 
     // Do request
@@ -70,7 +72,7 @@ class db
     self::$last_statement->execute((array) $data);
 
     // Count Queries
-    if (!empty(load::$config['debug']))
+    if (!empty(\load::$config['debug']))
     {
       ++self::$query_count;
       self::$queries[$name][] = self::$last_statement->queryString;
@@ -99,18 +101,18 @@ class db
 
 
 	// -- Make update string from and array. Add "!" at start of the key to avoid escaping.
-  public static function update($table, $data, $where)
+  public static function update($table, $data, $where, $name = 'default')
   {
     // Make SET
     foreach ((array)$data as $key => $value)
     {
       if ($key[0] == '!')
       {
-        $set[] = substr($key, 1) ." = {$value}";
+        $set[] = \load::$config['db']['pdo'][$name]['wrap_column'] . substr($key, 1) . \load::$config['db']['pdo'][$name]['wrap_column'] ." = {$value}";
       }
       else
       {
-        $set[] = "{$key} = ?";
+        $set[] = \load::$config['db']['pdo'][$name]['wrap_column'] . $key . \load::$config['db']['pdo'][$name]['wrap_column'] .' = ?';
         $params[] = $value;
       }
     }
@@ -128,11 +130,11 @@ class db
 
       if ($key[0] == '!')
       {
-        $cond[] = substr($key, 1) ." {$c} {$value}";
+        $cond[] = \load::$config['db']['pdo'][$name]['wrap_column'] . substr($key, 1) . \load::$config['db']['pdo'][$name]['wrap_column'] . " {$c} {$value}";
       }
       else
       {
-        $cond[] = "{$key} {$c} ?";
+        $cond[] = \load::$config['db']['pdo'][$name]['wrap_column'] . $key . \load::$config['db']['pdo'][$name]['wrap_column'] . " {$c} ?";
         $params[] = $value;
       }
     }
@@ -145,24 +147,24 @@ class db
     }
 
     // Run Query
-    return self::query("UPDATE {$table} SET {$set} {$cond};", $params);
+    return self::query("UPDATE {$table} SET {$set} {$cond};", $params, $name);
   }
 
 
 
 	// -- Make insert string from and array. Add "!" at start of the key to avoid escaping
-  public static function insert($table, $data)
+  public static function insert($table, $data, $name = 'default')
   {
     foreach ((array)$data as $key => $value)
     {
       if ($key[0] == '!')
       {
-        $keys[] = substr($key, 1); 
+        $keys[] = \load::$config['db']['pdo'][$name]['wrap_column'] . substr($key, 1) . \load::$config['db']['pdo'][$name]['wrap_column'];
         $values[] = $value;
       }
       else
       {
-        $keys[] = $key; 
+        $keys[] = \load::$config['db']['pdo'][$name]['wrap_column'] . $key . \load::$config['db']['pdo'][$name]['wrap_column'];
         $values[] = '?';
         $params[] = $value;
       }
@@ -173,7 +175,7 @@ class db
     $values = implode(', ', $values);
 
     // Run Query
-    return self::query("INSERT INTO {$table} ({$keys}) VALUES ({$values})", $params);
+    return self::query("INSERT INTO {$table} ({$keys}) VALUES ({$values})", $params, $name);
   }
 
 
@@ -206,12 +208,11 @@ class db
 
 
 	// -- Return the last insert id is created into database
-  public static function last_insert_id($sql = FALSE, $name = 'default')
+  public static function last_insert_id($sequence_name = '', $sql = FALSE, $name = 'default')
   {
 		if (empty($sql))
 		{
-			$db_link = &self::$db_links[$name];
-			return $db_link->lastInsertId();
+			return self::$db_links[$name]->lastInsertId($sequence_name);
 		}
 		else
 		{

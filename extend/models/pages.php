@@ -1,11 +1,16 @@
 <?php
 
-class pager
+namespace models;
+
+class pages
 {
   private static $obj = null;
+  private static $base_uri = NULL;
 
-  public static function init($record_count, $active_page, $page_limit, $pages_display = 10)
+  public static function init($record_count, $active_page, $page_limit, $pages_display = 10, $base_uri = NULL)
   {
+    self::$base_uri = $base_uri;
+
     $pages_left = floor($pages_display / 2);
     $pages_right = $pages_display - $pages_left - 1;
 
@@ -44,6 +49,31 @@ class pager
     }
 
     return self::$obj;
+  }
+
+
+  public static function display()
+  {
+    if (empty(self::$obj) || self::$obj->page_count <= 1)
+    {
+      return '';
+    }
+
+    $pages = '<div class="pages">';
+    $pages .= '<a href="'. self::$base_uri .'1" class="first"><<</a> ';
+    $pages .= '<a href="'. self::$base_uri . self::$obj->prev_page .'" class="previous"><</a> ';
+
+    for ($i = self::$obj->pages_from; $i <= self::$obj->pages_to; ++$i)
+    {
+      $current = ($i == self::$obj->active_page ? ' class="current_page"' : '');
+      $pages .= '<a href="'. self::$base_uri . $i .'"'. $current .'>'. $i . '</a> ';
+    }
+
+    $pages .= '<a href="'. self::$base_uri . self::$obj->next_page .'" class="last">></a> ';
+    $pages .= '<a href="'. self::$base_uri . self::$obj->page_count .'" class="last">>></a>';
+    $pages .= '</div>';
+
+    return $pages;
   }
 }
 

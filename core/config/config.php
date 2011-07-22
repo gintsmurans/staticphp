@@ -1,9 +1,5 @@
 <?php
 
-// Set Active Configuration, set to NULL for no subdirectory config files
-$config['env'] = 'dev';
-
-
 // Set base_uri, leave empty for auto detection
 $config['base_uri'] = NULL;
 
