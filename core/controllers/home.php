@@ -21,6 +21,9 @@ class home
 
     // Same as
     load::$config['timer'] = TRUE;
+    
+    // Turn on debugging to display timer output
+    load::$config['debug'] = TRUE;
 
     // Load view
     // Pass array (key => value) as second parameter, to get variables available in your view
