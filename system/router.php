@@ -2,13 +2,20 @@
 
 class router
 {
+
+  /*
+  |--------------------------------------------------------------------------
+  | Variables
+  |--------------------------------------------------------------------------
+  */
+
   public static $prefixes = array();
   public static $prefixes_url = NULL;
 
   public static $segments = array();
   public static $segments_url = NULL;
   public static $segments_full_url = NULL;
-	public static $segments_requested = array();
+  public static $segments_requested = array();
 
   public static $domain_uri = NULL;
   public static $base_uri = NULL;
@@ -18,13 +25,11 @@ class router
   public static $method = NULL;
 
 
-  # Init router
-  public static function init()
-  {
-    self::split_segments();
-    self::load_controller();
-  }
-
+  /*
+  |--------------------------------------------------------------------------
+  | Helper methods
+  |--------------------------------------------------------------------------
+  */
 
   # Get base uri
   public static function base_uri($url = '')
@@ -109,6 +114,22 @@ class router
   }
 
 
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | Router initialization methods
+  |--------------------------------------------------------------------------
+  */
+
+  # Init router
+  public static function init()
+  {
+    self::split_segments();
+    self::load_controller();
+  }
+
+
   # Split segments
   public static function split_segments($force = FALSE)
   {
@@ -120,12 +141,14 @@ class router
     // Get some config variables
     $uri = load::$config['request_uri'];
     $script_path = trim(dirname(load::$config['script_name']), '/');
+    self::$base_uri = load::$config['base_uri'];
 
     // Set some variables
-    if (!empty($_SERVER['HTTP_HOST']))
+    if (empty(self::$base_uri) && !empty($_SERVER['HTTP_HOST']))
     {
-      self::$domain_uri = 'http'.(isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '').'://'.$_SERVER['HTTP_HOST'].'/';
-      self::$base_uri = (empty(load::$config['base_uri']) ? self::$domain_uri . (!empty($script_path) ? $script_path.'/' : '') : load::$config['base_uri']);
+      $https = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on');
+      self::$domain_uri = 'http'.(empty($https) ? '' : 's').'://'.$_SERVER['HTTP_HOST'] . (empty($https) && $_SERVER['SERVER_PORT'] != 80 ? ':' . $_SERVER['SERVER_PORT'] : (!empty($https) && $_SERVER['SERVER_PORT'] != 443 ? ':' . $_SERVER['SERVER_PORT'] : '')) .'/';
+      self::$base_uri = self::$domain_uri . (!empty($script_path) ? $script_path.'/' : '');
     }
 
     // Replace script_path in uri and remove query string
@@ -141,7 +164,7 @@ class router
         $tmp = preg_replace('#'.$key.'#', $item, $uri);
         if ($tmp !== $uri)
         {
-					self::$segments_requested = explode('/', $uri);
+          self::$segments_requested = explode('/', $uri);
           $uri = $tmp;
         }
       }
@@ -168,21 +191,25 @@ class router
       }
     }
 
-		// Set URL prefixes url
+  // Set URL prefixes url
     self::$prefixes_url = implode('/', self::$prefixes);
 
     // Set URL
     self::$segments_url = implode('/', self::$segments);
 
     // Define base_uri
-		define('BASE_URI', self::$base_uri);
+  define('BASE_URI', self::$base_uri);
   }
 
 
 
-  // ------------ PRIVATE METHODS ----------------------
+  /*
+  |--------------------------------------------------------------------------
+  | Controller loading
+  |--------------------------------------------------------------------------
+  */
 
-  private static function load_controller()
+  public static function load_controller()
   {
     // Get controller, class, method from URL
     $tmp = router::url_to_file(load::$config['routing']['']);
@@ -194,53 +221,53 @@ class router
     // Controller and method count, this number is needed because of subdirectory controllers and possibility to have and have not method provided
     $count = 0;
 
-		switch (TRUE)
-		{
-			case (!empty(self::$segments[1]) && is_file(BASE_PATH .'controllers'. DS . self::$segments[0] . DS . self::$segments[1] . '.php')):
+    switch (TRUE)
+    {
+      case (!empty(self::$segments[1]) && is_file(APP_PATH .'controllers'. DS . self::$segments[0] . DS . self::$segments[1] . '.php')):
         $count = 2;
-				self::$class = self::$segments[1];
-				self::$file = self::$segments[0] . DS . self::$segments[1];
-				if (!empty(self::$segments[2]))
-				{
-				  $count = 3;
-					self::$method = self::$segments[2];
-				}
-			break;
-
-			case (!empty(self::$segments[0])):
+        self::$class = self::$segments[1];
+        self::$file = self::$segments[0] . DS . self::$segments[1];
+        if (!empty(self::$segments[2]))
+        {
+          $count = 3;
+          self::$method = self::$segments[2];
+        }
+      break;
+      
+      case (!empty(self::$segments[0])):
         $count = 1;
-				self::$class = self::$segments[0];
-				self::$file = self::$segments[0];
-				if (!is_file(BASE_PATH .'controllers'. DS . self::$segments[0] . '.php'))
-				{
-					self::$file .= DS . self::$segments[0];
-				}
-				if (!empty(self::$segments[1]))
-				{
-				  $count = 2;
-					self::$method = self::$segments[1];
-				}
-			break;
-
-			default:
-				self::$file = $tmp['file'];
-			break;
-		}
-
+        self::$class = self::$segments[0];
+        self::$file = self::$segments[0];
+        if (!is_file(APP_PATH .'controllers'. DS . self::$segments[0] . '.php'))
+        {
+          self::$file .= DS . self::$segments[0];
+        }
+        if (!empty(self::$segments[1]))
+        {
+          $count = 2;
+          self::$method = self::$segments[1];
+        }
+      break;
+      
+      default:
+        self::$file = $tmp['file'];
+      break;
+    }
+    
     // Remove controller and method from segments
-		array_splice(self::$segments, 0, $count);
-
+    array_splice(self::$segments, 0, $count);
+    
     // Load pre controller hook
     if (!empty(load::$config['before_controller']))
-		{
-			foreach(load::$config['before_controller'] as $tmp)
-			{
-				call_user_func($tmp);
-			}
-		}
+    {
+      foreach(load::$config['before_controller'] as $tmp)
+      {
+        call_user_func($tmp);
+      }
+    }
 
     // Load controllers
-    self::_load_controller(BASE_PATH .'controllers'. DS . self::$file .'.php', self::$class, self::$method);
+    self::_load_controller(APP_PATH .'controllers'. DS . self::$file .'.php', self::$class, self::$method);
   }
 
 
@@ -261,15 +288,15 @@ class router
       // Call our contructor
       if (isset($methods['_construct']))
       {
-        call_user_func(array($class, '_construct'), &$class, &$method);
-        # $class::_construct($class, $method);
+        # call_user_func(array($class, '_construct'), $class, $method);
+        $class::_construct($class, $method);
       }
 
       // Check for $Method
       if (isset($methods[$method]) || isset($methods['__callStatic']))
       {
-        call_user_func_array(array($class, $method), self::$segments);
-        # $class::$method();
+        # call_user_func_array(array($class, $method), self::$segments);
+        $class::$method();
       }
       else
       {

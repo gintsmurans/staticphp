@@ -5,7 +5,11 @@ class load
   public static $config = array();
 
 
-// ------------------ CONFIG -----------------------
+  /*
+  |--------------------------------------------------------------------------
+  | Configuration methods
+  |--------------------------------------------------------------------------
+  */
 
   # Get config variable
   public static function &get($name)
@@ -70,7 +74,11 @@ class load
 
 
 
-// ------------------ LOADING OF FILES -----------------------
+  /*
+  |--------------------------------------------------------------------------
+  | File Loadings
+  |--------------------------------------------------------------------------
+  */
 
   # Load config files
   public static function config($files)
@@ -78,7 +86,7 @@ class load
     $config =& self::$config;
     foreach ((array) $files as $name)
     {
-      include BASE_PATH .'config/'. $name .'.php';
+      include APP_PATH .'config/'. $name .'.php';
     }
   }
 
@@ -88,13 +96,13 @@ class load
   {
     foreach ((array) $files as $name)
     {
-      include BASE_PATH .'models/'. $name .'.php';
+      include APP_PATH .'models/'. $name .'.php';
     }
   }
 
 
-  # Load a views
-  function view($files, $data = array(), $return = FALSE)
+  # Load views
+  public static function view($files, &$data = array(), $return = FALSE)
   {
     // Check for global template variables
     if (!empty(self::$config['view_data']))
@@ -111,7 +119,7 @@ class load
     // Include view files
     foreach ((array) $files as $file)
     {
-      include BASE_PATH . 'views/' . $file . '.php';
+      include APP_PATH . 'views/' . $file . '.php';
     }
 
     // Return it
@@ -124,13 +132,27 @@ class load
   }
 
 
-  # Load any file within application directory or full path to a file
-  function helper($files)
+  # Helpers
+  public static function helper($files)
   {
     foreach ((array) $files as $name)
     {
-      include BASE_PATH .'helpers/'. $name .'.php';
+      include APP_PATH .'helpers/'. $name .'.php';
     }
+  }
+
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | Aditional methods
+  |--------------------------------------------------------------------------
+  */
+
+  public static function execution_time()
+  {
+    global $microtime;
+    return 'Generated in ' . round(microtime(true) - $microtime, 5) . ' seconds. Memory used: ' . round(memory_get_usage() / 1024 / 1024, 4) . ' MB' . "\n";
   }
 }
 
@@ -139,7 +161,7 @@ class load
 function __autoload($classname)
 {
   $classname = ltrim(substr($classname, strrpos($classname, '\\')), '\\');
-  load::model($classname);
+  \load::model($classname);
 }
 
 ?>
