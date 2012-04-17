@@ -28,3 +28,38 @@ Directory structure
         core.php               - Core php file to init loading of session
         load.php               - Class for loading files and holding configuration values.
         router.php             - Router class. It determines correct controller and method to load and some other methods like router::redirect().
+
+
+Basic Nginx configuration
+-------------------
+
+    server {
+        listen       80;
+        listen       443 ssl;
+        server_name  staticphp.gm.lv;
+
+        root   /www/sites/gm.lv/staticphp/application/public;
+        index index.php index.html index.htm;
+    
+        location ~ \.php$ {
+            if (!-f $request_filename) {
+                return 404;
+            }
+    
+            fastcgi_pass   127.0.0.1:9000;
+            fastcgi_index  index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            include /etc/nginx/fastcgi_params;
+        }
+    
+    
+        location ~ /\.ht {
+            return 404;
+        }
+    }
+
+
+
+Demo
+-------------------
+http://staticphp.gm.lv/
