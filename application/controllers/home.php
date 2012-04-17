@@ -12,14 +12,8 @@ class home
   # Default method
   public static function index()
   {
-    // Enable timer output
-    load::set('timer', TRUE);
-
-    // Same as
-    load::$config['timer'] = TRUE;
-    
-    // Turn on debugging to display timer output
-    load::$config['debug'] = TRUE;
+    // Do something heavy and add timer mark
+    \load::mark_timer('Before views');
 
     // Load view
     // Pass array (key => value) as second parameter, to get variables available in your view

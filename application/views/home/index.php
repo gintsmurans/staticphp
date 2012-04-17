@@ -29,5 +29,5 @@
   </ol>
 
   <br />
-  <p>Execution time: <?php echo \load::execution_time(); ?></p>
+  <pre><?php echo \load::execution_time(); ?></pre>
 </div>

@@ -4,6 +4,8 @@ class load
 {
   public static $config = array();
 
+  private static $custom_timers = array();
+
 
   /*
   |--------------------------------------------------------------------------
@@ -149,11 +151,29 @@ class load
   |--------------------------------------------------------------------------
   */
 
+  public static function mark_timer($name)
+  {
+    global $microtime;
+    self::$custom_timers[$name] = round(microtime(true) - $microtime, 5);
+  }
+
+
   public static function execution_time()
   {
     global $microtime;
-    return 'Generated in ' . round(microtime(true) - $microtime, 5) . ' seconds. Memory used: ' . round(memory_get_usage() / 1024 / 1024, 4) . ' MB' . "\n";
-  }
+    $output = 'Total execution time: ' . round(microtime(true) - $microtime, 5) . " seconds;\n";
+    $output .= 'Memory used: ' . round(memory_get_usage() / 1024 / 1024, 4) . " MB;\n";
+    
+    if (!empty(self::$custom_timers))
+    {
+      foreach (self::$custom_timers as $key => $value)
+      {
+        $output .= "\n{$key}: {$value} seconds;";
+      }
+    }
+
+    return $output;
+  }  
 }
 
 
