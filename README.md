@@ -40,7 +40,14 @@ Basic Nginx configuration
 
         root   /www/sites/gm.lv/staticphp/application/public;
         index index.php index.html index.htm;
-    
+
+        location / {
+            if (!-e $request_filename)
+            {
+                rewrite  ^(.*)$  /index.php?/$1  last;
+            }
+        }
+
         location ~ \.php$ {
             if (!-f $request_filename) {
                 return 404;
