@@ -295,8 +295,8 @@ class router
       // Check for $Method
       if (isset($methods[$method]) || isset($methods['__callStatic']))
       {
-        # call_user_func_array(array($class, $method), self::$segments);
-        $class::$method();
+        call_user_func_array(array($class, $method), self::$segments);
+        # $class::$method();
       }
       else
       {
