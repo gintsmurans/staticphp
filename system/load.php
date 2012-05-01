@@ -83,28 +83,28 @@ class load
   */
 
   # Load config files
-  public static function config($files)
+  public static function config($files, $project = NULL)
   {
     $config =& self::$config;
     foreach ((array) $files as $name)
     {
-      include APP_PATH .'config/'. $name .'.php';
+      include (empty($project) ? APP_PATH : BASE_PATH . $project . '/') . 'config/'. $name .'.php';
     }
   }
 
 
   # Load models
-  public static function model($files)
+  public static function model($files, $project = NULL)
   {
     foreach ((array) $files as $name)
     {
-      include APP_PATH .'models/'. $name .'.php';
+      include (empty($project) ? APP_PATH : BASE_PATH . $project . '/') . 'models/'. $name .'.php';
     }
   }
 
 
   # Load views
-  public static function view($files, &$data = array(), $return = FALSE)
+  public static function view($files, &$data = array(), $return = FALSE, $project = NULL)
   {
     // Check for global template variables
     if (!empty(self::$config['view_data']))
@@ -121,7 +121,7 @@ class load
     // Include view files
     foreach ((array) $files as $file)
     {
-      include APP_PATH . 'views/' . $file . '.php';
+      include (empty($project) ? APP_PATH : BASE_PATH . $project . '/') . 'views/' . $file . '.php';
     }
 
     // Return it
@@ -135,11 +135,11 @@ class load
 
 
   # Helpers
-  public static function helper($files)
+  public static function helper($files, $project = NULL)
   {
     foreach ((array) $files as $name)
     {
-      include APP_PATH .'helpers/'. $name .'.php';
+      include (empty($project) ? APP_PATH : BASE_PATH . $project . '/') . 'helpers/'. $name .'.php';
     }
   }
 
