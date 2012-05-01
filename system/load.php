@@ -4,7 +4,8 @@ class load
 {
   public static $config = array();
 
-  private static $custom_timers = array();
+  private static $started_timers = array();
+  private static $finished_timers = array();
 
 
   /*
@@ -151,29 +152,38 @@ class load
   |--------------------------------------------------------------------------
   */
 
-  public static function mark_timer($name)
+  public static function init_timer()
   {
-    global $microtime;
-    self::$custom_timers[$name] = round(microtime(true) - $microtime, 5);
+    self::$started_timers[] = microtime(true);
   }
 
+  public static function stop_timer($name)
+  {
+    self::$finished_timers[$name] = round(microtime(true) - array_shift(self::$started_timers), 5);
+  }
+
+  public static function mark_time($name)
+  {
+    global $microtime;
+    self::$finished_timers['*' . $name] = round(microtime(true) - $microtime, 5);
+  }
 
   public static function execution_time()
   {
     global $microtime;
     $output = 'Total execution time: ' . round(microtime(true) - $microtime, 5) . " seconds;\n";
     $output .= 'Memory used: ' . round(memory_get_usage() / 1024 / 1024, 4) . " MB;\n";
-    
-    if (!empty(self::$custom_timers))
+
+    if (!empty(self::$finished_timers))
     {
-      foreach (self::$custom_timers as $key => $value)
+      foreach (self::$finished_timers as $key => $value)
       {
         $output .= "\n{$key}: {$value} seconds;";
       }
     }
 
     return $output;
-  }  
+  }
 }
 
 
