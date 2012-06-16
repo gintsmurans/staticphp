@@ -1,5 +1,7 @@
 <?php
 
+namespace controllers;
+
 class home
 {
   # This is called every time controller loads
@@ -7,7 +9,6 @@ class home
   {
 
   }
-
 
   # Default method
   public static function index()
@@ -17,7 +18,7 @@ class home
 
     // Load view
     // Pass array (key => value) as second parameter, to get variables available in your view
-    load::view(array('header', 'home/index', 'footer'), $data);
+    \load::view(array('header', 'home/index', 'footer'), $data);
   }
 }
 

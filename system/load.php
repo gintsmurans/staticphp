@@ -17,7 +17,7 @@ class load
   # Get config variable
   public static function &get($name)
   {
-    return self::$config[$name];
+    return (isset(self::$config[$name]) ? self::$config[$name] : FALSE);
   }
 
 
@@ -94,6 +94,16 @@ class load
   }
 
 
+  # Load controllers
+  public static function controller($files, $project = NULL)
+  {
+    foreach ((array) $files as $name)
+    {
+      include (empty($project) ? APP_PATH : BASE_PATH . $project . '/') . 'controllers/'. $name .'.php';
+    }
+  }
+
+
   # Load models
   public static function model($files, $project = NULL)
   {
@@ -152,7 +162,7 @@ class load
   |--------------------------------------------------------------------------
   */
 
-  public static function init_timer()
+  public static function start_timer()
   {
     self::$started_timers[] = microtime(true);
   }
@@ -160,6 +170,7 @@ class load
   public static function stop_timer($name)
   {
     self::$finished_timers[$name] = round(microtime(true) - array_shift(self::$started_timers), 5);
+    return self::$finished_timers[$name];
   }
 
   public static function mark_time($name)
@@ -190,8 +201,8 @@ class load
 // Autoload models
 function __autoload($classname)
 {
-  $classname = ltrim(substr($classname, strrpos($classname, '\\')), '\\');
-  \load::model($classname);
+  $classname = str_replace('\\', '/', $classname);
+  include APP_PATH . $classname . '.php';
 }
 
 ?>

@@ -34,7 +34,7 @@ class router
   # Get base uri
   public static function base_uri($url = '')
   {
-    return router::$base_uri . $url;
+    return self::$base_uri . $url;
   }
 
 
@@ -42,8 +42,8 @@ class router
   public static function site_uri($url = '', $prefix = NULL, $current_prefix = TRUE)
   {
     $url002  = !empty($prefix) ? trim($prefix, '/') . '/' : '';
-    $url002 .= !empty($current_prefix) && !empty(router::$prefixes_url) ? router::$prefixes_url . '/' : '';
-    return router::$base_uri . $url002 . $url;
+    $url002 .= !empty($current_prefix) && !empty(self::$prefixes_url) ? self::$prefixes_url . '/' : '';
+    return self::$base_uri . $url002 . $url;
   }
 
 
@@ -60,7 +60,7 @@ class router
     switch ($type)
     {
       case 'js':
-        echo '<script type="text/javascript"> window.location.href = \'', ($site_uri === FALSE ? $url : router::site_uri($url)), '\'; </script>';
+        echo '<script type="text/javascript"> window.location.href = \'', ($site_uri === FALSE ? $url : self::site_uri($url)), '\'; </script>';
       break;
 
       default:
@@ -69,7 +69,7 @@ class router
             header("HTTP/1.1 301 Moved Permanently");
         }
 
-        header("Location: ".(empty($site_uri) ? $url : router::site_uri($url)));
+        header("Location: ".(empty($site_uri) ? $url : self::site_uri($url)));
         header("Connection: close");
       break;
     }
@@ -92,10 +92,10 @@ class router
 
 
   # Show http error
-  public static function error($error_code, $error_string)
+  public static function error($error_code, $error_string, $data = NULL)
   {
     header('HTTP/1.0 '. $error_code .' '. $error_string);
-    load::view('errors/E'. $error_code);
+    \load::view('errors/E'. $error_code, $data);
     exit;
   }
 
@@ -139,9 +139,9 @@ class router
     }
 
     // Get some config variables
-    $uri = load::$config['request_uri'];
-    $script_path = trim(dirname(load::$config['script_name']), '/');
-    self::$base_uri = load::$config['base_uri'];
+    $uri = \load::$config['request_uri'];
+    $script_path = trim(dirname(\load::$config['script_name']), '/');
+    self::$base_uri = \load::$config['base_uri'];
 
     // Set some variables
     if (empty(self::$base_uri) && !empty($_SERVER['HTTP_HOST']))
@@ -156,7 +156,7 @@ class router
     $uri = preg_replace('/\?.*/', '', $uri);
 
     // Check config routing array
-    foreach(load::$config['routing'] as $key => &$item)
+    foreach(\load::$config['routing'] as $key => &$item)
     {
       if (!empty($key) && !empty($item))
       {
@@ -171,13 +171,13 @@ class router
     }
 
     // Set segments_full_url
-    self::$segments_full_url = $uri . (empty(load::$config['query_string']) ? '' : '?'. load::$config['query_string']);
+    self::$segments_full_url = $uri . (empty(\load::$config['query_string']) ? '' : '?'. \load::$config['query_string']);
 
     // Explode segments
     self::$segments = explode('/', $uri);
 
     // Get URL prefixes
-    foreach(load::$config['url_prefixes'] as &$item)
+    foreach(\load::$config['url_prefixes'] as &$item)
     {
       if (isset(self::$segments[0]) && self::$segments[0] == $item)
       {
@@ -198,7 +198,7 @@ class router
     self::$segments_url = implode('/', self::$segments);
 
     // Define base_uri
-  define('BASE_URI', self::$base_uri);
+    define('BASE_URI', self::$base_uri);
   }
 
 
@@ -211,8 +211,8 @@ class router
 
   public static function load_controller()
   {
-    // Get controller, class, method from URL
-    $tmp = router::url_to_file(load::$config['routing']['']);
+    // Get default controller, class, method from URL
+    $tmp = self::url_to_file(\load::$config['routing']['']);
 
     // Set default class and method
     self::$class = $tmp['class'];
@@ -223,9 +223,10 @@ class router
 
     switch (TRUE)
     {
+      // Controller is in subdirectory
       case (!empty(self::$segments[1]) && is_file(APP_PATH .'controllers'. DS . self::$segments[0] . DS . self::$segments[1] . '.php')):
         $count = 2;
-        self::$class = self::$segments[1];
+        self::$class = self::$segments[0] . '\\' . self::$segments[1];
         self::$file = self::$segments[0] . DS . self::$segments[1];
         if (!empty(self::$segments[2]))
         {
@@ -233,7 +234,8 @@ class router
           self::$method = self::$segments[2];
         }
       break;
-      
+
+      // Controller is not in subdirectory
       case (!empty(self::$segments[0])):
         $count = 1;
         self::$class = self::$segments[0];
@@ -248,19 +250,20 @@ class router
           self::$method = self::$segments[1];
         }
       break;
-      
+
+      // Run default controller
       default:
         self::$file = $tmp['file'];
       break;
     }
-    
+
     // Remove controller and method from segments
     array_splice(self::$segments, 0, $count);
-    
+
     // Load pre controller hook
-    if (!empty(load::$config['before_controller']))
+    if (!empty(\load::$config['before_controller']))
     {
-      foreach(load::$config['before_controller'] as $tmp)
+      foreach(\load::$config['before_controller'] as $tmp)
       {
         call_user_func($tmp);
       }
@@ -279,6 +282,9 @@ class router
     {
       include $file;
 
+      // Namespaces support
+      $class = '\\controllers\\' . $class;
+
       // Get all methods in class
       if (is_array($methods = get_class_methods($class)))
       {
@@ -288,7 +294,6 @@ class router
       // Call our contructor
       if (isset($methods['_construct']))
       {
-        # call_user_func(array($class, '_construct'), $class, $method);
         $class::_construct($class, $method);
       }
 
@@ -296,7 +301,6 @@ class router
       if (isset($methods[$method]) || isset($methods['__callStatic']))
       {
         call_user_func_array(array($class, $method), self::$segments);
-        # $class::$method();
       }
       else
       {
@@ -311,9 +315,9 @@ class router
     // Show error if there is any
     if (!empty($error))
     {
-      if (!empty(load::$config['debug']))
+      if (!empty(\load::$config['debug']))
       {
-        throw new Exception($error);
+        self::error('500', 'Internal Server Error', array('error' => $error));
       }
       else
       {

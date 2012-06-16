@@ -4,7 +4,7 @@
   <strong>Some variables and definitions:</strong>
   <ol>
     <li>BASE_URI: <strong><?php echo BASE_URI; ?></strong></li>
-    <li>router::site_uri(): <strong><?php echo router::site_uri(); ?></strong><br /><br /></li>
+    <li>\router::site_uri(): <strong><?php echo \router::site_uri(); ?></strong><br /><br /></li>
 
     <li>BASE_PATH: <strong><?php echo BASE_PATH; ?></strong></li>
     <li>APP_PATH: <strong><?php echo APP_PATH; ?></strong></li>

@@ -23,9 +23,8 @@ $config['environment'] = 'production';
 // Set debug
 $config['debug'] = TRUE;
 
-// Debug IP
+// List of ip addresses where debug will be turned on by default
 $config['debug_ips'] = array('::1', '127.0.0.1');
-
 
 
 

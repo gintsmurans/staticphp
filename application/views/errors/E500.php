@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>404 Not Found</title>
+    <title>500 Internal Server Error</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   </head>
   <body>
-    <h1>404 Not Found</h1>
+    <h1>500 Internal Server Error</h1>    
+    <p><?php echo $data['error']; ?></p>
 	</body>
 </html>
