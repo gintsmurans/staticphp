@@ -7,10 +7,9 @@ $microtime = microtime(true);
 // Re-Define DS as DIRECTORY_SEPARATOR
 define('DS', DIRECTORY_SEPARATOR);
 
-
 // Load all core clases
-include BASE_PATH . 'system/load.php'; // Load
-include BASE_PATH . 'system/router.php'; // Router
+include SYS_PATH . 'core/load.php'; // Load
+include SYS_PATH . 'core/router.php'; // Router
 
 
 // Load default config file and routing
@@ -31,9 +30,14 @@ if (!empty(\load::$config['autoload_configs']))
 
 
 // Define our own error handler
-if (!empty(\load::$config['debug']))
+function sp_handle_errors($errno , $errstr = NULL, $errfile = NULL, $errline = NULL, $errcontext = NULL)
 {
-  function sp_handle_errors($errno , $errstr = NULL, $errfile = NULL, $errline = NULL, $errcontext = NULL)
+  if (!empty(\load::$config['debug_callback']))
+  {
+    call_user_func_array(\load::$config['debug_callback'], func_get_args());
+  }
+
+  if (!empty(\load::$config['debug']))
   {
     if (is_object($errno) === FALSE)
     {
@@ -56,10 +60,10 @@ if (!empty(\load::$config['debug']))
       \router::error('500', 'Internal Server Error', array('error' => $error));
     }
   }
-
-  set_error_handler('sp_handle_errors', E_ALL);
-  set_exception_handler('sp_handle_errors');
 }
+
+set_error_handler('sp_handle_errors', E_ALL);
+set_exception_handler('sp_handle_errors');
 
 
 // Autoload models

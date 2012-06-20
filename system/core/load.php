@@ -87,9 +87,14 @@ class load
   public static function config($files, $project = NULL)
   {
     $config =& self::$config;
-    foreach ((array) $files as $name)
+    foreach ((array) $files as $key => $name)
     {
-      include (empty($project) ? APP_PATH : BASE_PATH . $project . '/') . 'config/'. $name .'.php';
+      if (is_numeric($key) === FALSE)
+      {
+        $project = $name;
+        $name = $key;
+      }
+      include (empty($project) ? APP_PATH : BASE_PATH . $project . DS) . 'config'. DS . $name .'.php';
     }
   }
 
@@ -97,9 +102,14 @@ class load
   # Load controllers
   public static function controller($files, $project = NULL)
   {
-    foreach ((array) $files as $name)
+    foreach ((array) $files as $key => $name)
     {
-      include (empty($project) ? APP_PATH : BASE_PATH . $project . '/') . 'controllers/'. $name .'.php';
+      if (is_numeric($key) === FALSE)
+      {
+        $project = $name;
+        $name = $key;
+      }
+      include (empty($project) ? APP_PATH : BASE_PATH . $project . DS) . 'controllers'. DS . $name .'.php';
     }
   }
 
@@ -107,15 +117,20 @@ class load
   # Load models
   public static function model($files, $project = NULL)
   {
-    foreach ((array) $files as $name)
+    foreach ((array) $files as $key => $name)
     {
-      include (empty($project) ? APP_PATH : BASE_PATH . $project . '/') . 'models/'. $name .'.php';
+      if (is_numeric($key) === FALSE)
+      {
+        $project = $name;
+        $name = $key;
+      }
+      include (empty($project) ? APP_PATH : BASE_PATH . $project . DS) . 'models'. DS . $name .'.php';
     }
   }
 
 
   # Load views
-  public static function view($files, &$data = array(), $return = FALSE, $project = NULL)
+  public static function view($files, &$data = array(), $return = FALSE, $project = '')
   {
     // Check for global template variables
     if (!empty(self::$config['view_data']))
@@ -130,9 +145,14 @@ class load
     }
 
     // Include view files
-    foreach ((array) $files as $file)
+    foreach ((array) $files as $key => $file)
     {
-      include (empty($project) ? APP_PATH : BASE_PATH . $project . '/') . 'views/' . $file . '.php';
+      if (is_numeric($key) === FALSE)
+      {
+        $project = $name;
+        $name = $key;
+      }
+      include (empty($project) ? APP_PATH : BASE_PATH . $project . DS) . 'views' . DS . $file . '.php';
     }
 
     // Return it
@@ -148,9 +168,14 @@ class load
   # Helpers
   public static function helper($files, $project = NULL)
   {
-    foreach ((array) $files as $name)
+    foreach ((array) $files as $key => $name)
     {
-      include (empty($project) ? APP_PATH : BASE_PATH . $project . '/') . 'helpers/'. $name .'.php';
+      if (is_numeric($key) === FALSE)
+      {
+        $project = $name;
+        $name = $key;
+      }
+      include (empty($project) ? APP_PATH : BASE_PATH . $project . DS) . 'helpers' . DS . $name .'.php';
     }
   }
 

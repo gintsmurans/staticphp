@@ -9,7 +9,6 @@ body{
 
 h1{
   color: #555555;
-  text-align: center;
 }
 
 a{
@@ -28,5 +27,20 @@ a.active{
 
 
 .content{
-  padding: 20px;
+  padding: 5px 20px;
+}
+
+
+h2{
+  border-bottom: 1px #777 dashed;
+}
+
+div.description{
+  display: none;
+}
+
+.section{
+  display: block;
+  border-bottom: 1px #ffcc21 solid;
+  margin: 10px 0 5px;
 }

@@ -26,6 +26,8 @@ $config['debug'] = TRUE;
 // List of ip addresses where debug will be turned on by default
 $config['debug_ips'] = array('::1', '127.0.0.1');
 
+// Error pre-processing function
+$config['debug_callback'] = NULL;
 
 
 /*
@@ -65,8 +67,8 @@ $config['url_prefixes'] = array();
 |--------------------------------------------------------------------------
 | Autoload
 |
-| Place filenames without ".php" extension here to autoload 
-| various files and classes
+| Place filenames without ".php" extension here to autoload various files and classes
+| To auto-load files from other projects as well from system, use array('db' => 'system')
 |--------------------------------------------------------------------------
 */
 
