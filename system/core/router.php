@@ -175,6 +175,7 @@ class router
 
     // Explode segments
     self::$segments = explode('/', $uri);
+    self::$segments = array_map('rawurldecode', self::$segments);
 
     // Get URL prefixes
     foreach(\load::$config['url_prefixes'] as &$item)
