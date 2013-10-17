@@ -174,7 +174,7 @@ class router
     self::$segments_full_url = $uri . (empty(\load::$config['query_string']) ? '' : '?'. \load::$config['query_string']);
 
     // Explode segments
-    self::$segments = explode('/', $uri);
+    self::$segments = (empty($uri) ? [] : explode('/', $uri));
     self::$segments = array_map('rawurldecode', self::$segments);
 
     // Get URL prefixes
