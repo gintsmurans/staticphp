@@ -135,7 +135,7 @@ class load
     // Check for global template variables
     if (!empty(self::$config['view_data']))
     {
-      $data = $data + (array) self::$config['view_data'];
+      $data = (array)$data + (array)self::$config['view_data'];
     }
 
     // Return it
