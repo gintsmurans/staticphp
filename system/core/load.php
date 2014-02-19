@@ -89,12 +89,13 @@ class load
     $config =& self::$config;
     foreach ((array) $files as $key => $name)
     {
+      $project1 = $project;
       if (is_numeric($key) === FALSE)
       {
-        $project = $name;
+        $project1 = $name;
         $name = $key;
       }
-      include (empty($project) ? APP_PATH : BASE_PATH . $project . DS) . 'config'. DS . $name .'.php';
+      include (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'config'. DS . $name .'.php';
     }
   }
 
@@ -104,12 +105,13 @@ class load
   {
     foreach ((array) $files as $key => $name)
     {
+      $project1 = $project;
       if (is_numeric($key) === FALSE)
       {
-        $project = $name;
+        $project1 = $name;
         $name = $key;
       }
-      include (empty($project) ? APP_PATH : BASE_PATH . $project . DS) . 'controllers'. DS . $name .'.php';
+      include (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'controllers'. DS . $name .'.php';
     }
   }
 
@@ -119,12 +121,13 @@ class load
   {
     foreach ((array) $files as $key => $name)
     {
+      $project1 = $project;
       if (is_numeric($key) === FALSE)
       {
-        $project = $name;
+        $project1 = $name;
         $name = $key;
       }
-      include (empty($project) ? APP_PATH : BASE_PATH . $project . DS) . 'models'. DS . $name .'.php';
+      include (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'models'. DS . $name .'.php';
     }
   }
 
@@ -147,12 +150,13 @@ class load
     // Include view files
     foreach ((array) $files as $key => $file)
     {
+      $project1 = $project;
       if (is_numeric($key) === FALSE)
       {
-        $project = $name;
+        $project1 = $name;
         $name = $key;
       }
-      include (empty($project) ? APP_PATH : BASE_PATH . $project . DS) . 'views' . DS . $file . '.php';
+      include (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'views' . DS . $file . '.php';
     }
 
     // Return it
@@ -170,12 +174,13 @@ class load
   {
     foreach ((array) $files as $key => $name)
     {
+      $project1 = $project;
       if (is_numeric($key) === FALSE)
       {
-        $project = $name;
+        $project1 = $name;
         $name = $key;
       }
-      include (empty($project) ? APP_PATH : BASE_PATH . $project . DS) . 'helpers' . DS . $name .'.php';
+      include (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'helpers' . DS . $name .'.php';
     }
   }
 
