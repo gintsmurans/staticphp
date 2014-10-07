@@ -5,9 +5,9 @@ namespace models;
 class pages
 {
   private static $obj = null;
-  private static $base_uri = NULL;
+  private static $base_uri = null;
 
-  public static function init($record_count, $active_page, $page_limit, $pages_display = 10, $base_uri = NULL)
+  public static function init($record_count, $active_page, $page_limit, $pages_display = 10, $base_uri = null)
   {
     self::$base_uri = $base_uri;
 

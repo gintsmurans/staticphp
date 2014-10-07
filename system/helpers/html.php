@@ -36,7 +36,7 @@ function css()
         default:
           if (defined('HTML_CSS_VERSION'))
           {
-            $file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . HTML_CSS_VERSION;
+            $file = $file . (strpos($file, '?') !== false ? '&' : '?') . HTML_CSS_VERSION;
           }
           echo '<link rel="stylesheet" type="text/css" href="', $file, '" />';
         break;
@@ -67,7 +67,7 @@ function js()
         default:
           if (defined('HTML_JS_VERSION'))
           {
-            $file = $file . (strpos($file, '?') !== FALSE ? '&' : '?') . HTML_JS_VERSION;
+            $file = $file . (strpos($file, '?') !== false ? '&' : '?') . HTML_JS_VERSION;
           }
           echo '<script type="text/javascript" src="', $file, '"></script>', "\n";
         break;
@@ -87,7 +87,7 @@ function js()
 
 
 // Return html dropdown
-function dropdown($items, $selected = NULL, $addons = NULL, $add_empty = FALSE, $as_value = NULL, $as_text = NULL, $grouped = FALSE)
+function dropdown($items, $selected = null, $addons = null, $add_empty = false, $as_value = null, $as_text = null, $grouped = false)
 {
   $select = (empty($grouped) ? '<select'. (!empty($addons['#']) ? ' ' . $addons['#'] : '') .'>' : '');
 
@@ -114,7 +114,7 @@ function dropdown($items, $selected = NULL, $addons = NULL, $add_empty = FALSE, 
     if (is_array($text))
     {
       $select .= '<optgroup label="'. $value .'">';
-      $select .= dropdown($text, $selected, $addons, FALSE, $as_value, $as_text, TRUE);
+      $select .= dropdown($text, $selected, $addons, false, $as_value, $as_text, true);
       $select .= '</optgroup>';
       continue;
     }
@@ -159,11 +159,11 @@ function set_selected(&$current, $needle)
   // Check in the array
   if (is_array($current))
   {
-    return (isset($current[$needle]) || in_array($needle, $current) ? ' selected="selected"' : NULL);
+    return (isset($current[$needle]) || in_array($needle, $current) ? ' selected="selected"' : null);
   }
 
   // Else just compare them
-  return ($current == $needle ? ' selected="selected"' : NULL);
+  return ($current == $needle ? ' selected="selected"' : null);
 }
 
 
@@ -173,11 +173,11 @@ function set_checked(&$current, $needle)
   // Check in the array
   if (is_array($current))
   {
-    return (isset($current[$needle]) || in_array($needle, $current) ? ' checked="checked"' : NULL);
+    return (isset($current[$needle]) || in_array($needle, $current) ? ' checked="checked"' : null);
   }
 
   // Else just compare them
-  return ($current == $needle ? ' checked="checked"' : NULL);
+  return ($current == $needle ? ' checked="checked"' : null);
 }
 
 ?>

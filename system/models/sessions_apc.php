@@ -12,10 +12,10 @@ namespace models;
 
 class sessions_apc extends sessions
 {
-  private $db_link = FALSE;
+  private $db_link = false;
 
 
-  public function __construct(&$db_link = NULL)
+  public function __construct(&$db_link = null)
   {
     $this->db_link = &$db_link;
     parent::__construct($this->db_link);
@@ -30,7 +30,7 @@ class sessions_apc extends sessions
       return $data;
     }
 
-    return (!empty($this->db_link) ? parent::read($id) : NULL);
+    return (!empty($this->db_link) ? parent::read($id) : null);
   }
 
 
@@ -43,7 +43,7 @@ class sessions_apc extends sessions
       parent::write($id, $data);
     }
 
-    return TRUE;
+    return true;
   }
 
 
@@ -56,7 +56,7 @@ class sessions_apc extends sessions
       parent::destroy($id);
     }
 
-    return TRUE;
+    return true;
   }
 }
 

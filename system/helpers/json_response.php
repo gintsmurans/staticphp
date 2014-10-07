@@ -14,7 +14,7 @@
 
 function json_response(&$json_data)
 {
-  static $json_request = FALSE;
+  static $json_request = false;
   if (empty($json_request))
   {
     header('Content-Type:application/json; charset=utf-8');
@@ -26,7 +26,7 @@ function json_response(&$json_data)
       }
     }, array(&$json_data));
 
-    $json_request = TRUE;
+    $json_request = true;
   }
 }
 

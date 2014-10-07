@@ -10,16 +10,16 @@ namespace models;
 
 class sessions_mongodb
 {
-  private $st = NULL; // session table
-  private $data = NULL;
-  private $salt = NULL;
+  private $st = null; // session table
+  private $data = null;
+  private $salt = null;
 
 
   public function __construct(&$mdb)
   {
     // Secure our sessions a little bit more
     session_name('SSSSS');
-    ini_set('session.use_only_cookies', TRUE);
+    ini_set('session.use_only_cookies', true);
 
     ini_set('session.entropy_file', '/dev/urandom');
 
@@ -66,8 +66,8 @@ class sessions_mongodb
 
   public function read($id)
   {
-    $this->data = $this->st->find(array('id' => $id, 'check' => $this->salt))->fields(array('data' => TRUE))->getNext();
-    return (empty($this->data) ? NULL : $this->data['data']);
+    $this->data = $this->st->find(array('id' => $id, 'check' => $this->salt))->fields(array('data' => true))->getNext();
+    return (empty($this->data) ? null : $this->data['data']);
   }
 
 
@@ -79,7 +79,7 @@ class sessions_mongodb
     $this->data['expires'] = time();
     $this->st->save($this->data);
 
-    return TRUE;
+    return true;
   }
 
 
@@ -88,19 +88,19 @@ class sessions_mongodb
     $this->st->remove(array('id' => $id));
 
     // Also delete the cookie
-    if (headers_sent() == FALSE)
+    if (headers_sent() == false)
     {
       setcookie($this->prefix, '', time() - 1, '/'); 
     }
 
-    return TRUE;
+    return true;
   }
 
 
   public function gc($max)
   {
     $this->st->remove(array('expires' => array('$lt' => (time() - $max))));
-    return TRUE;
+    return true;
   }
 }
 

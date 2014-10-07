@@ -17,7 +17,7 @@ class load
   # Get config variable
   public static function &get($name)
   {
-    return (isset(self::$config[$name]) ? self::$config[$name] : FALSE);
+    return (isset(self::$config[$name]) ? self::$config[$name] : false);
   }
 
 
@@ -31,7 +31,7 @@ class load
 
 
   # Merge config variable
-  public static function merge($name, $value, $owerwrite = TRUE)
+  public static function merge($name, $value, $owerwrite = true)
   {
     if (!isset(self::$config[$name]))
     {
@@ -84,13 +84,13 @@ class load
   */
 
   # Load config files
-  public static function config($files, $project = NULL)
+  public static function config($files, $project = null)
   {
     $config =& self::$config;
     foreach ((array) $files as $key => $name)
     {
       $project1 = $project;
-      if (is_numeric($key) === FALSE)
+      if (is_numeric($key) === false)
       {
         $project1 = $name;
         $name = $key;
@@ -101,12 +101,12 @@ class load
 
 
   # Load controllers
-  public static function controller($files, $project = NULL)
+  public static function controller($files, $project = null)
   {
     foreach ((array) $files as $key => $name)
     {
       $project1 = $project;
-      if (is_numeric($key) === FALSE)
+      if (is_numeric($key) === false)
       {
         $project1 = $name;
         $name = $key;
@@ -117,12 +117,12 @@ class load
 
 
   # Load models
-  public static function model($files, $project = NULL)
+  public static function model($files, $project = null)
   {
     foreach ((array) $files as $key => $name)
     {
       $project1 = $project;
-      if (is_numeric($key) === FALSE)
+      if (is_numeric($key) === false)
       {
         $project1 = $name;
         $name = $key;
@@ -133,7 +133,7 @@ class load
 
 
   # Load views
-  public static function view($files, &$data = array(), $return = FALSE, $project = '')
+  public static function view($files, &$data = array(), $return = false, $project = '')
   {
     // Check for global template variables
     if (!empty(self::$config['view_data']))
@@ -151,7 +151,7 @@ class load
     foreach ((array) $files as $key => $file)
     {
       $project1 = $project;
-      if (is_numeric($key) === FALSE)
+      if (is_numeric($key) === false)
       {
         $project1 = $name;
         $name = $key;
@@ -170,12 +170,12 @@ class load
 
 
   # Helpers
-  public static function helper($files, $project = NULL)
+  public static function helper($files, $project = null)
   {
     foreach ((array) $files as $key => $name)
     {
       $project1 = $project;
-      if (is_numeric($key) === FALSE)
+      if (is_numeric($key) === false)
       {
         $project1 = $name;
         $name = $key;

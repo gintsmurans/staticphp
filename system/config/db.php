@@ -7,10 +7,10 @@ $config['db']['pdo']['default'] = array(
   'username' => '',
   'password' => '',
   'charset' => 'UTF8',
-  'persistent' => TRUE,
+  'persistent' => true,
   'wrap_column' => '`', // ` - for mysql, " - for postgresql
-  'fetch_mode_objects' => FALSE,
-  'debug' => FALSE,
+  'fetch_mode_objects' => false,
+  'debug' => false
 );
 
 ?>

@@ -12,16 +12,16 @@ namespace models;
 
 class sessions
 {
-  public $prefix = NULL;
-  public $expire = NULL;
+  public $prefix = null;
+  public $expire = null;
 
-  private $db_link = NULL;
+  private $db_link = null;
 
   public function __construct(&$db_link)
   {  
     // Secure our sessions a little bit more
     session_name('SSSSS');
-    ini_set('session.use_only_cookies', TRUE);
+    ini_set('session.use_only_cookies', true);
 
     ini_set('session.entropy_file', '/dev/urandom');
 
@@ -60,13 +60,13 @@ class sessions
 
   public function open()
   {
-    return TRUE;
+    return true;
   }
 
 
   public function close()
   {
-    return TRUE;
+    return true;
   }
 
 
@@ -77,7 +77,7 @@ class sessions
   {
    return $res->data;
   }
-    return NULL;
+    return null;
   }
 
 
@@ -85,7 +85,7 @@ class sessions
   {
     self::destroy($id);
     self::query('INSERT INTO sessions VALUES (?, ?, ?)', array($id, $data, time()));
-    return TRUE;
+    return true;
   }
 
 
@@ -94,27 +94,27 @@ class sessions
     self::query('DELETE FROM "sessions" WHERE "id" = ?', $id);
 
     // Also delete the cookie
-    if (headers_sent() == FALSE)
+    if (headers_sent() == false)
     {
       setcookie($this->prefix, '', time() - 1, '/'); 
     }
 
-    return TRUE;
+    return true;
   }
 
 
   public function gc($max)
   {
     db::query('DELETE FROM "sessions" WHERE "expires" <= ?', (time() - $max));
-    return TRUE;
+    return true;
   }
 
 
-  private function query($query, $data = NULL, $name = 'default')
+  private function query($query, $data = null, $name = 'default')
   {
     if (empty($query))
     {
-      return NULL;
+      return null;
     }
 
     if (empty($this->db_link))

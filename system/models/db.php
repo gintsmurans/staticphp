@@ -4,7 +4,7 @@ namespace models;
 
 class db
 {
-  public static $queries = NULL;
+  public static $queries = null;
   public static $query_count = 0;
 
   private static $db_links;
@@ -19,7 +19,7 @@ class db
     {
       if (empty(\load::$config['db']['pdo'][$name]))
       {
-        return FALSE;
+        return false;
       }
 
       $config = \load::$config['db']['pdo'][$name];
@@ -38,7 +38,7 @@ class db
     self::$db_links[$name]['link'] = new \PDO($config['string'], $config['username'], $config['password'], array(
       \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
       \PDO::ATTR_CASE => \PDO::CASE_NATURAL,
-      \PDO::ATTR_DEFAULT_FETCH_MODE => (empty($config['fetch_mode_objects']) || $config['fetch_mode_objects'] === true ? \PDO::FETCH_OBJ : \PDO::FETCH_ASSOC),
+      \PDO::ATTR_DEFAULT_FETCH_MODE => (!empty($config['fetch_mode_objects']) ? \PDO::FETCH_OBJ : \PDO::FETCH_ASSOC),
       \PDO::ATTR_PERSISTENT => $config['persistent']
     ));
 
@@ -54,13 +54,13 @@ class db
 
 
  // -- Query
-  public static function query($query, $data = NULL, $name = 'default')
+  public static function query($query, $data = null, $name = 'default')
   {
     $db_link = &self::$db_links[$name]['link'];
 
     if (empty($query))
     {
-      return NULL;
+      return null;
     }
 
     if (empty($db_link))
@@ -203,13 +203,13 @@ class db
  // -- Return the last query executed
   public static function last_query()
   {
-    return empty(self::$last_statement) ? NULL : self::$last_statement->queryString;
+    return empty(self::$last_statement) ? null : self::$last_statement->queryString;
   }
 
 
 
   // -- Return the last insert id is created into database
-  public static function last_insert_id($sequence_name = '', $sql = FALSE, $name = 'default')
+  public static function last_insert_id($sequence_name = '', $sql = false, $name = 'default')
   {
     if (empty($sql))
     {
@@ -225,7 +225,7 @@ class db
       {
         $res = self::query('SELECT currval(?) as id', $sequence_name);
       }
-      return (empty($res->id) ? NULL : $res->id);
+      return (empty($res->id) ? null : $res->id);
     }
   }
 }

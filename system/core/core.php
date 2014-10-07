@@ -30,7 +30,7 @@ if (!empty(\load::$config['autoload_configs']))
 
 
 // Define our own error handler
-function sp_handle_errors($errno , $errstr = NULL, $errfile = NULL, $errline = NULL, $errcontext = NULL)
+function sp_handle_errors($errno , $errstr = null, $errfile = null, $errline = null, $errcontext = null)
 {
   if (!empty(\load::$config['debug_callback']))
   {
@@ -39,12 +39,12 @@ function sp_handle_errors($errno , $errstr = NULL, $errfile = NULL, $errline = N
 
   if (!empty(\load::$config['debug']))
   {
-    if (is_object($errno) === FALSE)
+    if (is_object($errno) === false)
     {
       echo '<p style="background: #FFFFFF; color: #424242;">', "{$errstr}<br />", "{$errfile} (line {$errline})<br />";
       if (!empty($errcontext))
       {
-        print_r($errcontext, TRUE);
+        print_r($errcontext, true);
       }
       echo '</p>';
     }

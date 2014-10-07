@@ -13,11 +13,11 @@ namespace models;
 
 class sessions_memcached extends sessions
 {
-  private $memcached = NULL;
-  private $db_link = FALSE;
+  private $memcached = null;
+  private $db_link = false;
 
 
-  public function __construct(&$memcached, &$db_link = NULL)
+  public function __construct(&$memcached, &$db_link = null)
   {
     $this->memcached = $memcached;
     $this->db_link = &$db_link;
@@ -33,7 +33,7 @@ class sessions_memcached extends sessions
       return $data;
     }
 
-    return (!empty($this->db_link) ? parent::read($id) : NULL);
+    return (!empty($this->db_link) ? parent::read($id) : null);
   }
 
 
@@ -46,7 +46,7 @@ class sessions_memcached extends sessions
       parent::write($id, $data);
     }
 
-    return TRUE;
+    return true;
   }
 
 
@@ -59,7 +59,7 @@ class sessions_memcached extends sessions
       parent::destroy($id);
     }
 
-    return TRUE;
+    return true;
   }
 }
 

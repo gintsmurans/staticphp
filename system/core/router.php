@@ -10,19 +10,19 @@ class router
   */
 
   public static $prefixes = array();
-  public static $prefixes_url = NULL;
+  public static $prefixes_url = null;
 
   public static $segments = array();
-  public static $segments_url = NULL;
-  public static $segments_full_url = NULL;
+  public static $segments_url = null;
+  public static $segments_full_url = null;
   public static $segments_requested = array();
 
-  public static $domain_uri = NULL;
-  public static $base_uri = NULL;
+  public static $domain_uri = null;
+  public static $base_uri = null;
 
-  public static $file = NULL;
-  public static $class = NULL;
-  public static $method = NULL;
+  public static $file = null;
+  public static $class = null;
+  public static $method = null;
 
 
   /*
@@ -39,7 +39,7 @@ class router
 
 
   # Get site uri
-  public static function site_uri($url = '', $prefix = NULL, $current_prefix = TRUE)
+  public static function site_uri($url = '', $prefix = null, $current_prefix = true)
   {
     $url002  = !empty($prefix) ? trim($prefix, '/') . '/' : '';
     $url002 .= !empty($current_prefix) && !empty(self::$prefixes_url) ? self::$prefixes_url . '/' : '';
@@ -55,16 +55,16 @@ class router
 
 
   # Redirect
-  public static function redirect($url = '', $site_uri = TRUE, $e301 = FALSE, $type = 'http')
+  public static function redirect($url = '', $site_uri = true, $e301 = false, $type = 'http')
   {
     switch ($type)
     {
       case 'js':
-        echo '<script type="text/javascript"> window.location.href = \'', ($site_uri === FALSE ? $url : self::site_uri($url)), '\'; </script>';
+        echo '<script type="text/javascript"> window.location.href = \'', ($site_uri === false ? $url : self::site_uri($url)), '\'; </script>';
       break;
 
       default:
-        if ($e301 === TRUE)
+        if ($e301 === true)
         {
             header("HTTP/1.1 301 Moved Permanently");
         }
@@ -87,12 +87,12 @@ class router
   # Return segment in url by $index
   public static function segment($index)
   {
-    return (empty(self::$segments[$index]) ? NULL : self::$segments[$index]);
+    return (empty(self::$segments[$index]) ? null : self::$segments[$index]);
   }
 
 
   # Show http error
-  public static function error($error_code, $error_string, $data = NULL)
+  public static function error($error_code, $error_string, $data = null)
   {
     header('HTTP/1.0 '. $error_code .' '. $error_string);
     \load::view('errors/E'. $error_code, $data);
@@ -131,7 +131,7 @@ class router
 
 
   # Split segments
-  public static function split_segments($force = FALSE)
+  public static function split_segments($force = false)
   {
     if (empty($force) && !empty(self::$domain_uri))
     {
@@ -224,7 +224,7 @@ class router
     // Controller and method count, this number is needed because of subdirectory controllers and possibility to have and have not method provided
     $count = 0;
 
-    switch (TRUE)
+    switch (true)
     {
       // Controller is in subdirectory
       case (!empty(self::$segments[1]) && is_file(APP_PATH .'controllers'. DS . self::$segments[0] . DS . self::$segments[1] . '.php')):
