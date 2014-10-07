@@ -12,7 +12,7 @@ class db
 
 
   // -- INIT
-  public static function init($config, $name = 'default')
+  public static function init($config = null, $name = 'default')
   {
     // Check if there is such configuration
     if (empty($config))
@@ -38,7 +38,7 @@ class db
     self::$db_links[$name]['link'] = new \PDO($config['string'], $config['username'], $config['password'], array(
       \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
       \PDO::ATTR_CASE => \PDO::CASE_NATURAL,
-      \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
+      \PDO::ATTR_DEFAULT_FETCH_MODE => (empty($config['fetch_mode_objects']) || $config['fetch_mode_objects'] === true ? \PDO::FETCH_OBJ : \PDO::FETCH_ASSOC),
       \PDO::ATTR_PERSISTENT => $config['persistent']
     ));
 

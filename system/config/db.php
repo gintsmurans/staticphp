@@ -9,6 +9,7 @@ $config['db']['pdo']['default'] = array(
   'charset' => 'UTF8',
   'persistent' => TRUE,
   'wrap_column' => '`', // ` - for mysql, " - for postgresql
+  'fetch_mode_objects' => FALSE,
   'debug' => FALSE,
 );
 
