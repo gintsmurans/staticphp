@@ -5,12 +5,12 @@
     Simple usage:
 
     fv::init($_POST);
-    fv::add_rules(array(
-        'email' => array(
-            'valid' => array('required', 'email'),
-            'filter' => array('trim'),
-        ),
-    ));
+    fv::add_rules([
+        'email' => [
+            'valid' => ['required', 'email'],
+            'filter' => ['trim'],
+        ],
+    ]);
 
     // This will print out all errors
     if (fv::validate() == false)
@@ -27,7 +27,7 @@
     <div><input type="text" name="email"<?php fv::set_input('email'); ?> /></div>
 
     // And even this one
-    <div><input type="text" name="test[]"<?php fv::set_input(array('test', 0)); ?> /></div>
+    <div><input type="text" name="test[]"<?php fv::set_input(['test', 0]); ?> /></div>
 */
 
 namespace models;
@@ -39,10 +39,10 @@ class fv
     public static $errors = null;
     public static $errors_all = null;
 
-    public static $post = array();
-    private static $rules = array();
+    public static $post = [];
+    private static $rules = [];
 
-    private static $default_errors = array(
+    private static $default_errors = [
         'missing' => 'Field "!name" is missing',
         'required' => 'Field "!name" is required',
         'email' => '"!value" is not a correct e-mail address',
@@ -62,7 +62,7 @@ class fv
         'upload_required' => 'Field "!name" is required',
         'upload_size' => 'Uploaded file is to large',
         'upload_ext' => 'File type is not allowed',
-    );
+    ];
 
 
 
@@ -116,7 +116,7 @@ class fv
         {
             foreach (self::$rules[$name]['filter'] as $item)
             {
-                $matches = $args = array();
+                $matches = $args = [];
                 $call = null;
 
                 // Get args from []
@@ -143,7 +143,7 @@ class fv
         {
             foreach (self::$rules[$name]['valid'] as $item)
             {
-                $matches = $args = array();
+                $matches = $args = [];
                 $call = null;
 
                 // Get args from []
@@ -176,7 +176,7 @@ class fv
             (!empty(self::$rules[$name]['errors'][$type]) ? self::$rules[$name]['errors'][$type] : (
                 empty(self::$default_errors[$type]) ? '' : self::$default_errors[$type])
             ),
-            array('!name' => $name, '!value' => $value)
+            ['!name' => $name, '!value' => $value]
         );
     }
 
@@ -191,7 +191,7 @@ class fv
         // Check for callable function
         if (method_exists('fv', $func))
         {
-            $call = array('fv', $func);
+            $call = ['fv', $func];
         }
         elseif (function_exists($func))
         {
@@ -227,7 +227,7 @@ class fv
         $string = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
         $string = strip_tags($string);
         $string = strtolower($string);
-        $string = str_replace(array(' ', "'", '--', '--'), '-', $string);
+        $string = str_replace([' ', "'", '--', '--'], '-', $string);
         $string = preg_replace('/[^a-z_\-0-9]*/', '', $string);
         $string = trim($string, '-');
 
@@ -243,12 +243,12 @@ class fv
         $string = preg_replace('#(<)([a-z]+[^>]*(</[a-z]*>|</|$))#iu', '&lt;$2', $string);
 
         // Avoid php tags
-        $string = str_ireplace(array("\t", '<?php', '<?', '?>'),  array(' ', '&lt;?php', '&lt;?', '?&gt;'), $string);
+        $string = str_ireplace(["\t", '<?php', '<?', '?>'],  [' ', '&lt;?php', '&lt;?', '?&gt;'], $string);
 
         // Clean empty tags
         $string = preg_replace('#<(?!input¦br¦img¦hr¦\/)[^>]*>\s*<\/[^>]*>#iu', '', $string);
 
-        $string = str_ireplace(array("&amp;", "&lt;", "&gt;"), array("&amp;amp;", "&amp;lt;", "&amp;gt;"), $string);
+        $string = str_ireplace(["&amp;", "&lt;", "&gt;"], ["&amp;amp;", "&amp;lt;", "&amp;gt;"], $string);
 
         // fix &entitiy\n;
         $string = preg_replace('#(&\#*\w+)[\x00-\x20]+;#u', "$1;", $string);
@@ -427,7 +427,7 @@ class fv
         // Check if isset keys in POST data
         if ($isset !== null)
         {
-            foreach((array) $isset as $key)
+            foreach((array)$isset as $key)
             {
                 if (!isset($_POST[$key]))
                 {

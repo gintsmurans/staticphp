@@ -1,12 +1,16 @@
 <?php
 
+// Define config array
+$config = [];
+
+
 /*
 |--------------------------------------------------------------------------
 | General
 |--------------------------------------------------------------------------
 */
 
-$config['base_uri'] = NULL; // NULL for auto detect
+$config['base_uri'] = null; // NULL for auto detect
 
 
 
@@ -21,13 +25,13 @@ $config['base_uri'] = NULL; // NULL for auto detect
 $config['environment'] = 'production';
 
 // Set debug
-$config['debug'] = TRUE;
+$config['debug'] = true;
 
 // List of ip addresses where debug will be turned on by default
-$config['debug_ips'] = array('::1', '127.0.0.1');
+$config['debug_ips'] = ['::1', '127.0.0.1'];
 
 // Error pre-processing function
-$config['debug_callback'] = NULL;
+$config['debug_callback'] = null;
 
 
 /*
@@ -55,10 +59,10 @@ $config['client_ip'] =& $_SERVER['REMOTE_ADDR'];
 | URL prefixes can be useful when for example identifying ajax requests,
 | they will be stored in config variable and can be checked with Router::have_prefix('ajax') === TRUE
 | they must be in correct sequence. For example, if url is /ajax/test/en/open/29, where ajax and test is prefixes,
-| then array should look like this - array('ajax', 'test'), anyway url can also look like /test/en/open/29.
+| then array should look like this - ['ajax', 'test'], anyway url can also look like /test/en/open/29.
 |--------------------------------------------------------------------------
 */
-$config['url_prefixes'] = array();
+$config['url_prefixes'] = [];
 
 
 
@@ -68,13 +72,13 @@ $config['url_prefixes'] = array();
 | Autoload
 |
 | Place filenames without ".php" extension here to autoload various files and classes
-| To auto-load files from other projects as well from system, use array('db' => 'system')
+| To auto-load files from other projects as well from system, use ['db' => 'system']
 |--------------------------------------------------------------------------
 */
 
-$config['autoload_configs'] = array();
-$config['autoload_models'] = array();
-$config['autoload_helpers'] = array('system');
+$config['autoload_configs'] = [];
+$config['autoload_models'] = [];
+$config['autoload_helpers'] = ['system'];
 
 
 
@@ -87,6 +91,6 @@ $config['autoload_helpers'] = array('system');
 |--------------------------------------------------------------------------
 */
 
-$config['before_controller'] = array();
+$config['before_controller'] = [];
 
 ?>

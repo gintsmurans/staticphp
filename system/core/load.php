@@ -2,10 +2,10 @@
 
 class load
 {
-    public static $config = array();
+    public static $config = [];
 
-    private static $started_timers = array();
-    private static $finished_timers = array();
+    private static $started_timers = [];
+    private static $finished_timers = [];
 
 
     /*
@@ -87,7 +87,7 @@ class load
     public static function config($files, $project = null)
     {
         $config =& self::$config;
-        foreach ((array) $files as $key => $name)
+        foreach ((array)$files as $key => $name)
         {
             $project1 = $project;
             if (is_numeric($key) === false)
@@ -103,7 +103,7 @@ class load
     # Load controllers
     public static function controller($files, $project = null)
     {
-        foreach ((array) $files as $key => $name)
+        foreach ((array)$files as $key => $name)
         {
             $project1 = $project;
             if (is_numeric($key) === false)
@@ -119,7 +119,7 @@ class load
     # Load models
     public static function model($files, $project = null)
     {
-        foreach ((array) $files as $key => $name)
+        foreach ((array)$files as $key => $name)
         {
             $project1 = $project;
             if (is_numeric($key) === false)
@@ -133,7 +133,7 @@ class load
 
 
     # Load views
-    public static function view($files, &$data = array(), $return = false, $project = '')
+    public static function view($files, &$data = [], $return = false, $project = '')
     {
         // Check for global template variables
         if (!empty(self::$config['view_data']))
@@ -148,7 +148,7 @@ class load
         }
 
         // Include view files
-        foreach ((array) $files as $key => $file)
+        foreach ((array)$files as $key => $file)
         {
             $project1 = $project;
             if (is_numeric($key) === false)
@@ -172,7 +172,7 @@ class load
     # Helpers
     public static function helper($files, $project = null)
     {
-        foreach ((array) $files as $key => $name)
+        foreach ((array)$files as $key => $name)
         {
             $project1 = $project;
             if (is_numeric($key) === false)

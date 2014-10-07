@@ -17,7 +17,7 @@ namespace html;
 
 function css()
 {
-    static $files = array();
+    static $files = [];
     
     if (func_num_args() > 0)
     {
@@ -48,7 +48,7 @@ function css()
 
 function js()
 {
-    static $files = array();
+    static $files = [];
     
     if (func_num_args() > 0)
     {

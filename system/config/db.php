@@ -2,7 +2,7 @@
 
 // Database configuration, See PDO documentation for connection string: http://php.net/manual/en/pdo.construct.php for more information
 
-$config['db']['pdo']['default'] = array(
+$config['db']['pdo']['default'] = [
     'string' => 'mysql:host=localhost;dbname=',
     'username' => '',
     'password' => '',
@@ -11,6 +11,6 @@ $config['db']['pdo']['default'] = array(
     'wrap_column' => '`', // ` - for mysql, " - for postgresql
     'fetch_mode_objects' => false,
     'debug' => false
-);
+];
 
 ?>

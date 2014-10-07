@@ -44,12 +44,12 @@ class sessions
 
         // Register session handler
         session_set_save_handler(
-            array($this, 'open'),
-            array($this, 'close'),
-            array($this, 'read'),
-            array($this, 'write'),
-            array($this, 'destroy'),
-            array($this, 'gc')
+            [$this, 'open'],
+            [$this, 'close'],
+            [$this, 'read'],
+            [$this, 'write'],
+            [$this, 'destroy'],
+            [$this, 'gc']
         );
         session_start();
     }
@@ -87,7 +87,7 @@ class sessions
     public function write($id, $data)
     {
         self::destroy($id);
-        self::query('INSERT INTO sessions VALUES (?, ?, ?)', array($id, $data, time()));
+        self::query('INSERT INTO sessions VALUES (?, ?, ?)', [$id, $data, time()]);
         return true;
     }
 

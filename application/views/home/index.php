@@ -50,8 +50,8 @@
     <br /><br />
     Controller:
     <pre>
-$data = array('msg' => 'Important message');
-\load::view(array('header', 'home/index', 'footer'));
+$data = ['msg' => 'Important message'];
+\load::view(['header', 'home/index', 'footer']);
     </pre>
 
     View: (application/views/home/index)
@@ -103,7 +103,7 @@ $data = array('msg' => 'Important message');
         <li><i>public static function config($files, $project = NULL)</i></li>
         <li><i>public static function controller($files, $project = NULL)</i></li>
         <li><i>public static function model($files, $project = NULL)</i></li>
-        <li><i>public static function view($files, &$data = array(), $return = FALSE, $project = NULL)</i></li>
+        <li><i>public static function view($files, &$data = [], $return = FALSE, $project = NULL)</i></li>
         <li><i>public static function helper($files, $project = NULL)</i></li>
         <li><i>public static function start_timer()</i></li>
         <li><i>public static function stop_timer($name)</i></li>
@@ -131,7 +131,7 @@ $data = array('msg' => 'Important message');
       <strong class="section">Connecting to the database</strong>
       <pre>
 \load::model('db', 'system');
-\models\db::init(array(
+\models\db::init([
   'string' => 'mysql:host=localhost;dbname=',
   'username' => '',
   'password' => '',
@@ -139,7 +139,7 @@ $data = array('msg' => 'Important message');
   'persistent' => TRUE,
   'wrap_column' => '`', // ` - for mysql, " - for postgresql
   'debug' => FALSE,
-));
+]);
 
 // or
 
@@ -157,22 +157,22 @@ $data = array('msg' => 'Important message');
 
       <strong class="section">Inserting</strong>
       <pre>
-\models\db::query('INSERT INTO users SET name = ?, email = ?', array('Gints', 'gm@gm.lv'));
+\models\db::query('INSERT INTO users SET name = ?, email = ?', ['Gints', 'gm@gm.lv']);
 
-\models\db::insert('users', array(
+\models\db::insert('users', [
   'name' => 'Gints',
   'email' => 'gm@gm.lv'
-));
+]);
       </pre>
 
       <strong class="section">Updating</strong>
       <pre>
-\models\db::query('UPDATE users SET name = ?, email = ? WHERE user_id = ?', array('Gints', 'gm@gm.lv', $user_id));
+\models\db::query('UPDATE users SET name = ?, email = ? WHERE user_id = ?', ['Gints', 'gm@gm.lv', $user_id]);
 
-\models\db::update('users', array(
+\models\db::update('users', [
   'name' => 'Gints',
   'email' => 'gm@gm.lv'
-), array('user_id' => $user_id));
+], ['user_id' => $user_id]);
       </pre>
 
 
@@ -180,8 +180,8 @@ $data = array('msg' => 'Important message');
       <ul>
         <li><i>(PDO) public static function init($config, $name = 'default')</i></li>
         <li><i>(PDOStatement) public static function query($query, $data = NULL, $name = 'default')</i></li>
-        <li><i>(object) public static function fetch($query, $data = array(), $name = 'default')</i></li>
-        <li><i>(array) public static function fetchAll($query, $data = array(), $name = 'default')</i></li>
+        <li><i>(object) public static function fetch($query, $data = [], $name = 'default')</i></li>
+        <li><i>(array) public static function fetchAll($query, $data = [], $name = 'default')</i></li>
         <li><i>(PDOStatement) public static function update($table, $data, $where, $name = 'default')</i></li>
         <li><i>(PDOStatement) public static function insert($table, $data, $name = 'default')</i></li>
         <li><i>(PDO) public static function &db_link($name = 'default')</i></li>

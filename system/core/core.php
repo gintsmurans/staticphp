@@ -13,11 +13,11 @@ include SYS_PATH . 'core/router.php'; // Router
 
 
 // Load default config file and routing
-\load::config(array('config', 'routing'));
+\load::config(['config', 'routing']);
 
 
 // Set debug
-\load::$config['debug'] = (\load::$config['debug'] || in_array(\load::$config['client_ip'], (array) \load::$config['debug_ips']));
+\load::$config['debug'] = (\load::$config['debug'] || in_array(\load::$config['client_ip'], (array)\load::$config['debug_ips']));
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', (int)\load::$config['debug']);
 
@@ -57,7 +57,7 @@ function sp_handle_errors($errno , $errstr = null, $errfile = null, $errline = n
                 $error .= $call['file'] .' (line '. $call['line'] .')<br />';
             }
 
-            \router::error('500', 'Internal Server Error', array('error' => $error));
+            \router::error('500', 'Internal Server Error', ['error' => $error]);
         }
     }
 }

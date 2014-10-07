@@ -24,7 +24,7 @@ function json_response(&$json_data)
             {
                 echo json_encode($data);
             }
-        }, array(&$json_data));
+        }, [&$json_data]);
 
         $json_request = true;
     }

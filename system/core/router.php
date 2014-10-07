@@ -9,13 +9,13 @@ class router
     |--------------------------------------------------------------------------
     */
 
-    public static $prefixes = array();
+    public static $prefixes = [];
     public static $prefixes_url = null;
 
-    public static $segments = array();
+    public static $segments = [];
     public static $segments_url = null;
     public static $segments_full_url = null;
-    public static $segments_requested = array();
+    public static $segments_requested = [];
 
     public static $domain_uri = null;
     public static $base_uri = null;
@@ -50,7 +50,7 @@ class router
     # Convert / and \ to systems directory separator
     public static function make_path_string($string)
     {
-        return str_replace(array('/', '\\'), DS, $string);
+        return str_replace(['/', '\\'], DS, $string);
     }
 
 
@@ -303,7 +303,7 @@ class router
             // Check for $Method
             if (isset($methods[$method]) || isset($methods['__callStatic']))
             {
-                call_user_func_array(array($class, $method), self::$segments);
+                call_user_func_array([$class, $method], self::$segments);
             }
             else
             {
@@ -320,7 +320,7 @@ class router
         {
             if (!empty(\load::$config['debug']))
             {
-                self::error('500', 'Internal Server Error', array('error' => $error));
+                self::error('500', 'Internal Server Error', ['error' => $error]);
             }
             else
             {

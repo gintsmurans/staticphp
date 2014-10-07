@@ -36,12 +36,12 @@ class db
         self::$db_links[$name]['config'] = $config;
 
         // Open new connection to DB
-        self::$db_links[$name]['link'] = new \PDO($config['string'], $config['username'], $config['password'], array(
+        self::$db_links[$name]['link'] = new \PDO($config['string'], $config['username'], $config['password'], [
             \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
             \PDO::ATTR_CASE => \PDO::CASE_NATURAL,
             \PDO::ATTR_DEFAULT_FETCH_MODE => (!empty($config['fetch_mode_objects']) ? \PDO::FETCH_OBJ : \PDO::FETCH_ASSOC),
             \PDO::ATTR_PERSISTENT => $config['persistent']
-        ));
+        ]);
 
         // Set encoding - mysql only
         if (!empty($config['charset']) && self::$db_links[$name]['link']->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'mysql')
@@ -71,7 +71,7 @@ class db
 
         // Do request
         self::$last_statement = $db_link->prepare($query);
-        self::$last_statement->execute((array) $data);
+        self::$last_statement->execute((array)$data);
 
         // Count Queries
         if (!empty(self::$db_links[$name]['config']['debug']))
@@ -87,7 +87,7 @@ class db
 
 
     // -- Fetch wrapper
-    public static function fetch($query, $data = array(), $name = 'default')
+    public static function fetch($query, $data = [], $name = 'default')
     {
         return self::query($query, $data, $name)->fetch();
     }
@@ -95,7 +95,7 @@ class db
 
 
     // -- FetchAll wrapper
-    public static function fetchAll($query, $data = array(), $name = 'default')
+    public static function fetchAll($query, $data = [], $name = 'default')
     {
         return self::query($query, $data, $name)->fetchAll();
     }

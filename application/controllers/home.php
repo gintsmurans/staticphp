@@ -18,8 +18,8 @@ class home
         \load::mark_time('Before views');
 
         // Load view
-        // Pass array (key => value) as second parameter, to get variables available in your view
-        \load::view(array('header', 'home/index', 'footer'), $data);
+        // Pass [key => value] as second parameter, to get variables available in your view
+        \load::view(['header', 'home/index', 'footer'], $data);
     }
 }
 

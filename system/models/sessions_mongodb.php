@@ -44,12 +44,12 @@ class sessions_mongodb
 
         // Register session handler
         session_set_save_handler(
-            array($this, 'open'),
-            array($this, 'close'),
-            array($this, 'read'),
-            array($this, 'write'),
-            array($this, 'destroy'),
-            array($this, 'gc')
+            [$this, 'open'],
+            [$this, 'close'],
+            [$this, 'read'],
+            [$this, 'write'],
+            [$this, 'destroy'],
+            [$this, 'gc']
         );
         session_start();
     }
@@ -69,7 +69,7 @@ class sessions_mongodb
 
     public function read($id)
     {
-        $this->data = $this->st->find(array('id' => $id, 'check' => $this->salt))->fields(array('data' => true))->getNext();
+        $this->data = $this->st->find(['id' => $id, 'check' => $this->salt])->fields(['data' => true])->getNext();
         return (empty($this->data) ? null : $this->data['data']);
     }
 
@@ -87,7 +87,7 @@ class sessions_mongodb
 
     public function destroy($id)
     {
-        $this->st->remove(array('id' => $id));
+        $this->st->remove(['id' => $id]);
         // Also delete the cookie
         if (headers_sent() == false)
         {
@@ -99,7 +99,7 @@ class sessions_mongodb
 
     public function gc($max)
     {
-        $this->st->remove(array('expires' => array('$lt' => (time() - $max))));
+        $this->st->remove(['expires' => ['$lt' => (time() - $max)]]);
         return true;
     }
 }
