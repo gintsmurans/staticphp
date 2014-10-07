@@ -11,56 +11,52 @@
 
 namespace models;
 
+
 class sessions_memcached extends sessions
 {
-  private $memcached = null;
-  private $db_link = false;
+    private $memcached = null;
+    private $db_link = false;
 
 
-  public function __construct(&$memcached, &$db_link = null)
-  {
-    $this->memcached = $memcached;
-    $this->db_link = &$db_link;
-    parent::__construct($this->db_link);
-  }
-
-
-  public function read($id)
-  {
-    $data = $this->memcached->get($this->prefix . $id);
-    if (!empty($data))
+    public function __construct(&$memcached, &$db_link = null)
     {
-      return $data;
+        $this->memcached = $memcached;
+        $this->db_link = &$db_link;
+        parent::__construct($this->db_link);
     }
 
-    return (!empty($this->db_link) ? parent::read($id) : null);
-  }
 
-
-  public function write($id, $data)
-  {
-    $this->memcached->set($this->prefix . $id, $data, $this->expire);
-
-    if (!empty($this->db_link))
+    public function read($id)
     {
-      parent::write($id, $data);
+        $data = $this->memcached->get($this->prefix . $id);
+        if (!empty($data))
+        {
+            return $data;
+        }
+        return (!empty($this->db_link) ? parent::read($id) : null);
     }
 
-    return true;
-  }
 
-
-  public function destroy($id)
-  {
-    $this->memcached->delete($this->prefix . $id);
-
-    if (!empty($this->db_link))
+    public function write($id, $data)
     {
-      parent::destroy($id);
+        $this->memcached->set($this->prefix . $id, $data, $this->expire);
+        if (!empty($this->db_link))
+        {
+            parent::write($id, $data);
+        }
+        return true;
     }
 
-    return true;
-  }
+
+    public function destroy($id)
+    {
+        $this->memcached->delete($this->prefix . $id);
+        if (!empty($this->db_link))
+        {
+            parent::destroy($id);
+        }
+        return true;
+    }
 }
 
 ?>

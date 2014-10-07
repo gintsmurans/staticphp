@@ -12,11 +12,11 @@
 
 $config['routing'] = array(
 
-  // Default Controller and Method names
-  '' => 'home/index',
+    // Default Controller and Method names
+    '' => 'home/index',
 
-  // Rest of the routing
-  # '^([0-9]+)$' => 'orders/details/$1'  # Example rewrite: http://example.com/1234 -> http://example.com/orders/details/1234
-);
+    // Rest of the routing
+    # '^([0-9]+)$' => 'orders/details/$1'  # Example rewrite: http://example.com/1234 -> http://example.com/orders/details/1234
+    );
 
 ?>
