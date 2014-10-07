@@ -231,8 +231,17 @@ class load
 // Autoload models
 function __autoload($classname)
 {
-    $classname = str_replace('\\', '/', $classname);
-    include APP_PATH . $classname . '.php';
+    $classname = str_replace(['\\', '_'], DS, $classname);
+    $classname = ltrim($classname, DS);
+
+    if (is_file(APP_PATH . $classname . '.php'))
+    {
+        include APP_PATH . $classname . '.php';
+    }
+    else
+    {
+        include SYS_PATH . $classname . '.php';
+    }
 }
 
 ?>
