@@ -54,7 +54,10 @@ function sp_handle_errors($errno , $errstr = null, $errfile = null, $errline = n
 
             foreach ($errno->getTrace() as $call)
             {
-                $error .= $call['file'] .' (line '. $call['line'] .')<br />';
+                if (isset($call['file']))
+                {
+                    $error .= $call['file'] .' (line '. $call['line'] .')<br />';
+                }
             }
 
             \router::error('500', 'Internal Server Error', ['error' => $error]);

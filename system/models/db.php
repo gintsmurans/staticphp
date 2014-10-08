@@ -5,9 +5,6 @@ namespace models;
 
 class db
 {
-    public static $queries = null;
-    public static $query_count = 0;
-
     private static $db_links;
     private static $last_statement;
 
@@ -70,14 +67,17 @@ class db
         }
 
         // Do request
+        if (!empty(self::$db_links[$name]['config']['debug']))
+        {
+            \load::start_timer();
+        }
+
         self::$last_statement = $db_link->prepare($query);
         self::$last_statement->execute((array)$data);
 
-        // Count Queries
         if (!empty(self::$db_links[$name]['config']['debug']))
         {
-            ++self::$query_count;
-            self::$queries[$name][] = self::$last_statement->queryString;
+            \load::stop_timer($query);
         }
 
         // Return last statement
