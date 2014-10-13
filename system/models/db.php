@@ -77,7 +77,7 @@ class db
 
         if (!empty(self::$db_links[$name]['config']['debug']))
         {
-            \load::stop_timer($query);
+            \load::stop_timer($query . ' [' . implode(', ', $data) . ']');
         }
 
         // Return last statement
