@@ -217,9 +217,10 @@ class load
 
         if (!empty(self::$finished_timers))
         {
+            krsort(self::$finished_timers);
             foreach (self::$finished_timers as $key => $value)
             {
-                $output .= "\n{$key}: {$value} seconds;";
+                $output .= "\n[{$value}s] {$key}";
             }
         }
 
@@ -238,7 +239,7 @@ function __autoload($classname)
     {
         include APP_PATH . $classname . '.php';
     }
-    else
+    elseif (is_file(SYS_PATH . $classname . '.php'))
     {
         include SYS_PATH . $classname . '.php';
     }
