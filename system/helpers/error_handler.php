@@ -69,7 +69,7 @@ function send_error_email($e)
 
 
 // Register handlers
-set_error_handler('custom_error_handler', E_ALL);
+set_error_handler('custom_error_handler', (ini_get('display_errors') == 1 ? E_ALL : E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE));
 set_exception_handler('custom_exception_handler');
 register_shutdown_function('fatal_error_shutdown_handler');
 
