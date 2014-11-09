@@ -30,14 +30,13 @@ $config['debug'] = ($config['environment'] !== 'dev' ? false : true);
 // List of ip addresses where debug will be turned on by default
 $config['debug_ips'] = ['::1', '127.0.0.1'];
 
-
 /*
 | Send errors to this email address. Note: 
 |
 | 1. It will only send error emails when debug is turned off.
 | 2. It uses internal mail function to send email - make sure your system is configured to be able to send emails if you intend to use this feature.
 */
-$config['debug_email'] = 'gm@gm.lv';
+$config['debug_email'] = null;
 
 
 /*
