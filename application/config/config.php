@@ -22,16 +22,22 @@ $config['base_uri'] = null; // NULL for auto detect
 */
 
 // Set environment
-$config['environment'] = 'production';
+$config['environment'] = (empty($_SERVER['app_env']) || $_SERVER['app_env'] !== 'dev' ? 'live' : 'dev');
 
 // Set debug
-$config['debug'] = true;
+$config['debug'] = ($config['environment'] !== 'dev' ? false : true);
 
 // List of ip addresses where debug will be turned on by default
 $config['debug_ips'] = ['::1', '127.0.0.1'];
 
-// Error pre-processing function
-$config['debug_callback'] = null;
+
+/*
+| Send errors to this email address. Note: 
+|
+| 1. It will only send error emails when debug is turned off.
+| 2. It uses internal mail function to send email - make sure your system is configured to be able to send emails if you intend to use this feature.
+*/
+$config['debug_email'] = 'gm@gm.lv';
 
 
 /*

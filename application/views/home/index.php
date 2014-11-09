@@ -308,7 +308,7 @@ fastcgi_param	REDIRECT_STATUS		200;
     </ol>
   </div>
 
-  <br />
+  <br /><br /><br />
   <pre><?php echo \load::execution_time(); ?></pre>
 </div>
 
