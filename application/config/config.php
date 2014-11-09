@@ -31,10 +31,10 @@ $config['debug'] = ($config['environment'] !== 'dev' ? false : true);
 $config['debug_ips'] = ['::1', '127.0.0.1'];
 
 /*
-| Send errors to this email address. Note: 
+| Send errors to this email address.
 |
-| 1. It will only send error emails when debug is turned off.
-| 2. It uses internal mail function to send email - make sure your system is configured to be able to send emails if you intend to use this feature.
+| * Core will only send error emails when debug is turned off.
+| * Emails are sent using php's mail function, if you intend to use this feature, make sure your system is configured to be able to send emails.
 */
 $config['debug_email'] = null;
 
