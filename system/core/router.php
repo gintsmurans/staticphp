@@ -147,8 +147,16 @@ class router
         if (empty(self::$base_uri) && !empty($_SERVER['HTTP_HOST']))
         {
             $https = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on');
-            self::$domain_uri = 'http'.(empty($https) ? '' : 's').'://'.$_SERVER['HTTP_HOST'] . (empty($https) && $_SERVER['SERVER_PORT'] != 80 ? ':' . $_SERVER['SERVER_PORT'] : (!empty($https) && $_SERVER['SERVER_PORT'] != 443 ? ':' . $_SERVER['SERVER_PORT'] : '')) .'/';
-            self::$base_uri = self::$domain_uri . (!empty($script_path) ? $script_path.'/' : '');
+            self::$domain_uri = 'http'.(empty($https) ? '' : 's') .'://'. $_SERVER['HTTP_HOST'];
+            if (strpos($_SERVER['HTTP_HOST'], ':'.$_SERVER['SERVER_PORT']) === false)
+            {
+                if ((empty($https) && $_SERVER['SERVER_PORT'] != 80) || (!empty($https) && $_SERVER['SERVER_PORT'] != 443))
+                {
+                    self::$domain_uri .= ':' . $_SERVER['SERVER_PORT'];
+                }
+            }
+            self::$domain_uri .= '/';
+            self::$base_uri = self::$domain_uri . (!empty($script_path) ? $script_path . '/' : '');
         }
 
         // Replace script_path in uri and remove query string
