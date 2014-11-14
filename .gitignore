@@ -2,6 +2,8 @@
 ._*
 Thumbs.db
 Desktop.ini
-/vendor/
 /tmp/
-composer.json
+/vendor/
+/application/cache/
+/application/public/assets/vendor/
+/composer.lock

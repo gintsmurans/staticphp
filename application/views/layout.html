@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>StaticPHP Framework</title>
+
+        <link href="{{ base_url }}assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="{{ base_url }}assets/home/style.css" rel="stylesheet" type="text/css" />
+
+        {% block headers %}{% endblock %}
+    </head>
+    <body role="document">
+
+        <!-- Fixed navbar -->
+        <div class="navbar navbar-default navbar-static-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="{{ base_url }}" class="navbar-brand">StaticPHP</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="{{ base_url }}home">Start page</a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </div>
+
+        <div class="container" role="main">
+            {% block content %}{% endblock%}
+        </div>
+
+        <script src="{{ base_url }}assets/vendor/jquery/jquery.min.js"></script>
+        <script src="{{ base_url }}assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+        {% block scripts %}{% endblock%}
+
+        {% block footer %}
+        <footer class="page-footer">StaticPHP 2014</footer>
+        {% endblock%}
+
+        {% if config['debug'] %}
+        <pre style="margin: 0;"><strong>DEBUG</strong><br />{{ execution_time() }}</pre>
+        {% endif %}
+    </body>
+</html>

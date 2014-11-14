@@ -15,9 +15,9 @@ class load
     */
 
     # Get config variable
-    public static function &get($name)
+    public static function &get($name, $default = null)
     {
-        return (isset(self::$config[$name]) ? self::$config[$name] : false);
+        return (isset(self::$config[$name]) ? self::$config[$name] : $default);
     }
 
 
@@ -135,37 +135,39 @@ class load
     # Load views
     public static function view($files, &$data = [], $return = false, $project = '')
     {
-        // Check for global template variables
+        static $globals_added = false;
+
+        // Check for global views variables, can be set, for example, by controller's constructor
         if (!empty(self::$config['view_data']))
         {
             $data = (array)$data + (array)self::$config['view_data'];
         }
 
-        // Return it
-        if (!empty($return))
+        // Add default view data
+        if (empty($globals_added))
         {
-            ob_start();
+            \load::$config['view_engine']->addGlobal('base_url', BASE_URI);
+            \load::$config['view_engine']->addGlobal('config', self::$config);
+            \load::$config['view_engine']->addGlobal('class', \router::$class);
+            \load::$config['view_engine']->addGlobal('method', \router::$method);
+            \load::$config['view_engine']->addGlobal('segments', \router::$segments);
+            $globals_added = true;
         }
 
-        // Include view files
+        // Load view data
+        $contents = '';
         foreach ((array)$files as $key => $file)
         {
-            $project1 = $project;
-            if (is_numeric($key) === false)
-            {
-                $project1 = $name;
-                $name = $key;
-            }
-            include (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'views' . DS . $file . '.php';
+            $contents .= \load::$config['view_engine']->render($file, (array)$data);
         }
 
-        // Return it
-        if (!empty($return))
+        // Output or return view data
+        if (empty($return))
         {
-            $contents = ob_get_contents();
-            ob_end_clean();
-            return $contents;
+            echo $contents;
+            return true;
         }
+        return $contents;
     }
 
 
@@ -230,9 +232,8 @@ class load
 
 
 // Autoload models
-function __autoload($classname)
-{
-    $classname = str_replace(['\\', '_'], DS, $classname);
+spl_autoload_register(function($classname){
+    $classname = str_replace('\\', DS, $classname);
     $classname = ltrim($classname, DS);
 
     if (is_file(APP_PATH . $classname . '.php'))
@@ -243,6 +244,6 @@ function __autoload($classname)
     {
         include SYS_PATH . $classname . '.php';
     }
-}
+}, true, true);
 
 ?>

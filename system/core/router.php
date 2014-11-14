@@ -92,10 +92,11 @@ class router
 
 
     # Show http error
-    public static function error($error_code, $error_string, $data = null)
+    public static function error($error_code, $error_string = '', $description = '')
     {
         header('HTTP/1.0 '. $error_code .' '. $error_string);
-        \load::view('errors/E'. $error_code, $data);
+        $data = ['description' => $description];
+        \load::view("errors/E{$error_code}.html", $data);
         exit;
     }
 
@@ -328,7 +329,7 @@ class router
         {
             if (!empty(\load::$config['debug']))
             {
-                self::error('500', 'Internal Server Error', ['error' => $error]);
+                self::error('500', 'Internal Server Error', $error);
             }
             else
             {

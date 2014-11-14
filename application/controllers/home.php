@@ -19,7 +19,7 @@ class home
 
         // Load view
         // Pass [key => value] as second parameter, to get variables available in your view
-        \load::view(['header', 'home/index', 'footer'], $data);
+        \load::view('home/index.html', $data);
     }
 }
 

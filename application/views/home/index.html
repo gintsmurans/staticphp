@@ -1,10 +1,13 @@
+{% extends "layout.html" %}
+
+{% block content %}
 <div class="content">
-  <h1><a href="<?php echo BASE_URI; ?>">StaticPHP</a></h1>
+  <h1>StaticPHP</h1>
 
   <!-- ----------------------------------------------------------------- -->
   <h2>Welcome</h2>
 
-  StaticPHP v0.8
+  StaticPHP
 
   <ul>
     <li>Basic mvc structure</li>
@@ -19,14 +22,13 @@
   <h2>Installation</h2>
   <h3>How to get a copy of StaticPHP?</h3>
   Download or clone it from <a href="https://github.com/gintsmurans/staticphp" target="_blank">GitHub</a>
-  
+
   <h3>How to install it?</h3>
   <ol>
     <li>Extract the archive (skip it if you cloned git repository)</li>
     <li>Point webserver's root directory to the application/public directory</li>
     <li>Set directory index file to index.php</li>
   </ol>
-
 
 
   <!-- ----------------------------------------------------------------- -->
@@ -40,11 +42,11 @@
     All configuration files are put in application/config directory. config.php is the main application config file and is loaded automatically. routing.php is where application routes are set. View each configuration file for more details.
 
     <strong class="section">Controllers (application/controllers)</strong>
-    
+
     <strong class="section">Models (application/models)</strong>
-    
+
     <strong class="section">Helpers (application/helpers)</strong>
-    
+
     <strong class="section">Views / Templates (application/views)</strong>
     StaticPHP uses default php templating system, which means no parsing to views is done to improve its performance.
     <br /><br />
@@ -122,12 +124,12 @@ $data = ['msg' => 'Important message'];
   <h2><a href="#models" id="models" class="open_description">Models</a></h2>
   <div class="description">
     To load in-built models use <i>\load::model('model name', 'system');</i>
-    
+
     <h3><a href="#models_db_php" id="models_db_php" class="open_description">system/models/db.php</a></h3>
     <div class="description">
-    
+
       <i>Simple pdo wrapper</i><br /><br />
-      
+
       <strong class="section">Connecting to the database</strong>
       <pre>
 \load::model('db', 'system');
@@ -284,21 +286,21 @@ fastcgi_param	REDIRECT_STATUS		200;
     <ol>
       <li>BASE_URI: <strong><?php echo BASE_URI; ?></strong></li>
       <li>\router::site_uri(): <strong><?php echo \router::site_uri(); ?></strong><br /><br /></li>
-  
+
       <li>BASE_PATH: <strong><?php echo BASE_PATH; ?></strong></li>
       <li>APP_PATH: <strong><?php echo APP_PATH; ?></strong></li>
       <li>PUBLIC_PATH: <strong><?php echo PUBLIC_PATH; ?></strong></li>
     </ol>
-  
+
     <strong>This page:</strong>
     <ol>
       <li>Controller: <strong><?php echo APP_PATH . 'controllers/home.php'; ?></strong></li>
       <li>View: <strong><?php echo __FILE__; ?></strong></li>
       <li>CSS: <strong><?php echo PUBLIC_PATH . 'css/style.css'; ?></strong></li>
     </ol>
-  
+
     <div>&nbsp;</div>
-  
+
     <strong>All included files:</strong>
     <ol>
       <?php foreach (get_included_files() as $file): ?>
@@ -307,9 +309,6 @@ fastcgi_param	REDIRECT_STATUS		200;
       <li><?php echo APP_PATH . 'views/footer.php'; ?></li>
     </ol>
   </div>
-
-  <br /><br /><br />
-  <pre><?php echo \load::execution_time(); ?></pre>
 </div>
 
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -334,3 +333,5 @@ fastcgi_param	REDIRECT_STATUS		200;
       }
     });
 </script>
+
+{% endblock %}

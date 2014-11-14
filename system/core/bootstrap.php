@@ -8,8 +8,8 @@ $microtime = microtime(true);
 define('DS', DIRECTORY_SEPARATOR);
 
 // Load all core clases
-include SYS_PATH . 'core/load.php'; // Load
-include SYS_PATH . 'core/router.php'; // Router
+require SYS_PATH . 'core/load.php'; // Load
+require SYS_PATH . 'core/router.php'; // Router
 
 
 // Load default config file and routing
@@ -110,6 +110,59 @@ function sp_format_exception($e, $full = false)
 set_error_handler('sp_error_handler', (!empty(\load::$config['debug']) ? E_ALL : E_ALL & ~E_DEPRECATED & ~E_STRICT));
 set_exception_handler('sp_exception_handler');
 register_shutdown_function('sp_error_shutdown_handler');
+
+
+// Load twig
+if (is_file(BASE_PATH . 'vendor/twig/twig/lib/Twig/Autoloader.php') !== true)
+{
+    throw new Exception('Twig Not Found! If you installed StaticPHP manually, not using composer, please see README.md to where to place the twig library.');
+}
+
+require BASE_PATH . 'vendor/twig/twig/lib/Twig/Autoloader.php';
+Twig_Autoloader::register();
+
+\load::$config['view_loader'] = new Twig_Loader_Filesystem(APP_PATH.'views');
+\load::$config['view_engine'] = new Twig_Environment(\load::$config['view_loader'], array(
+    'cache' => APP_PATH.'cache',
+    'debug' => \load::$config['debug']
+));
+
+// Register default filters and functions
+// Site url filter
+$filter = new Twig_SimpleFilter('site_url', function($url = null){
+    return \router::site_uri($url);
+});
+\load::$config['view_engine']->addFilter($filter);
+
+// Site url function
+$function = new Twig_SimpleFunction('site_url', function($url = null){
+    return \router::site_uri($url);
+});
+\load::$config['view_engine']->addFunction($function);
+
+// Start timer function
+$function = new Twig_SimpleFunction('start_timer', function(){
+    \load::start_timer();
+});
+\load::$config['view_engine']->addFunction($function);
+
+// Stop timer function
+$function = new Twig_SimpleFunction('stop_timer', function($name){
+    \load::stop_timer($name);
+});
+\load::$config['view_engine']->addFunction($function);
+
+// Mark time function
+$function = new Twig_SimpleFunction('mark_time', function($name){
+    \load::mark_time($name);
+});
+\load::$config['view_engine']->addFunction($function);
+
+// Execution time function
+$function = new Twig_SimpleFunction('execution_time', function(){
+    return \load::execution_time();
+});
+\load::$config['view_engine']->addFunction($function);
 
 
 // Autoload models

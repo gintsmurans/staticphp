@@ -22,7 +22,7 @@ $config['base_uri'] = null; // NULL for auto detect
 */
 
 // Set environment
-$config['environment'] = (empty($_SERVER['app_env']) || $_SERVER['app_env'] !== 'dev' ? 'live' : 'dev');
+$config['environment'] = ((empty($_SERVER['app_env']) || $_SERVER['app_env'] !== 'dev') && php_sapi_name() != 'cli-server' ? 'live' : 'dev');
 
 // Set debug
 $config['debug'] = ($config['environment'] !== 'dev' ? false : true);
