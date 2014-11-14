@@ -1,0 +1,12 @@
+{
+    "name": "4apps/staticphp",
+    "description": "A lightweight PHP framework",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Gints Murans",
+            "email": "gm@gm.lv"
+        }
+    ],
+    "require": {}
+}

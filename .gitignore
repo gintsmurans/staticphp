@@ -2,3 +2,5 @@
 ._*
 Thumbs.db
 Desktop.ini
+/vendor/
+/tmp/
