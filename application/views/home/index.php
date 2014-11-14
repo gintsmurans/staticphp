@@ -65,7 +65,7 @@ $data = ['msg' => 'Important message'];
   <!-- ----------------------------------------------------------------- -->
   <h2><a href="#system" id="system" class="open_description">System</a></h2>
   <div class="description">
-    <h3><a href="#core_php" id="core_php" class="open_description">core.php</a></h3>
+    <h3><a href="#bootstrap_php" id="bootstrap_php" class="open_description">bootstrap.php</a></h3>
     <div class="description">
 
     </div>

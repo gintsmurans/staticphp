@@ -7,6 +7,6 @@ define('BASE_PATH', dirname(APP_PATH) . DIRECTORY_SEPARATOR);
 define('SYS_PATH', BASE_PATH . 'system' . DIRECTORY_SEPARATOR);
 
 // Load core class
-include SYS_PATH . 'core/core.php'; // Load
+include SYS_PATH . 'core/bootstrap.php'; // Load
 
 ?>
