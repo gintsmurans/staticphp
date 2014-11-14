@@ -69,7 +69,7 @@ class db
         // Do request
         if (!empty(self::$db_links[$name]['config']['debug']))
         {
-            \load::start_timer();
+            \load::startTimer();
         }
 
         self::$last_statement = $db_link->prepare($query);
@@ -77,7 +77,7 @@ class db
 
         if (!empty(self::$db_links[$name]['config']['debug']))
         {
-            \load::stop_timer($query . ' [' . implode(', ', (array)$data) . ']');
+            \load::stopTimer($query . ' [' . implode(', ', (array)$data) . ']');
         }
 
         // Return last statement
@@ -183,7 +183,7 @@ class db
 
 
     // -- Return link to the database connection for raw actions on it
-    public static function &db_link($name = 'default')
+    public static function &dbLink($name = 'default')
     {
         return self::$db_links[$name]['link'];
     }
@@ -191,7 +191,7 @@ class db
 
 
     // -- Return the last query statement
-    public static function &last_statement()
+    public static function &lastStatement()
     {
         if (!empty(self::$last_statement))
         {
@@ -202,7 +202,7 @@ class db
 
 
     // -- Return the last query executed
-    public static function last_query()
+    public static function lastQuery()
     {
         return empty(self::$last_statement) ? null : self::$last_statement->queryString;
     }
@@ -210,7 +210,7 @@ class db
 
 
     // -- Return the last insert id is created into database
-    public static function last_insert_id($sequence_name = '', $sql = false, $name = 'default')
+    public static function lastInsertId($sequence_name = '', $sql = false, $name = 'default')
     {
         if (empty($sql))
         {

@@ -5,7 +5,7 @@
     Simple usage:
 
     fv::init($_POST);
-    fv::add_rules([
+    fv::addRules([
         'email' => [
             'valid' => ['required', 'email'],
             'filter' => ['trim'],
@@ -19,15 +19,15 @@
     }
 
     // And html code, this will output first error for "email" field
-    <?php if (($test = fv::get_error('email')) != false): ?>
+    <?php if (($test = fv::getError('email')) != false): ?>
     <div class="error"><?php echo $test[0]; ?></div>
     <?php endif; ?>
 
     // Another usage
-    <div><input type="text" name="email"<?php fv::set_input('email'); ?> /></div>
+    <div><input type="text" name="email"<?php fv::setInput('email'); ?> /></div>
 
     // And even this one
-    <div><input type="text" name="test[]"<?php fv::set_input(['test', 0]); ?> /></div>
+    <div><input type="text" name="test[]"<?php fv::setInput(['test', 0]); ?> /></div>
 */
 
 namespace models;
@@ -49,7 +49,7 @@ class fv
         'date' => '"!value" is not a correct date format',
         'ipv4' => '"!value" is not a correct ipv4 address',
         'ipv6' => '"!value" is not a correct ipv6 address',
-        'credit_card' => '"!value" is not a correct credit card number',
+        'creditCard' => '"!value" is not a correct credit card number',
 
         'length' => 'Field "!name" has not correct length',
         'equal' => 'Field "!name" has wrong value',
@@ -59,9 +59,9 @@ class fv
         'float' => 'Field "!name" must be float number',
         'string' => 'Field "!name" can contain only letters, []$/!.?()-\'" and space chars',
 
-        'upload_required' => 'Field "!name" is required',
-        'upload_size' => 'Uploaded file is to large',
-        'upload_ext' => 'File type is not allowed',
+        'uploadRequired' => 'Field "!name" is required',
+        'uploadSize' => 'Uploaded file is to large',
+        'uploadExt' => 'File type is not allowed',
     ];
 
 
@@ -85,7 +85,7 @@ class fv
     }
 
 
-    public static function add_rules($rules)
+    public static function addRules($rules)
     {
         self::$rules = array_merge(self::$rules, $rules);
     }
@@ -97,12 +97,12 @@ class fv
         {
             if (!isset(self::$post[$name]))
             {
-                self::set_error('missing', $name);
+                self::setError('missing', $name);
             }
             else
             {
-                self::filter_field($name);
-                self::validate_field($name);
+                self::filterField($name);
+                self::validateField($name);
             }
         }
 
@@ -110,7 +110,7 @@ class fv
     }
 
 
-    public static function filter_field($name)
+    public static function filterField($name)
     {
         if (!empty(self::$rules[$name]['filter']))
         {
@@ -131,13 +131,13 @@ class fv
                 array_unshift($args, self::$post[$name]);
 
                 // Call function
-                self::$post[$name] = self::call_func($item, $args);
+                self::$post[$name] = self::callFunc($item, $args);
             }
         }
     }
 
 
-    public static function validate_field($name)
+    public static function validateField($name)
     {
         if (!empty(self::$rules[$name]['valid']))
         {
@@ -158,16 +158,16 @@ class fv
                 array_unshift($args, self::$post[$name]);
 
                 // Call function
-                if (self::call_func($item, $args) === false)
+                if (self::callFunc($item, $args) === false)
                 {
-                    self::set_error($item, $name, self::$post[$name]);
+                    self::setError($item, $name, self::$post[$name]);
                 }
             }
         }
     }
 
 
-    public static function set_error($type, $name, $value = '')
+    public static function setError($type, $name, $value = '')
     {
         self::$errors_all[] = &$tmp;
         self::$errors[$name][] = &$tmp;
@@ -180,13 +180,13 @@ class fv
         );
     }
 
-    public static function get_error($name)
+    public static function getError($name)
     {
         return (empty(self::$errors[$name]) ? false : self::$errors[$name]);
     }
 
 
-    private static function call_func($func, $args = null)
+    protected static function callFunc($func, $args = null)
     {
         // Check for callable function
         if (method_exists('fv', $func))
@@ -214,13 +214,13 @@ class fv
     *
     **/
 
-    public static function set_plain($string, $valid = '')
+    public static function setPlain($string, $valid = '')
     {
         return preg_replace('/[^a-z_\-0-9\ \p{L}'.$valid.']+/iu', '', $string);
     }
 
     // Requires iconv
-    public static function set_friendly($string)
+    public static function setFriendly($string)
     {
         setlocale(LC_ALL, 'en_US.UTF8');
 
@@ -318,7 +318,7 @@ class fv
         return (bool) preg_match('/^(^(([0-9A-F]{1,4}(((:[0-9A-F]{1,4}){5}::[0-9A-F]{1,4})|((:[0-9A-F]{1,4}){4}::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,1})|((:[0-9A-F]{1,4}){3}::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,2})|((:[0-9A-F]{1,4}){2}::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,3})|(:[0-9A-F]{1,4}::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,4})|(::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,5})|(:[0-9A-F]{1,4}){7}))$|^(::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,6})$)|^::$)|^((([0-9A-F]{1,4}(((:[0-9A-F]{1,4}){3}::([0-9A-F]{1,4}){1})|((:[0-9A-F]{1,4}){2}::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,1})|((:[0-9A-F]{1,4}){1}::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,2})|(::[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,3})|((:[0-9A-F]{1,4}){0,5})))|([:]{2}[0-9A-F]{1,4}(:[0-9A-F]{1,4}){0,4})):|::)((25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{0,2})\.){3}(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{0,2})$$/', $value);
     }
 
-    public static function credit_card($value)
+    public static function creditCard($value)
     {
         $value = preg_replace('/[^0-9]+/', '', $value);
         return (bool) preg_match('/^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6011[0-9]{12}|3(?:0[0-5]|[68][0-9])[0-9]{11}|3[47][0-9]{13})$/', $value);
@@ -377,22 +377,22 @@ class fv
 
 
 
-    public static function upload_required($upload)
+    public static function uploadRequired($upload)
     {
         return (is_array($upload) && !empty($upload['name']) && !empty($upload['tmp_name']) && !empty($upload['size']));
     }
 
-    public static function upload_size($upload, $size)
+    public static function uploadSize($upload, $size)
     {
-        if (self::upload_required($upload))
+        if (self::uploadRequired($upload))
         {
             return ($upload['size'] <= $size);
         }
     }
 
-    public static function upload_ext($upload, $extensions)
+    public static function uploadExt($upload, $extensions)
     {
-        if (self::upload_required($upload))
+        if (self::uploadRequired($upload))
         {
             $ext = explode(' ', $extensions);
             $tmp = explode('.', $upload['name']);
@@ -410,13 +410,13 @@ class fv
     *
     **/
 
-    public static function isget()
+    public static function isGet()
     {
         return (strtolower($_SERVER['REQUEST_METHOD']) === 'get');
     }
 
     // $isset checks against $_POST not local self::$post
-    public static function ispost($isset = null)
+    public static function isPost($isset = null)
     {
         // Check if post
         if (strtolower($_SERVER['REQUEST_METHOD']) !== 'post')
@@ -440,18 +440,18 @@ class fv
 
 
 
-    public static function set_input($name)
+    public static function setInput($name)
     {
-        if (($field = self::get_field($name)) == false)
+        if (($field = self::getField($name)) == false)
         {
             return false;
         }
         echo ' value="'.(!empty($field) ? htmlspecialchars($field) : '').'"';
     }
 
-    public static function set_select($name, $test = '')
+    public static function setSelect($name, $test = '')
     {
-        if (($field = self::get_field($name)) == false)
+        if (($field = self::getField($name)) == false)
         {
             return false;
         }
@@ -459,9 +459,9 @@ class fv
     }
 
 
-    public static function set_checkbox($name)
+    public static function setCheckbox($name)
     {
-        if (($field = self::get_field($name)) == false)
+        if (($field = self::getField($name)) == false)
         {
             return false;
         }
@@ -469,9 +469,9 @@ class fv
     }
 
 
-    public static function set_value($name)
+    public static function setValue($name)
     {
-        if (($field = self::get_field($name)) == false)
+        if (($field = self::getField($name)) == false)
         {
             return false;
         }
@@ -479,7 +479,7 @@ class fv
     }
 
 
-    private static function get_field($name)
+    private static function getField($name)
     {
         $field = self::$post;
 

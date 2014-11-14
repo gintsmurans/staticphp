@@ -10,7 +10,7 @@ $config = [];
 |--------------------------------------------------------------------------
 */
 
-$config['base_uri'] = null; // NULL for auto detect
+$config['base_url'] = null; // NULL for auto detect
 
 
 

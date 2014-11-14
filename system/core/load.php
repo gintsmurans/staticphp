@@ -1,5 +1,8 @@
 <?php
 
+namespace core;
+
+
 class load
 {
     public static $config = [];
@@ -146,11 +149,11 @@ class load
         // Add default view data
         if (empty($globals_added))
         {
-            \load::$config['view_engine']->addGlobal('base_url', BASE_URI);
-            \load::$config['view_engine']->addGlobal('config', self::$config);
-            \load::$config['view_engine']->addGlobal('class', \router::$class);
-            \load::$config['view_engine']->addGlobal('method', \router::$method);
-            \load::$config['view_engine']->addGlobal('segments', \router::$segments);
+            load::$config['view_engine']->addGlobal('base_url', router::$base_url);
+            load::$config['view_engine']->addGlobal('config', self::$config);
+            load::$config['view_engine']->addGlobal('class', router::$class);
+            load::$config['view_engine']->addGlobal('method', router::$method);
+            load::$config['view_engine']->addGlobal('segments', router::$segments);
             $globals_added = true;
         }
 
@@ -158,7 +161,7 @@ class load
         $contents = '';
         foreach ((array)$files as $key => $file)
         {
-            $contents .= \load::$config['view_engine']->render($file, (array)$data);
+            $contents .= load::$config['view_engine']->render($file, (array)$data);
         }
 
         // Output or return view data
@@ -194,24 +197,24 @@ class load
     |--------------------------------------------------------------------------
     */
 
-    public static function start_timer()
+    public static function startTimer()
     {
         self::$started_timers[] = microtime(true);
     }
 
-    public static function stop_timer($name)
+    public static function stopTimer($name)
     {
         self::$finished_timers[$name] = round(microtime(true) - array_shift(self::$started_timers), 5);
         return self::$finished_timers[$name];
     }
 
-    public static function mark_time($name)
+    public static function markTime($name)
     {
         global $microtime;
         self::$finished_timers['*' . $name] = round(microtime(true) - $microtime, 5);
     }
 
-    public static function execution_time()
+    public static function executionTime()
     {
         global $microtime;
         $output = 'Total execution time: ' . round(microtime(true) - $microtime, 5) . " seconds;\n";

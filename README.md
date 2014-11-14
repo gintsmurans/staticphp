@@ -114,11 +114,11 @@ Installing via composer automatically downloads jquery and bootstrap components.
 
 ####Before releasing a stable version
 
-* Change all include to require, so that we don't expose staticphp to any security issues by doing something that can't be done.
+* √ Change all include to require, so that we don't expose staticphp to any security issues by doing something that can't be done.
 * Update staticphp start page.
 * Add filesystem helpers to core \load class.
 * Go through core router class and make sure there are no redundant methods.
-* Rename all class methods in camelCase format to comply with php-fip standards. Also possibly filenames.
+* √ Rename all class methods in camelCase format to comply with php-fip standards. Also possibly filenames.
 * Check whether url prefixes are working.
 * Choose documentation parser and write api documentation, e.g. write descriptions for all staticphp class methods and files.
 * Check before_controller hook.

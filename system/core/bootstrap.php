@@ -1,5 +1,8 @@
 <?php
 
+use \core\load;
+use \core\router;
+
 // Set microtime
 $microtime = microtime(true);
 
@@ -9,23 +12,22 @@ define('DS', DIRECTORY_SEPARATOR);
 
 // Load all core clases
 require SYS_PATH . 'core/load.php'; // Load
-require SYS_PATH . 'core/router.php'; // Router
 
 
 // Load default config file and routing
-\load::config(['config', 'routing']);
+load::config(['config', 'routing']);
 
 
 // Set debug
-\load::$config['debug'] = (\load::$config['debug'] || in_array(\load::$config['client_ip'], (array)\load::$config['debug_ips']));
-ini_set('error_reporting', (!empty(\load::$config['debug']) ? E_ALL : E_ALL & ~E_DEPRECATED & ~E_STRICT));
-ini_set('display_errors', (int)\load::$config['debug']);
+load::$config['debug'] = (load::$config['debug'] || in_array(load::$config['client_ip'], (array)load::$config['debug_ips']));
+ini_set('error_reporting', (!empty(load::$config['debug']) ? E_ALL : E_ALL & ~E_DEPRECATED & ~E_STRICT));
+ini_set('display_errors', (int)load::$config['debug']);
 
 
 // Autoload additional config files
-if (!empty(\load::$config['autoload_configs']))
+if (!empty(load::$config['autoload_configs']))
 {
-    \load::config(\load::$config['autoload_configs']);
+    load::config(load::$config['autoload_configs']);
 }
 
 
@@ -60,7 +62,7 @@ function sp_exception_handler($exception)
         http_response_code(500);
     }
 
-    if (!empty(\load::$config['debug']))
+    if (!empty(load::$config['debug']))
     {
         echo sp_format_exception($exception);
     }
@@ -74,9 +76,9 @@ function sp_exception_handler($exception)
 # Send error email
 function sp_send_error_email($e)
 {
-    if (!empty(\load::$config['debug_email']))
+    if (!empty(load::$config['debug_email']))
     {
-        mail(\load::$config['debug_email'], 'PHP ERROR: "' . $_SERVER['HTTP_HOST'] .'"', sp_format_exception($e, true), "Content-Type: text/html; charset=utf-8");
+        mail(load::$config['debug_email'], 'PHP ERROR: "' . $_SERVER['HTTP_HOST'] .'"', sp_format_exception($e, true), "Content-Type: text/html; charset=utf-8");
     }
 }
 
@@ -107,7 +109,7 @@ function sp_format_exception($e, $full = false)
 
 
 // Register error handlers
-set_error_handler('sp_error_handler', (!empty(\load::$config['debug']) ? E_ALL : E_ALL & ~E_DEPRECATED & ~E_STRICT));
+set_error_handler('sp_error_handler', (!empty(load::$config['debug']) ? E_ALL : E_ALL & ~E_DEPRECATED & ~E_STRICT));
 set_exception_handler('sp_exception_handler');
 register_shutdown_function('sp_error_shutdown_handler');
 
@@ -121,64 +123,64 @@ if (is_file(BASE_PATH . 'vendor/twig/twig/lib/Twig/Autoloader.php') !== true)
 require BASE_PATH . 'vendor/twig/twig/lib/Twig/Autoloader.php';
 Twig_Autoloader::register();
 
-\load::$config['view_loader'] = new Twig_Loader_Filesystem(APP_PATH.'views');
-\load::$config['view_engine'] = new Twig_Environment(\load::$config['view_loader'], array(
+load::$config['view_loader'] = new Twig_Loader_Filesystem(APP_PATH.'views');
+load::$config['view_engine'] = new Twig_Environment(load::$config['view_loader'], array(
     'cache' => APP_PATH.'cache',
-    'debug' => \load::$config['debug']
+    'debug' => load::$config['debug']
 ));
 
 // Register default filters and functions
 // Site url filter
-$filter = new Twig_SimpleFilter('site_url', function($url = null){
-    return \router::site_uri($url);
+$filter = new Twig_SimpleFilter('siteUrl', function($url = null){
+    return router::siteUrl($url);
 });
-\load::$config['view_engine']->addFilter($filter);
+load::$config['view_engine']->addFilter($filter);
 
 // Site url function
-$function = new Twig_SimpleFunction('site_url', function($url = null){
-    return \router::site_uri($url);
+$function = new Twig_SimpleFunction('siteUrl', function($url = null){
+    return router::siteUrl($url);
 });
-\load::$config['view_engine']->addFunction($function);
+load::$config['view_engine']->addFunction($function);
 
 // Start timer function
-$function = new Twig_SimpleFunction('start_timer', function(){
-    \load::start_timer();
+$function = new Twig_SimpleFunction('startTimer', function(){
+    load::startTimer();
 });
-\load::$config['view_engine']->addFunction($function);
+load::$config['view_engine']->addFunction($function);
 
 // Stop timer function
-$function = new Twig_SimpleFunction('stop_timer', function($name){
-    \load::stop_timer($name);
+$function = new Twig_SimpleFunction('stopTimer', function($name){
+    load::stopTimer($name);
 });
-\load::$config['view_engine']->addFunction($function);
+load::$config['view_engine']->addFunction($function);
 
 // Mark time function
-$function = new Twig_SimpleFunction('mark_time', function($name){
-    \load::mark_time($name);
+$function = new Twig_SimpleFunction('markTime', function($name){
+    load::markTime($name);
 });
-\load::$config['view_engine']->addFunction($function);
+load::$config['view_engine']->addFunction($function);
 
 // Execution time function
-$function = new Twig_SimpleFunction('execution_time', function(){
-    return \load::execution_time();
+$function = new Twig_SimpleFunction('executionTime', function(){
+    return load::executionTime();
 });
-\load::$config['view_engine']->addFunction($function);
+load::$config['view_engine']->addFunction($function);
 
 
 // Autoload models
-if (!empty(\load::$config['autoload_models']))
+if (!empty(load::$config['autoload_models']))
 {
-    \load::model(\load::$config['autoload_models']);
+    load::model(load::$config['autoload_models']);
 }
 
 // Autoload helpers
-if (!empty(\load::$config['autoload_helpers']))
+if (!empty(load::$config['autoload_helpers']))
 {
-    \load::helper(\load::$config['autoload_helpers']);
+    load::helper(load::$config['autoload_helpers']);
 }
 
 
 // Init router
-\router::init();
+router::init();
 
 ?>
