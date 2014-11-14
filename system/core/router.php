@@ -292,7 +292,7 @@ class router
         // Check for $File
         if (is_file($file))
         {
-            include $file;
+            require $file;
 
             // Namespaces support
             $class = '\\controllers\\' . $class;

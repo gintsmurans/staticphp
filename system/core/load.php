@@ -95,7 +95,7 @@ class load
                 $project1 = $name;
                 $name = $key;
             }
-            include (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'config'. DS . $name .'.php';
+            require (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'config'. DS . $name .'.php';
         }
     }
 
@@ -111,7 +111,7 @@ class load
                 $project1 = $name;
                 $name = $key;
             }
-            include (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'controllers'. DS . $name .'.php';
+            require (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'controllers'. DS . $name .'.php';
         }
     }
 
@@ -127,7 +127,7 @@ class load
                 $project1 = $name;
                 $name = $key;
             }
-            include (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'models'. DS . $name .'.php';
+            require (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'models'. DS . $name .'.php';
         }
     }
 
@@ -182,7 +182,7 @@ class load
                 $project1 = $name;
                 $name = $key;
             }
-            include (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'helpers' . DS . $name .'.php';
+            require (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'helpers' . DS . $name .'.php';
         }
     }
 
@@ -238,11 +238,11 @@ spl_autoload_register(function($classname){
 
     if (is_file(APP_PATH . $classname . '.php'))
     {
-        include APP_PATH . $classname . '.php';
+        require APP_PATH . $classname . '.php';
     }
     elseif (is_file(SYS_PATH . $classname . '.php'))
     {
-        include SYS_PATH . $classname . '.php';
+        require SYS_PATH . $classname . '.php';
     }
 }, true, true);
 
