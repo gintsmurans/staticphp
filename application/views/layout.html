@@ -24,7 +24,10 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="{{ base_url }}home">Start page</a></li>
+                        <li{{ method == 'index' ? ' class="active"' }}><a href="{{ base_url }}home">Start page</a></li>
+                        {% if config['debug'] == true %}
+                        <li{{ method == 'help' ? ' class="active"' }}><a href="{{ base_url }}home/help">Help</a></li>
+                        {% endif %}
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>
@@ -44,7 +47,7 @@
         {% endblock%}
 
         {% if config['debug'] %}
-        <pre style="margin: 0;"><strong>DEBUG</strong><br />{{ executionTime() }}</pre>
+        <pre style="margin: 0;"><strong>DEBUG</strong><br />{{ debugOutput()|raw }}</pre>
         {% endif %}
     </body>
 </html>

@@ -7,7 +7,7 @@ use \core\router;
 
 class home
 {
-    # This is called every time controller loads
+    # This is a reserved method and is called every time controller loads
     public static function construct()
     {
     }
@@ -20,7 +20,13 @@ class home
 
         // Load view
         // Pass [key => value] as second parameter, to get variables available in your view
-        load::view('home/index.html', $data);
+        load::view('home/index.html');
+    }
+
+    # Default method
+    public static function help()
+    {
+        load::view('home/help.html');
     }
 }
 

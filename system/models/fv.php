@@ -24,10 +24,10 @@
     <?php endif; ?>
 
     // Another usage
-    <div><input type="text" name="email"<?php fv::setInput('email'); ?> /></div>
+    <div><input type="text" name="email"<?php echo fv::setInputValue('email'); ?> /></div>
 
     // And even this one
-    <div><input type="text" name="test[]"<?php fv::setInput(['test', 0]); ?> /></div>
+    <div><input type="text" name="test[]"<?php echo fv::setInputValue(['test', 0]); ?> /></div>
 */
 
 namespace models;
@@ -35,7 +35,6 @@ namespace models;
 
 class fv
 {
-
     public static $errors = null;
     public static $errors_all = null;
 
@@ -63,8 +62,6 @@ class fv
         'uploadSize' => 'Uploaded file is to large',
         'uploadExt' => 'File type is not allowed',
     ];
-
-
 
 
     public static function init()
@@ -180,6 +177,13 @@ class fv
         );
     }
 
+
+    public static function hasError($name)
+    {
+        return !empty(self::$errors[$name]);
+    }
+
+
     public static function getError($name)
     {
         return (empty(self::$errors[$name]) ? false : self::$errors[$name]);
@@ -189,9 +193,9 @@ class fv
     protected static function callFunc($func, $args = null)
     {
         // Check for callable function
-        if (method_exists('fv', $func))
+        if (method_exists('\models\fv', $func))
         {
-            $call = ['fv', $func];
+            $call = ['\models\fv', $func];
         }
         elseif (function_exists($func))
         {
@@ -222,8 +226,11 @@ class fv
     // Requires iconv
     public static function setFriendly($string)
     {
+        // Cache current locale, set new one as UTF8
+        $current_locale = setlocale(LC_ALL, 0);
         setlocale(LC_ALL, 'en_US.UTF8');
 
+        // Do some magick
         $string = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
         $string = strip_tags($string);
         $string = strtolower($string);
@@ -231,6 +238,10 @@ class fv
         $string = preg_replace('/[^a-z_\-0-9]*/', '', $string);
         $string = trim($string, '-');
 
+        // Revert locale
+        setlocale(LC_ALL, $current_locale);
+
+        // Return
         return $string;
     }
 
@@ -440,32 +451,32 @@ class fv
 
 
 
-    public static function setInput($name)
+    public static function setInputValue($name)
     {
         if (($field = self::getField($name)) == false)
         {
             return false;
         }
-        echo ' value="'.(!empty($field) ? htmlspecialchars($field) : '').'"';
+        return ' value="'.(!empty($field) ? htmlspecialchars($field) : '').'"';
     }
 
-    public static function setSelect($name, $test = '')
+    public static function setSelected($name, $test = '')
     {
         if (($field = self::getField($name)) == false)
         {
             return false;
         }
-        echo ((is_array($field) && in_array($test, $field)) || $field == $test ? ' selected="selected"' : '');
+        return ((is_array($field) && in_array($test, $field)) || $field == $test ? ' selected="selected"' : '');
     }
 
 
-    public static function setCheckbox($name)
+    public static function setChecked($name)
     {
         if (($field = self::getField($name)) == false)
         {
             return false;
         }
-        echo (!empty($field) ? ' checked="checked"' : '');
+        return (!empty($field) ? ' checked="checked"' : '');
     }
 
 
@@ -475,7 +486,7 @@ class fv
         {
             return false;
         }
-        echo $field;
+        return $field;
     }
 
 
@@ -495,6 +506,66 @@ class fv
             }
         }
         return $field;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Register Twig filters
+    |--------------------------------------------------------------------------
+    */
+
+    public static function twig_register()
+    {
+        // Register filters
+        $filter = new \Twig_SimpleFilter('fvPlain', function($value, $valid = ''){
+            return \models\fv::setPlain($value);
+        });
+        \core\load::$config['view_engine']->addFilter($filter);
+
+        $filter = new \Twig_SimpleFilter('fvFriendly', function($value){
+            return \models\fv::setFriendly($value);
+        });
+        \core\load::$config['view_engine']->addFilter($filter);
+
+        $filter = new \Twig_SimpleFilter('fvXSS', function($value, $valid = ''){
+            return \models\fv::xss($value);
+        });
+        \core\load::$config['view_engine']->addFilter($filter);
+
+
+        // Register form functions
+        $function = new \Twig_SimpleFunction('fvHasError', function($value){
+            return \models\fv::hasError($value);
+        });
+        \core\load::$config['view_engine']->addFunction($function);
+
+        $function = new \Twig_SimpleFunction('fvError', function($value){
+            return \models\fv::getError($value);
+        });
+        \core\load::$config['view_engine']->addFunction($function);
+
+
+        // Register helper functions
+        $function = new \Twig_SimpleFunction('fvInputValue', function($value){
+            return \models\fv::setInputValue($value);
+        });
+        \core\load::$config['view_engine']->addFunction($function);
+
+        $function = new \Twig_SimpleFunction('fvSelected', function($value, $test = ''){
+            return \models\fv::setSelected($value, $test);
+        });
+        \core\load::$config['view_engine']->addFunction($function);
+
+        $function = new \Twig_SimpleFunction('fvChecked', function($value){
+            return \models\fv::setChecked($value);
+        });
+        \core\load::$config['view_engine']->addFunction($function);
+
+        $function = new \Twig_SimpleFunction('fvValue', function($value){
+            return \models\fv::setValue($value);
+        });
+        \core\load::$config['view_engine']->addFunction($function);
     }
 }
 

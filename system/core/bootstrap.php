@@ -35,6 +35,11 @@ if (!empty(load::$config['autoload_configs']))
 # Error handler
 function sp_error_handler($errno, $errstr, $errfile, $errline)
 {
+    if (error_reporting() === 0)
+    {
+        return false;
+    }
+
     $e = new ErrorException($errstr, 0, $errno, $errfile, $errline);
     sp_exception_handler($e);
     return true;
@@ -160,9 +165,9 @@ $function = new Twig_SimpleFunction('markTime', function($name){
 });
 load::$config['view_engine']->addFunction($function);
 
-// Execution time function
-$function = new Twig_SimpleFunction('executionTime', function(){
-    return load::executionTime();
+// Debug output function
+$function = new Twig_SimpleFunction('debugOutput', function(){
+    return load::debugOutput();
 });
 load::$config['view_engine']->addFunction($function);
 

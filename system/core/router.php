@@ -74,7 +74,7 @@ class router
 
 
     # Have prefix
-    public static function have_prefix($p)
+    public static function hasPrefix($p)
     {
         return (isset(self::$prefixes[$p]));
     }
@@ -101,7 +101,7 @@ class router
 
     /*
     |--------------------------------------------------------------------------
-    | Class private helper methods
+    | Class helper methods
     |--------------------------------------------------------------------------
     */
 
@@ -283,15 +283,6 @@ class router
 
         // Remove controller and method from segments
         array_splice(self::$segments, 0, $count);
-
-        // Load pre controller hook
-        if (!empty(load::$config['before_controller']))
-        {
-            foreach(load::$config['before_controller'] as $tmp)
-            {
-                call_user_func($tmp);
-            }
-        }
     }
 
 
@@ -315,6 +306,17 @@ class router
         {
             $method = self::$method;
         }
+
+
+        // Load pre controller hook
+        if (!empty(load::$config['before_controller']))
+        {
+            foreach(load::$config['before_controller'] as $tmp)
+            {
+                call_user_func_array($tmp, [&$file, &$class, &$method]);
+            }
+        }
+
 
         // Check for $file
         if (is_file($file))

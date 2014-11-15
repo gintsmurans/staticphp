@@ -62,9 +62,9 @@ $config['client_ip'] =& $_SERVER['REMOTE_ADDR'];
 | Uris
 |
 | URL prefixes can be useful when for example identifying ajax requests,
-| they will be stored in config variable and can be checked with Router::have_prefix('ajax') === TRUE
+| they will be stored in config variable and can be checked with router::hasPrefix('ajax') === true
 | they must be in correct sequence. For example, if url is /ajax/test/en/open/29, where ajax and test is prefixes,
-| then array should look like this - ['ajax', 'test'], anyway url can also look like /test/en/open/29.
+| then array should look something like this - ['ajax', 'test']. In this case /test/en/open/29 will also work.
 |--------------------------------------------------------------------------
 */
 $config['url_prefixes'] = [];
@@ -92,7 +92,8 @@ $config['autoload_helpers'] = ['system'];
 |--------------------------------------------------------------------------
 | Hooks
 |
-| Currently only one is supported
+| Currently only "before controller" hook is supported and will be called right before including controller file.
+| It passes three parametrs as references - $file, $class and $mehthod, meaning callback can override current controller.
 |--------------------------------------------------------------------------
 */
 

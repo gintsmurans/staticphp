@@ -114,17 +114,21 @@ Installing via composer automatically downloads jquery and bootstrap components.
 
 ####Before releasing a stable version
 
-* √ Change all include to require, so that we don't expose staticphp to any security issues by doing something that can't be done.
-* Update staticphp start page.
-* Add filesystem helpers to core \load class.
-* Go through core router class and make sure there are no redundant methods.
-* √ Rename all class methods in camelCase format to comply with php-fip standards. Also possibly filenames.
-* Check whether url prefixes are working.
+* Update help page
 * Choose documentation parser and write api documentation, e.g. write descriptions for all staticphp class methods and files.
-* Check before_controller hook.
-* Json reponse has been used very often, maybe we should make some kind of output filtering method that outputs content base on output type?
-* Update one of the projects currently using staticphp to get the idea of whether we are not missing any required variable to be available globaly in view files.
+* Update one of the projects currently using staticphp to get the idea of whether we are not missing any required variable to be available globally in view files.
+* √ Check whether form validation helper still works and how it applies to Twig. - Works now and can be registered with twig by running \models\fv::twig_register();
+* √ Pages helper should register it self with Twig once loadded and if Twig is available. - Nop, pagination html can be passed in the view in variable.
+* √ Change all include to require, so that we don't expose staticphp to any security issues by doing something that can't be done.
+* √ Update staticphp start page.
+* √ Add filesystem helpers to core \load class.
+* √ Logger interface through core\load class.
+* √ Go through core router class and make sure there are no redundant methods.
+* √ Rename all class methods in camelCase format to comply with php-fip standards. Also possibly filenames.
+* √ Check whether url prefixes are working.
+* √ Check before_controller hook.
+
+####v1.1
+* Json reponse has been used very often so far, maybe we should make some kind of output filtering method that outputs content based on output type?
 * Rewrite all sessions classes into one by adding an option to choose from session backend to use, possibly allowing to use multiple backends (e.g. memcached -> sql).
-* Check whether form validation helper still works and how it applies to Twig.
-* Pages helper should register it self with Twig once loadded and if Twig is available.
 * Make cache class for memcached and redis.
