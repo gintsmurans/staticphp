@@ -10,7 +10,6 @@
 
 namespace models;
 
-
 class sessions
 {
     public $prefix = null;
@@ -80,6 +79,7 @@ class sessions
         {
             return $res->data;
         }
+
         return null;
     }
 
@@ -88,6 +88,7 @@ class sessions
     {
         self::destroy($id);
         self::query('INSERT INTO sessions VALUES (?, ?, ?)', [$id, $data, time()]);
+
         return true;
     }
 
@@ -98,8 +99,9 @@ class sessions
         // Also delete the cookie
         if (headers_sent() == false)
         {
-        setcookie($this->prefix, '', time() - 1, '/');
+            setcookie($this->prefix, '', time() - 1, '/');
         }
+
         return true;
     }
 
@@ -107,6 +109,7 @@ class sessions
     public function gc($max)
     {
         db::query('DELETE FROM "sessions" WHERE "expires" <= ?', (time() - $max));
+
         return true;
     }
 
@@ -126,8 +129,7 @@ class sessions
         // Do request
         $prepare = $this->db_link->prepare($query);
         $prepare->execute((array)$data);
+
         return $prepare;
     }
 }
-
-?>

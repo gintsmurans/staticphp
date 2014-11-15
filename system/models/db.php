@@ -2,7 +2,6 @@
 
 namespace models;
 
-
 class db
 {
     private static $db_links;
@@ -43,7 +42,7 @@ class db
         // Set encoding - mysql only
         if (!empty($config['charset']) && self::$db_links[$name]['link']->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'mysql')
         {
-            self::$db_links[$name]['link']->exec('SET NAMES '. $config['charset'] .';');
+            self::$db_links[$name]['link']->exec('SET NAMES '.$config['charset'].';');
         }
 
         return self::$db_links[$name]['link'];
@@ -77,7 +76,7 @@ class db
 
         if (!empty(self::$db_links[$name]['config']['debug']))
         {
-            \load::stopTimer($query . ' [' . implode(', ', (array)$data) . ']');
+            \load::stopTimer($query.' ['.implode(', ', (array)$data).']');
         }
 
         // Return last statement
@@ -110,11 +109,11 @@ class db
         {
             if ($key[0] == '!')
             {
-                $set[] = self::$db_links[$name]['config']['wrap_column'] . substr($key, 1) . self::$db_links[$name]['config']['wrap_column'] ." = {$value}";
+                $set[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column']." = {$value}";
             }
             else
             {
-                $set[] = self::$db_links[$name]['config']['wrap_column'] . $key . self::$db_links[$name]['config']['wrap_column'] .' = ?';
+                $set[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column'].' = ?';
                 $params[] = $value;
             }
         }
@@ -132,11 +131,11 @@ class db
 
             if ($key[0] == '!')
             {
-                $cond[] = self::$db_links[$name]['config']['wrap_column'] . substr($key, 1) . self::$db_links[$name]['config']['wrap_column'] . " {$c} {$value}";
+                $cond[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column']." {$c} {$value}";
             }
             else
             {
-                $cond[] = self::$db_links[$name]['config']['wrap_column'] . $key . self::$db_links[$name]['config']['wrap_column'] . " {$c} ?";
+                $cond[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column']." {$c} ?";
                 $params[] = $value;
             }
         }
@@ -145,7 +144,7 @@ class db
         $set = implode(', ', $set);
         if (!empty($cond))
         {
-            $cond = 'WHERE ' . implode(' AND ', $cond);
+            $cond = 'WHERE '.implode(' AND ', $cond);
         }
 
         // Run Query
@@ -161,12 +160,12 @@ class db
         {
             if ($key[0] == '!')
             {
-                $keys[] = self::$db_links[$name]['config']['wrap_column'] . substr($key, 1) . self::$db_links[$name]['config']['wrap_column'];
+                $keys[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column'];
                 $values[] = $value;
             }
             else
             {
-                $keys[] = self::$db_links[$name]['config']['wrap_column'] . $key . self::$db_links[$name]['config']['wrap_column'];
+                $keys[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column'];
                 $values[] = '?';
                 $params[] = $value;
             }
@@ -226,9 +225,8 @@ class db
             {
                 $res = self::query('SELECT currval(?) as id', $sequence_name);
             }
+
             return (empty($res->id) ? null : $res->id);
         }
     }
 }
-
-?>

@@ -2,7 +2,6 @@
 
 namespace models;
 
-
 class pages
 {
     private static $obj = [];
@@ -61,25 +60,23 @@ class pages
         }
 
         $pages = '<nav><ul class="pagination">';
-        $pages .= '<li'. (self::$obj['active_page'] == 1 ? ' class="disabled"' : '') .'><a href="'. self::$base_uri . self::$obj['prev_page'] .'"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>';
+        $pages .= '<li'.(self::$obj['active_page'] == 1 ? ' class="disabled"' : '').'><a href="'.self::$base_uri.self::$obj['prev_page'].'"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>';
 
         for ($i = self::$obj['pages_from']; $i <= self::$obj['pages_to']; ++$i)
         {
             if ($i === self::$obj['active_page'])
             {
-                $pages .= '<li class="active"><a href="'. self::$base_uri . $i .'">'. $i .' <span class="sr-only">(current)</span></a></li>';
+                $pages .= '<li class="active"><a href="'.self::$base_uri.$i.'">'.$i.' <span class="sr-only">(current)</span></a></li>';
             }
             else
             {
-                $pages .= '<li><a href="'. self::$base_uri . $i .'">'. $i .'</a></li>';
+                $pages .= '<li><a href="'.self::$base_uri.$i.'">'.$i.'</a></li>';
             }
         }
 
-        $pages .= '<li'. (self::$obj['active_page'] == self::$obj['page_count'] ? ' class="disabled"' : '') .'><a href="'. self::$base_uri . self::$obj['next_page'] .'"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>';
+        $pages .= '<li'.(self::$obj['active_page'] == self::$obj['page_count'] ? ' class="disabled"' : '').'><a href="'.self::$base_uri.self::$obj['next_page'].'"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>';
         $pages .= '</ul></nav>';
 
         return $pages;
     }
 }
-
-?>

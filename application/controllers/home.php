@@ -29,5 +29,3 @@ class home
         load::view('home/help.html');
     }
 }
-
-?>

@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": ">=5.4",
-        "twig/twig": "~1.0",
+        "twig/twig": "~1.5",
         "components/jquery": "~1.0",
         "components/bootstrap": "~3.0"
     },

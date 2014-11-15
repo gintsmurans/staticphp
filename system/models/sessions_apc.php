@@ -10,7 +10,6 @@
 
 namespace models;
 
-
 class sessions_apc extends sessions
 {
     private $db_link = false;
@@ -25,7 +24,7 @@ class sessions_apc extends sessions
 
     public function read($id)
     {
-        $data = apc_fetch($this->prefix . $id);
+        $data = apc_fetch($this->prefix.$id);
         if (!empty($data))
         {
             return $data;
@@ -36,7 +35,7 @@ class sessions_apc extends sessions
 
     public function write($id, $data)
     {
-        apc_store($this->prefix . $id, $data, $this->expire);
+        apc_store($this->prefix.$id, $data, $this->expire);
         if (!empty($this->db_link))
         {
             parent::write($id, $data);
@@ -47,7 +46,7 @@ class sessions_apc extends sessions
 
     public function destroy($id)
     {
-        apc_delete($this->prefix . $id);
+        apc_delete($this->prefix.$id);
         if (!empty($this->db_link))
         {
             parent::destroy($id);
@@ -55,5 +54,3 @@ class sessions_apc extends sessions
         return true;
     }
 }
-
-?>

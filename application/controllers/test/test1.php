@@ -12,5 +12,3 @@ class test1
         echo 'one ';
     }
 }
-
-?>

@@ -11,5 +11,3 @@ if (!empty($GLOBALS['argv'][1]))
 {
     load::$config['request_uri'] =& $GLOBALS['argv'][1];
 }
-
-?>

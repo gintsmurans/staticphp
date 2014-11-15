@@ -10,7 +10,5 @@ $config['db']['pdo']['default'] = [
     'persistent' => true,
     'wrap_column' => '`', // ` - for mysql, " - for postgresql
     'fetch_mode_objects' => false,
-    'debug' => $config['debug']
+    'debug' => $config['debug'],
 ];
-
-?>

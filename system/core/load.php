@@ -2,7 +2,6 @@
 
 namespace core;
 
-
 class LogLevel
 {
     const EMERGENCY = 'emergency';
@@ -14,8 +13,6 @@ class LogLevel
     const INFO = 'info';
     const DEBUG = 'debug';
 }
-
-
 
 
 class load
@@ -105,24 +102,24 @@ class load
     // Generate UUID v4. Taken from here: http://php.net/manual/en/function.uniqid.php#94959
     public static function uuid4()
     {
-        return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
             // 32 bits for "time_low"
-            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+            mt_rand(0, 0xffff), mt_rand(0, 0xffff),
 
             // 16 bits for "time_mid"
-            mt_rand( 0, 0xffff ),
+            mt_rand(0, 0xffff),
 
             // 16 bits for "time_hi_and_version",
             // four most significant bits holds version number 4
-            mt_rand( 0, 0x0fff ) | 0x4000,
+            mt_rand(0, 0x0fff) | 0x4000,
 
             // 16 bits, 8 bits for "clk_seq_hi_res",
             // 8 bits for "clk_seq_low",
             // two most significant bits holds zero and one for variant DCE1.1
-            mt_rand( 0, 0x3fff ) | 0x8000,
+            mt_rand(0, 0x3fff) | 0x8000,
 
             // 48 bits for "node"
-            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
         );
     }
 
@@ -155,18 +152,18 @@ class load
         }
 
         // Put directory together
-        $dir = (empty($parts) ? '' : implode('/', $parts) . '/');
+        $dir = (empty($parts) ? '' : implode('/', $parts).'/');
 
         // Create hashed directory
         for ($i = 1; $i <= $levels_deep; ++$i)
         {
-            $data['hash_dir'] .= substr($data['filename'], -1 * $directory_name_length * $i, $directory_name_length) . '/';
+            $data['hash_dir'] .= substr($data['filename'], -1 * $directory_name_length * $i, $directory_name_length).'/';
         }
 
         // Put other stuff together
-        $data['dir'] = str_replace($data['hash_dir'], '', $dir) . $data['hash_dir'];
-        $data['file'] = $data['dir'] . $data['filename'] . (empty($data['ext']) ? '' : '.' . $data['ext']);
-        $data['hash_file'] = $data['hash_dir'] . $data['filename'] . (empty($data['ext']) ? '' : '.' . $data['ext']);
+        $data['dir'] = str_replace($data['hash_dir'], '', $dir).$data['hash_dir'];
+        $data['file'] = $data['dir'].$data['filename'].(empty($data['ext']) ? '' : '.'.$data['ext']);
+        $data['hash_file'] = $data['hash_dir'].$data['filename'].(empty($data['ext']) ? '' : '.'.$data['ext']);
 
         // Create directories
         if (!empty($create_directories) && !is_dir($data['dir']))
@@ -227,7 +224,7 @@ class load
                 $project1 = $name;
                 $name = $key;
             }
-            require (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'config'. DS . $name .'.php';
+            require (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS).'config'.DS.$name.'.php';
         }
     }
 
@@ -243,7 +240,7 @@ class load
                 $project1 = $name;
                 $name = $key;
             }
-            require (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'controllers'. DS . $name .'.php';
+            require (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS).'controllers'.DS.$name.'.php';
         }
     }
 
@@ -259,7 +256,7 @@ class load
                 $project1 = $name;
                 $name = $key;
             }
-            require (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'models'. DS . $name .'.php';
+            require (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS).'models'.DS.$name.'.php';
         }
     }
 
@@ -299,6 +296,7 @@ class load
             echo $contents;
             return true;
         }
+
         return $contents;
     }
 
@@ -314,7 +312,7 @@ class load
                 $project1 = $name;
                 $name = $key;
             }
-            require (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS) . 'helpers' . DS . $name .'.php';
+            require (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS).'helpers'.DS.$name.'.php';
         }
     }
 
@@ -335,6 +333,7 @@ class load
     public static function stopTimer($name)
     {
         self::$finished_timers[$name] = round(microtime(true) - array_shift(self::$started_timers), 5);
+
         return self::$finished_timers[$name];
     }
 
@@ -342,7 +341,7 @@ class load
     public static function markTime($name)
     {
         global $microtime;
-        self::$finished_timers['*' . $name] = round(microtime(true) - $microtime, 5);
+        self::$finished_timers['*'.$name] = round(microtime(true) - $microtime, 5);
     }
 
 
@@ -350,8 +349,8 @@ class load
     {
         global $microtime;
 
-        self::info('Total execution time: ' . round(microtime(true) - $microtime, 5) . " seconds;");
-        self::info('Memory used: ' . round(memory_get_usage() / 1024 / 1024, 4) . " MB;\n");
+        self::info('Total execution time: '.round(microtime(true) - $microtime, 5)." seconds;");
+        self::info('Memory used: '.round(memory_get_usage() / 1024 / 1024, 4)." MB;\n");
 
         if (!empty(self::$finished_timers))
         {
@@ -536,9 +535,9 @@ class load
                     break;
             }
 
-            $output .= '<span class="text-'. $class .'">' . strtoupper($item['level']) . ': </span>';
+            $output .= '<span class="text-'.$class.'">'.strtoupper($item['level']).': </span>';
             $output .= $item['message'];
-            $output .= (!empty($item['context']) ? " [". implode(',', $item['context']) ."]\n" : "\n");
+            $output .= (!empty($item['context']) ? " [".implode(',', $item['context'])."]\n" : "\n");
         }
 
         // Return it
@@ -548,18 +547,16 @@ class load
 
 
 // Autoload models
-spl_autoload_register(function($classname){
+spl_autoload_register(function ($classname) {
     $classname = str_replace('\\', DS, $classname);
     $classname = ltrim($classname, DS);
 
-    if (is_file(APP_PATH . $classname . '.php'))
+    if (is_file(APP_PATH.$classname.'.php'))
     {
-        require APP_PATH . $classname . '.php';
+        require APP_PATH.$classname.'.php';
     }
-    elseif (is_file(SYS_PATH . $classname . '.php'))
+    elseif (is_file(SYS_PATH.$classname.'.php'))
     {
-        require SYS_PATH . $classname . '.php';
+        require SYS_PATH.$classname.'.php';
     }
 }, true, true);
-
-?>

@@ -45,7 +45,7 @@ Installing via composer automatically downloads jquery and bootstrap components.
 
 ### Api
 
-
+_Comming Soon_
 
 
 ### Example app
@@ -116,6 +116,7 @@ Installing via composer automatically downloads jquery and bootstrap components.
 
 * Update help page
 * Choose documentation parser and write api documentation, e.g. write descriptions for all staticphp class methods and files.
+* Database should run all queries in beginTransaction .. commit .. rollback mode.
 * Update one of the projects currently using staticphp to get the idea of whether we are not missing any required variable to be available globally in view files.
 * √ Check whether form validation helper still works and how it applies to Twig. - Works now and can be registered with twig by running \models\fv::twig_register();
 * √ Pages helper should register it self with Twig once loadded and if Twig is available. - Nop, pagination html can be passed in the view in variable.
@@ -129,6 +130,9 @@ Installing via composer automatically downloads jquery and bootstrap components.
 * √ Check before_controller hook.
 
 ####v1.1
+* Unit testing.
+* Css and js minifying - git hooks, also css and js versioning.
+* Script to clear Twig cache. Also a git hook?
 * Json reponse has been used very often so far, maybe we should make some kind of output filtering method that outputs content based on output type?
 * Rewrite all sessions classes into one by adding an option to choose from session backend to use, possibly allowing to use multiple backends (e.g. memcached -> sql).
 * Make cache class for memcached and redis.

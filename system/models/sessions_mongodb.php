@@ -8,7 +8,6 @@
 
 namespace models;
 
-
 class sessions_mongodb
 {
     private $st = null; // session table
@@ -70,6 +69,7 @@ class sessions_mongodb
     public function read($id)
     {
         $this->data = $this->st->find(['id' => $id, 'check' => $this->salt])->fields(['data' => true])->getNext();
+
         return (empty($this->data) ? null : $this->data['data']);
     }
 
@@ -81,6 +81,7 @@ class sessions_mongodb
         $this->data['check'] = $this->salt;
         $this->data['expires'] = time();
         $this->st->save($this->data);
+
         return true;
     }
 
@@ -93,6 +94,7 @@ class sessions_mongodb
         {
             setcookie($this->prefix, '', time() - 1, '/');
         }
+
         return true;
     }
 
@@ -100,8 +102,7 @@ class sessions_mongodb
     public function gc($max)
     {
         $this->st->remove(['expires' => ['$lt' => (time() - $max)]]);
+
         return true;
     }
 }
-
-?>

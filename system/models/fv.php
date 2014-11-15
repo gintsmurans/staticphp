@@ -32,7 +32,6 @@
 
 namespace models;
 
-
 class fv
 {
     public static $errors = null;
@@ -332,6 +331,7 @@ class fv
     public static function creditCard($value)
     {
         $value = preg_replace('/[^0-9]+/', '', $value);
+
         return (bool) preg_match('/^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6011[0-9]{12}|3(?:0[0-5]|[68][0-9])[0-9]{11}|3[47][0-9]{13})$/', $value);
     }
 
@@ -438,7 +438,7 @@ class fv
         // Check if isset keys in POST data
         if ($isset !== null)
         {
-            foreach((array)$isset as $key)
+            foreach ((array)$isset as $key)
             {
                 if (!isset($_POST[$key]))
                 {
@@ -446,6 +446,7 @@ class fv
                 }
             }
         }
+
         return true;
     }
 
@@ -457,6 +458,7 @@ class fv
         {
             return false;
         }
+
         return ' value="'.(!empty($field) ? htmlspecialchars($field) : '').'"';
     }
 
@@ -466,6 +468,7 @@ class fv
         {
             return false;
         }
+
         return ((is_array($field) && in_array($test, $field)) || $field == $test ? ' selected="selected"' : '');
     }
 
@@ -476,6 +479,7 @@ class fv
         {
             return false;
         }
+
         return (!empty($field) ? ' checked="checked"' : '');
     }
 
@@ -486,6 +490,7 @@ class fv
         {
             return false;
         }
+
         return $field;
     }
 
@@ -504,7 +509,7 @@ class fv
             {
                 return false;
             }
-        }
+
         return $field;
     }
 
@@ -518,55 +523,53 @@ class fv
     public static function twig_register()
     {
         // Register filters
-        $filter = new \Twig_SimpleFilter('fvPlain', function($value, $valid = ''){
+        $filter = new \Twig_SimpleFilter('fvPlain', function ($value, $valid = '') {
             return \models\fv::setPlain($value);
         });
         \core\load::$config['view_engine']->addFilter($filter);
 
-        $filter = new \Twig_SimpleFilter('fvFriendly', function($value){
+        $filter = new \Twig_SimpleFilter('fvFriendly', function ($value) {
             return \models\fv::setFriendly($value);
         });
         \core\load::$config['view_engine']->addFilter($filter);
 
-        $filter = new \Twig_SimpleFilter('fvXSS', function($value, $valid = ''){
+        $filter = new \Twig_SimpleFilter('fvXSS', function ($value, $valid = '') {
             return \models\fv::xss($value);
         });
         \core\load::$config['view_engine']->addFilter($filter);
 
 
         // Register form functions
-        $function = new \Twig_SimpleFunction('fvHasError', function($value){
+        $function = new \Twig_SimpleFunction('fvHasError', function ($value) {
             return \models\fv::hasError($value);
         });
         \core\load::$config['view_engine']->addFunction($function);
 
-        $function = new \Twig_SimpleFunction('fvError', function($value){
+        $function = new \Twig_SimpleFunction('fvError', function ($value) {
             return \models\fv::getError($value);
         });
         \core\load::$config['view_engine']->addFunction($function);
 
 
         // Register helper functions
-        $function = new \Twig_SimpleFunction('fvInputValue', function($value){
+        $function = new \Twig_SimpleFunction('fvInputValue', function ($value) {
             return \models\fv::setInputValue($value);
         });
         \core\load::$config['view_engine']->addFunction($function);
 
-        $function = new \Twig_SimpleFunction('fvSelected', function($value, $test = ''){
+        $function = new \Twig_SimpleFunction('fvSelected', function ($value, $test = '') {
             return \models\fv::setSelected($value, $test);
         });
         \core\load::$config['view_engine']->addFunction($function);
 
-        $function = new \Twig_SimpleFunction('fvChecked', function($value){
+        $function = new \Twig_SimpleFunction('fvChecked', function ($value) {
             return \models\fv::setChecked($value);
         });
         \core\load::$config['view_engine']->addFunction($function);
 
-        $function = new \Twig_SimpleFunction('fvValue', function($value){
+        $function = new \Twig_SimpleFunction('fvValue', function ($value) {
             return \models\fv::setValue($value);
         });
         \core\load::$config['view_engine']->addFunction($function);
     }
 }
-
-?>

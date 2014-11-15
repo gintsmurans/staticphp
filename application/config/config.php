@@ -48,11 +48,10 @@ $config['debug_email'] = null;
 |--------------------------------------------------------------------------
 */
 
-$config['request_uri'] =& $_SERVER['REQUEST_URI'];
-$config['query_string'] =& $_SERVER['QUERY_STRING'];
-$config['script_name'] =& $_SERVER['SCRIPT_NAME'];
-
-$config['client_ip'] =& $_SERVER['REMOTE_ADDR'];
+$config['request_uri'] = & $_SERVER['REQUEST_URI'];
+$config['query_string'] = & $_SERVER['QUERY_STRING'];
+$config['script_name'] = & $_SERVER['SCRIPT_NAME'];
+$config['client_ip'] = & $_SERVER['REMOTE_ADDR'];
 
 
 
@@ -98,5 +97,3 @@ $config['autoload_helpers'] = ['system'];
 */
 
 $config['before_controller'] = [];
-
-?>
