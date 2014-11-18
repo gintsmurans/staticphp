@@ -31,11 +31,9 @@ Download [Twig](https://github.com/twigphp/Twig/archive/v1.16.2.tar.gz). Extract
 
 ### Gettings started
 
-Most quickest way to run your project is to use php's in-built server. To do that, cd into the _./somedir/application/public_ and run `php -S 0.0.0.0:8081`. Now open your **servers_ip:8081** (or **127.0.0.1:8081**) and staticphp first page should show up. By default, running as cli server, turns debugging on, but you can configure that in _./somedir/applications/config/config.php_ by settings $config['environment'] or $config['debug'].
+Most quickest way to run your project is to use php's in-built server. To do that, cd into the _./somedir/application/public_ and run `php -S 0.0.0.0:8081`. Now open your **server_ip:8081** (or **127.0.0.1:8081**) and staticphp first page should show up. By default, running staticphp with php's cli server, turns debugging on, but you can configure that in _./somedir/applications/config/config.php_ by settings $config['environment'] or $config['debug'] variable.
 
-_* Take a look at home controller in ./somedir/applications/controllers/home.php for basic usage. Base views in ./somedir/applications/views/ also shows the most basic usage of views._
-
-_* TODO: Write usage guide_
+_* Take a look at home controller in ./somedir/applications/controllers/home.php and views in ./somedir/applications/views/ for their basic usage._
 
 
 ### Components
@@ -52,7 +50,7 @@ _* Work in progress_
 
 ### Example app
 
-[This](http://staticphp-example.gm.lv/) is a simple todo example application based on sessions and memcached. To view the source, checkout the "example" branch.
+[A simple todo application](http://staticphp-example.gm.lv/) based on sessions and memcached. To view the source, checkout the "example" branch.
 
 
 ### Basic Nginx configuration
@@ -116,9 +114,10 @@ _* Work in progress_
 
 ####Before releasing a stable version
 
-* Update help page
-* write api documentation, e.g. write descriptions for all staticphp class methods and files.
+* Write usage guide
+* Write api documentation, e.g. write descriptions for all staticphp class methods and files.
 * Should database run all queries in beginTransaction .. commit .. rollback mode?
+* Update help page
 * Update one of the project currently using staticphp to get the idea of whether we are not missing any required variable to be available globally in view files.
 * √ Choose documentation parser. - apigen for now.
 * √ Check whether form validation helper still works and how it applies to Twig. - Works now and can be registered with twig by running \models\fv::twig_register();
