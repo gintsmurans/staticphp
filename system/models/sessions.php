@@ -34,12 +34,10 @@ class sessions
         ini_set('session.hash_function', 'sha512');
         ini_set('session.hash_bits_per_character', 5);
 
-
         // Set some variables
         $this->db_link = $db_link;
         $this->prefix = session_name();
         $this->expire = session_cache_expire() * 60;
-
 
         // Register session handler
         session_set_save_handler(
@@ -53,36 +51,30 @@ class sessions
         session_start();
     }
 
-
     public function __destruct()
     {
         session_write_close();
     }
-
 
     public function open()
     {
         return true;
     }
 
-
     public function close()
     {
         return true;
     }
 
-
     public function read($id)
     {
         $res = self::query('SELECT "data" FROM "sessions" WHERE "id" = ?', $id)->fetch();
-        if (!empty($res->data))
-        {
+        if (!empty($res->data)) {
             return $res->data;
         }
 
         return null;
     }
-
 
     public function write($id, $data)
     {
@@ -92,19 +84,16 @@ class sessions
         return true;
     }
 
-
     public function destroy($id)
     {
         self::query('DELETE FROM "sessions" WHERE "id" = ?', $id);
         // Also delete the cookie
-        if (headers_sent() == false)
-        {
+        if (headers_sent() == false) {
             setcookie($this->prefix, '', time() - 1, '/');
         }
 
         return true;
     }
-
 
     public function gc($max)
     {
@@ -113,22 +102,19 @@ class sessions
         return true;
     }
 
-
     private function query($query, $data = null, $name = 'default')
     {
-        if (empty($query))
-        {
+        if (empty($query)) {
             return null;
         }
 
-        if (empty($this->db_link))
-        {
+        if (empty($this->db_link)) {
             throw new \Exception('No connection to database');
         }
 
         // Do request
         $prepare = $this->db_link->prepare($query);
-        $prepare->execute((array)$data);
+        $prepare->execute((array) $data);
 
         return $prepare;
     }

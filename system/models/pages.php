@@ -11,7 +11,7 @@ class pages
     {
         self::$base_uri = $base_uri;
 
-        $pages_left = (int)floor($pages_display / 2);
+        $pages_left = (int) floor($pages_display / 2);
         $pages_right = $pages_display - $pages_left - 1;
 
         self::$obj = [];
@@ -20,9 +20,8 @@ class pages
         self::$obj['active_page'] = $active_page;
         self::$obj['page_limit'] = $page_limit;
 
-        self::$obj['page_count'] = (int)ceil(self::$obj['record_count'] / self::$obj['page_limit']);
-        if (empty(self::$obj['active_page']) || self::$obj['active_page'] > self::$obj['page_count'])
-        {
+        self::$obj['page_count'] = (int) ceil(self::$obj['record_count'] / self::$obj['page_limit']);
+        if (empty(self::$obj['active_page']) || self::$obj['active_page'] > self::$obj['page_count']) {
             self::$obj['active_page'] = 1;
         }
         self::$obj['limit_from'] = (self::$obj['active_page'] < 1 ? 0 : (self::$obj['active_page'] - 1) * self::$obj['page_limit']);
@@ -30,15 +29,14 @@ class pages
         self::$obj['next_page'] = (self::$obj['active_page'] + 1 > self::$obj['page_count'] ? false : self::$obj['active_page'] + 1);
         self::$obj['prev_page'] = (self::$obj['active_page'] - 1 < 1 ? false : self::$obj['active_page'] - 1);
 
-        switch (true)
-        {
+        switch (true) {
             case (self::$obj['active_page'] - $pages_left < 1):
                 self::$obj['pages_from'] = 1;
                 self::$obj['pages_to'] = (self::$obj['active_page'] + $pages_display >= self::$obj['page_count'] ? self::$obj['page_count'] : self::$obj['active_page'] + ($pages_display - self::$obj['active_page']));
                 break;
 
             case (self::$obj['active_page'] + $pages_right >= self::$obj['page_count']):
-                self::$obj['pages_from'] = (int)(self::$obj['active_page'] - $pages_display <= 0 ? 1 : self::$obj['active_page'] - ($pages_display - (self::$obj['page_count'] - self::$obj['active_page']) - 1));
+                self::$obj['pages_from'] = (int) (self::$obj['active_page'] - $pages_display <= 0 ? 1 : self::$obj['active_page'] - ($pages_display - (self::$obj['page_count'] - self::$obj['active_page']) - 1));
                 self::$obj['pages_to'] = self::$obj['page_count'];
                 break;
 
@@ -51,25 +49,19 @@ class pages
         return self::$obj;
     }
 
-
     public static function display()
     {
-        if (empty(self::$obj) || self::$obj['page_count'] <= 1)
-        {
+        if (empty(self::$obj) || self::$obj['page_count'] <= 1) {
             return '';
         }
 
         $pages = '<nav><ul class="pagination">';
         $pages .= '<li'.(self::$obj['active_page'] == 1 ? ' class="disabled"' : '').'><a href="'.self::$base_uri.self::$obj['prev_page'].'"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>';
 
-        for ($i = self::$obj['pages_from']; $i <= self::$obj['pages_to']; ++$i)
-        {
-            if ($i === self::$obj['active_page'])
-            {
+        for ($i = self::$obj['pages_from']; $i <= self::$obj['pages_to']; ++$i) {
+            if ($i === self::$obj['active_page']) {
                 $pages .= '<li class="active"><a href="'.self::$base_uri.$i.'">'.$i.' <span class="sr-only">(current)</span></a></li>';
-            }
-            else
-            {
+            } else {
                 $pages .= '<li><a href="'.self::$base_uri.$i.'">'.$i.'</a></li>';
             }
         }

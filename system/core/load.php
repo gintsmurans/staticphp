@@ -3,7 +3,6 @@
 
 namespace core;
 
-
 /**
  * LogLevel class.
  *
@@ -20,7 +19,6 @@ class LogLevel
     const INFO = 'info';
     const DEBUG = 'debug';
 }
-
 
 /**
  * Core class for loading resources, setting timers for profiling and error handling.
@@ -71,7 +69,6 @@ class load
      */
     protected static $logs = [];
 
-
     /*
     |--------------------------------------------------------------------------
     | Configuration Methods
@@ -85,31 +82,28 @@ class load
      *
      * @access public
      * @static
-     * @param string $key
-     * @param mixed|null $default (default: null)
-     * @return mixed Returns mixed data
+     * @param  string     $key
+     * @param  mixed|null $default (default: null)
+     * @return mixed      Returns mixed data
      */
     public static function &get($key, $default = null)
     {
         return (isset(self::$config[$name]) ? self::$config[$name] : $default);
     }
 
-
     /**
      * Set configuration value.
      *
      * @access public
      * @static
-     * @param string $name
-     * @param mixed $value
-     * @return mixed Returns new value
+     * @param  string $name
+     * @param  mixed  $value
+     * @return mixed  Returns new value
      */
     public static function set($name, $value)
     {
         return (self::$config[$name] = $value);
     }
-
-
 
     /**
      * Merge configuration values.
@@ -118,39 +112,31 @@ class load
      *
      * @access public
      * @static
-     * @param string $name
-     * @param mixed $value
-     * @param bool $owerwrite (default: true)
+     * @param  string $name
+     * @param  mixed  $value
+     * @param  bool   $owerwrite (default: true)
      * @return void
      */
     public static function merge($name, $value, $owerwrite = true)
     {
-        if (!isset(self::$config[$name]))
-        {
+        if (!isset(self::$config[$name])) {
             return (self::$config[$name] = $value);
         }
 
-        switch (true)
-        {
+        switch (true) {
             case is_array(self::$config[$name]):
-                if (empty($owerwrite))
-                {
+                if (empty($owerwrite)) {
                     return (self::$config[$name] += $value);
-                }
-                else
-                {
-                    return (self::$config[$name] = array_merge((array)self::$config[$name], (array)$value));
+                } else {
+                    return (self::$config[$name] = array_merge((array) self::$config[$name], (array) $value));
                 }
                 break;
 
             case is_object(self::$config[$name]):
-                if (empty($owerwrite))
-                {
-                    return (self::$config[$name] = (object)((array)self::$config[$name] + (array)$value));
-                }
-                else
-                {
-                    return (self::$config[$name] = (object)array_merge((array)self::$config[$name], (array)$value));
+                if (empty($owerwrite)) {
+                    return (self::$config[$name] = (object) ((array) self::$config[$name] + (array) $value));
+                } else {
+                    return (self::$config[$name] = (object) array_merge((array) self::$config[$name], (array) $value));
                 }
                 break;
 
@@ -165,8 +151,6 @@ class load
                 break;
         }
     }
-
-
 
     /*
     |--------------------------------------------------------------------------
@@ -205,7 +189,6 @@ class load
         );
     }
 
-
     /**
      * Generate sha1 hash from random v4 uuid.
      *
@@ -219,7 +202,6 @@ class load
         return sha1(self::uuid4());
     }
 
-
     /**
      * Generate hashed path.
      *
@@ -232,21 +214,20 @@ class load
      * @see load::randomHash()
      * @access public
      * @static
-     * @param string $filename
-     * @param bool $randomize (default: false)
-     * @param bool $create_directories (default: false)
-     * @param int $levels_deep (default: 2)
-     * @param int $directory_name_length (default: 2)
-     * @return string[]
-     *      An array of string objects:
-     *      <ul>
-     *          <li>'hash_dir' Contains only hashed directory (e.g. ge/ma);</li>
-     *          <li>'hash_file' hash_dir + filename (ge/ma/image.jpg);</li>
-     *          <li>'filename' Filename without extension;</li>
-     *          <li>'ext' File extension;</li>
-     *          <li>'dir' Absolute path to file's containing directory, including hashed directories (/www/upload/files/ge/ma/);</li>
-     *          <li>'file' Full path to a file.</li>
-     *      </ul>
+     * @param  string   $filename
+     * @param  bool     $randomize             (default: false)
+     * @param  bool     $create_directories    (default: false)
+     * @param  int      $levels_deep           (default: 2)
+     * @param  int      $directory_name_length (default: 2)
+     * @return string[] An array of string objects:
+     *                  <ul>
+     *                  <li>'hash_dir' Contains only hashed directory (e.g. ge/ma);</li>
+     *                  <li>'hash_file' hash_dir + filename (ge/ma/image.jpg);</li>
+     *                  <li>'filename' Filename without extension;</li>
+     *                  <li>'ext' File extension;</li>
+     *                  <li>'dir' Absolute path to file's containing directory, including hashed directories (/www/upload/files/ge/ma/);</li>
+     *                  <li>'file' Full path to a file.</li>
+     *                  </ul>
      */
     public static function hashedPath($filename, $randomize = false, $create_directories = false, $levels_deep = 2, $directory_name_length = 2)
     {
@@ -262,8 +243,7 @@ class load
         $data['ext'] = (count($data['filename']) > 1 ? array_pop($data['filename']) : '');
         $data['filename'] = (empty($randomize) ? implode('.', $data['filename']) : self::randomHash());
 
-        if (strlen($data['filename']) < $levels_deep * $directory_name_length)
-        {
+        if (strlen($data['filename']) < $levels_deep * $directory_name_length) {
             throw new Exception('Filename length too small to satisfy how much sub-directories and how long each directory name should be made.');
         }
 
@@ -271,8 +251,7 @@ class load
         $dir = (empty($parts) ? '' : implode('/', $parts).'/');
 
         // Create hashed directory
-        for ($i = 1; $i <= $levels_deep; ++$i)
-        {
+        for ($i = 1; $i <= $levels_deep; ++$i) {
             $data['hash_dir'] .= substr($data['filename'], -1 * $directory_name_length * $i, $directory_name_length).'/';
         }
 
@@ -282,14 +261,12 @@ class load
         $data['hash_file'] = $data['hash_dir'].$data['filename'].(empty($data['ext']) ? '' : '.'.$data['ext']);
 
         // Create directories
-        if (!empty($create_directories) && !is_dir($data['dir']))
-        {
+        if (!empty($create_directories) && !is_dir($data['dir'])) {
             mkdir($data['dir'], 0777, true);
         }
 
         return $data;
     }
-
 
     /**
      * Delete file and directories created by load::hashedPath.
@@ -297,7 +274,7 @@ class load
      * @see load::hashedPath
      * @access public
      * @static
-     * @param string $filename
+     * @param  string $filename
      * @return void
      */
     public static function deleteHashedFile($filename)
@@ -312,24 +289,19 @@ class load
         $expl = explode('/', $path['hash_dir']);
 
         // Unlink the file
-        if (is_file($path['file']))
-        {
+        if (is_file($path['file'])) {
             unlink($path['file']);
         }
 
         // Remove directories
-        foreach ($expl as $null)
-        {
-            if (!@rmdir($path['dir']))
-            {
+        foreach ($expl as $null) {
+            if (!@rmdir($path['dir'])) {
                 break;
             }
 
             $path['dir'] = dirname($path['dir']);
         }
     }
-
-
 
     /*
     |--------------------------------------------------------------------------
@@ -345,25 +317,22 @@ class load
      *
      * @access public
      * @static
-     * @param string|array $files
-     * @param string|null $project (default: null)
+     * @param  string|array $files
+     * @param  string|null  $project (default: null)
      * @return void
      */
     public static function config($files, $project = null)
     {
-        $config =& self::$config;
-        foreach ((array)$files as $key => $name)
-        {
+        $config = & self::$config;
+        foreach ((array) $files as $key => $name) {
             $project1 = $project;
-            if (is_numeric($key) === false)
-            {
+            if (is_numeric($key) === false) {
                 $project1 = $name;
                 $name = $key;
             }
-            require (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS).'config'.DS.$name.'.php';
+            require(empty($project1) ? APP_PATH : BASE_PATH.$project1.DS).'config'.DS.$name.'.php';
         }
     }
-
 
     /**
      * Load controller files.
@@ -373,24 +342,21 @@ class load
      *
      * @access public
      * @static
-     * @param string|array $files
-     * @param string|null $project (default: null)
+     * @param  string|array $files
+     * @param  string|null  $project (default: null)
      * @return void
      */
     public static function controller($files, $project = null)
     {
-        foreach ((array)$files as $key => $name)
-        {
+        foreach ((array) $files as $key => $name) {
             $project1 = $project;
-            if (is_numeric($key) === false)
-            {
+            if (is_numeric($key) === false) {
                 $project1 = $name;
                 $name = $key;
             }
-            require (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS).'controllers'.DS.$name.'.php';
+            require(empty($project1) ? APP_PATH : BASE_PATH.$project1.DS).'controllers'.DS.$name.'.php';
         }
     }
-
 
     /**
      * Load model files.
@@ -400,24 +366,21 @@ class load
      *
      * @access public
      * @static
-     * @param string|array $files
-     * @param string|null $project (default: null)
+     * @param  string|array $files
+     * @param  string|null  $project (default: null)
      * @return void
      */
     public static function model($files, $project = null)
     {
-        foreach ((array)$files as $key => $name)
-        {
+        foreach ((array) $files as $key => $name) {
             $project1 = $project;
-            if (is_numeric($key) === false)
-            {
+            if (is_numeric($key) === false) {
                 $project1 = $name;
                 $name = $key;
             }
-            require (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS).'models'.DS.$name.'.php';
+            require(empty($project1) ? APP_PATH : BASE_PATH.$project1.DS).'models'.DS.$name.'.php';
         }
     }
-
 
     /**
      * Load helper files.
@@ -427,24 +390,21 @@ class load
      *
      * @access public
      * @static
-     * @param string|array $files
-     * @param string|null $project (default: null)
+     * @param  string|array $files
+     * @param  string|null  $project (default: null)
      * @return void
      */
     public static function helper($files, $project = null)
     {
-        foreach ((array)$files as $key => $name)
-        {
+        foreach ((array) $files as $key => $name) {
             $project1 = $project;
-            if (is_numeric($key) === false)
-            {
+            if (is_numeric($key) === false) {
                 $project1 = $name;
                 $name = $key;
             }
-            require (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS).'helpers'.DS.$name.'.php';
+            require(empty($project1) ? APP_PATH : BASE_PATH.$project1.DS).'helpers'.DS.$name.'.php';
         }
     }
-
 
     /**
      * Render a view or multiple views.
@@ -454,9 +414,9 @@ class load
      *
      * @access public
      * @static
-     * @param strign|array $files
-     * @param array &$data (default: [])
-     * @param bool $return (default: false)
+     * @param  strign|array $files
+     * @param  array        &$data  (default: [])
+     * @param  bool         $return (default: false)
      * @return void|string
      */
     public static function view($files, &$data = [], $return = false)
@@ -464,14 +424,12 @@ class load
         static $globals_added = false;
 
         // Check for global views variables, can be set, for example, by controller's constructor
-        if (!empty(self::$config['view_data']))
-        {
-            $data = (array)$data + (array)self::$config['view_data'];
+        if (!empty(self::$config['view_data'])) {
+            $data = (array) $data + (array) self::$config['view_data'];
         }
 
         // Add default view data
-        if (empty($globals_added))
-        {
+        if (empty($globals_added)) {
             load::$config['view_engine']->addGlobal('base_url', router::$base_url);
             load::$config['view_engine']->addGlobal('config', self::$config);
             load::$config['view_engine']->addGlobal('class', router::$class);
@@ -482,22 +440,19 @@ class load
 
         // Load view data
         $contents = '';
-        foreach ((array)$files as $key => $file)
-        {
-            $contents .= load::$config['view_engine']->render($file, (array)$data);
+        foreach ((array) $files as $key => $file) {
+            $contents .= load::$config['view_engine']->render($file, (array) $data);
         }
 
         // Output or return view data
-        if (empty($return))
-        {
+        if (empty($return)) {
             echo $contents;
+
             return true;
         }
 
         return $contents;
     }
-
-
 
     /*
     |--------------------------------------------------------------------------
@@ -517,14 +472,13 @@ class load
         self::$started_timers[] = microtime(true);
     }
 
-
     /**
      * Stop timer by providing name of the timer.
      *
      * @access public
      * @static
-     * @param string $name
-     * @return float Returns time in microseconds it took timer to execute.
+     * @param  string $name
+     * @return float  Returns time in microseconds it took timer to execute.
      */
     public static function stopTimer($name)
     {
@@ -533,14 +487,13 @@ class load
         return self::$finished_timers[$name];
     }
 
-
     /**
      * Mark time with a name.
      *
      * @access public
      * @static
-     * @param string $name
-     * @return float Returns time in microseconds it took to execute from startup to the time the method was called.
+     * @param  string $name
+     * @return float  Returns time in microseconds it took to execute from startup to the time the method was called.
      */
     public static function markTime($name)
     {
@@ -549,7 +502,6 @@ class load
 
         return self::$finished_timers['*'.$name];
     }
-
 
     /**
      * Generate debug output for all timers.
@@ -565,17 +517,13 @@ class load
         self::info('Total execution time: '.round(microtime(true) - $microtime, 5)." seconds;");
         self::info('Memory used: '.round(memory_get_usage() / 1024 / 1024, 4)." MB;\n");
 
-        if (!empty(self::$finished_timers))
-        {
+        if (!empty(self::$finished_timers)) {
             krsort(self::$finished_timers);
-            foreach (self::$finished_timers as $key => $value)
-            {
+            foreach (self::$finished_timers as $key => $value) {
                 self::info("[{$value}s] {$key}");
             }
         }
     }
-
-
 
     /*
     |--------------------------------------------------------------------------
@@ -586,8 +534,8 @@ class load
     /**
      * System is unusable.
      *
-     * @param string $message
-     * @param array $context
+     * @param  string $message
+     * @param  array  $context
      * @return void
      */
     public static function emergency($message, array $context = array())
@@ -595,15 +543,14 @@ class load
         self::log(LogLevel::EMERGENCY, $message, $context);
     }
 
-
     /**
      * Action must be taken immediately.
      *
      * Example: Entire website down, database unavailable, etc. This should
      * trigger the SMS alerts and wake you up.
      *
-     * @param string $message
-     * @param array $context
+     * @param  string $message
+     * @param  array  $context
      * @return void
      */
     public static function alert($message, array $context = array())
@@ -611,14 +558,13 @@ class load
         self::log(LogLevel::ALERT, $message, $context);
     }
 
-
     /**
      * Critical conditions.
      *
      * Example: Application component unavailable, unexpected exception.
      *
-     * @param string $message
-     * @param array $context
+     * @param  string $message
+     * @param  array  $context
      * @return void
      */
     public static function critical($message, array $context = array())
@@ -626,13 +572,12 @@ class load
         self::log(LogLevel::CRITICAL, $message, $context);
     }
 
-
     /**
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
      *
-     * @param string $message
-     * @param array $context
+     * @param  string $message
+     * @param  array  $context
      * @return void
      */
     public static function error($message, array $context = array())
@@ -640,15 +585,14 @@ class load
         self::log(LogLevel::ERROR, $message, $context);
     }
 
-
     /**
      * Exceptional occurrences that are not errors.
      *
      * Example: Use of deprecated APIs, poor use of an API, undesirable things
      * that are not necessarily wrong.
      *
-     * @param string $message
-     * @param array $context
+     * @param  string $message
+     * @param  array  $context
      * @return void
      */
     public static function warning($message, array $context = array())
@@ -656,12 +600,11 @@ class load
         self::log(LogLevel::WARNING, $message, $context);
     }
 
-
     /**
      * Normal but significant events.
      *
-     * @param string $message
-     * @param array $context
+     * @param  string $message
+     * @param  array  $context
      * @return void
      */
     public static function notice($message, array $context = array())
@@ -669,14 +612,13 @@ class load
         self::log(LogLevel::NOTICE, $message, $context);
     }
 
-
     /**
      * Interesting events.
      *
      * Example: User logs in, SQL logs.
      *
-     * @param string $message
-     * @param array $context
+     * @param  string $message
+     * @param  array  $context
      * @return void
      */
     public static function info($message, array $context = array())
@@ -684,12 +626,11 @@ class load
         self::log(LogLevel::INFO, $message, $context);
     }
 
-
     /**
      * Detailed debug information.
      *
-     * @param string $message
-     * @param array $context
+     * @param  string $message
+     * @param  array  $context
      * @return void
      */
     public static function debug($message, array $context = array())
@@ -697,13 +638,12 @@ class load
         self::log(LogLevel::DEBUG, $message, $context);
     }
 
-
     /**
      * Logs with an arbitrary level.
      *
-     * @param mixed $level
-     * @param string $message
-     * @param array $context
+     * @param  mixed  $level
+     * @param  string $message
+     * @param  array  $context
      * @return void
      */
     public static function log($level, $message, array $context = array())
@@ -711,13 +651,11 @@ class load
         self::$logs[] = ['level' => $level, 'message' => $message, 'context' => $context];
     }
 
-
     /*
     |--------------------------------------------------------------------------
     | Debug Output
     |--------------------------------------------------------------------------
     */
-
 
     /**
      * Generate debug output.
@@ -740,11 +678,9 @@ class load
 
         // Generate debug output
         $output = '';
-        foreach (self::$logs as $item)
-        {
+        foreach (self::$logs as $item) {
             $class = '';
-            switch ($item['level'])
-            {
+            switch ($item['level']) {
                 case LogLevel::EMERGENCY:
                 case LogLevel::ALERT:
                 case LogLevel::CRITICAL:
@@ -773,18 +709,14 @@ class load
     }
 }
 
-
 // Autoload function
 spl_autoload_register(function ($classname) {
     $classname = str_replace('\\', DS, $classname);
     $classname = ltrim($classname, DS);
 
-    if (is_file(APP_PATH.$classname.'.php'))
-    {
+    if (is_file(APP_PATH.$classname.'.php')) {
         require APP_PATH.$classname.'.php';
-    }
-    elseif (is_file(SYS_PATH.$classname.'.php'))
-    {
+    } elseif (is_file(SYS_PATH.$classname.'.php')) {
         require SYS_PATH.$classname.'.php';
     }
 }, true, true);

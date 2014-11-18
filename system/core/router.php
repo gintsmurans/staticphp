@@ -2,7 +2,6 @@
 
 namespace core;
 
-
 /**
  * Router class.
  *
@@ -127,7 +126,6 @@ class router
      */
     public static $class = null;
 
-
     /**
      * Controller class method to be called to handle this request.
      *
@@ -138,7 +136,6 @@ class router
      * @static
      */
     public static $method = null;
-
 
     /*
     |--------------------------------------------------------------------------
@@ -153,14 +150,13 @@ class router
      *
      * @access public
      * @static
-     * @param string $url (default: '')
+     * @param  string $url (default: '')
      * @return string
      */
     public static function baseUrl($url = '')
     {
         return self::$base_url.$url;
     }
-
 
     /**
      * Get site url of the website.
@@ -170,9 +166,9 @@ class router
      *
      * @access public
      * @static
-     * @param string $url (default: '')
-     * @param mixed $prefix (default: null)
-     * @param bool $current_prefix (default: true)
+     * @param  string $url            (default: '')
+     * @param  mixed  $prefix         (default: null)
+     * @param  bool   $current_prefix (default: true)
      * @return string
      */
     public static function siteUrl($url = '', $prefix = null, $current_prefix = true)
@@ -195,23 +191,21 @@ class router
      * @see router::siteUrl()
      * @access public
      * @static
-     * @param string $url (default: '')
-     * @param bool $site_uri (default: true)
-     * @param bool $e301 (default: false)
-     * @param string $type (default: 'http')
+     * @param  string $url      (default: '')
+     * @param  bool   $site_uri (default: true)
+     * @param  bool   $e301     (default: false)
+     * @param  string $type     (default: 'http')
      * @return void
      */
     public static function redirect($url = '', $site_uri = true, $e301 = false, $type = 'http')
     {
-        switch ($type)
-        {
+        switch ($type) {
             case 'js':
                 echo '<script type="text/javascript"> window.location.href = \'', ($site_uri === false ? $url : self::siteUrl($url)), '\'; </script>';
                 break;
 
             default:
-                if ($e301 === true)
-                {
+                if ($e301 === true) {
                     header("HTTP/1.1 301 Moved Permanently");
                 }
 
@@ -222,20 +216,18 @@ class router
         exit;
     }
 
-
     /**
      * Check if current request url has a prefix.
      *
      * @access public
      * @static
-     * @param string $prefix
+     * @param  string $prefix
      * @return bool
      */
     public static function hasPrefix($prefix)
     {
         return (isset(self::$prefixes[$prefix]));
     }
-
 
     /**
      * Error proof method for getting segment value by segment index.
@@ -245,7 +237,7 @@ class router
      *          you can use this method like this: <code>$segment = router::segment(1);</code>.
      * @access public
      * @static
-     * @param int $index
+     * @param  int    $index
      * @return string
      */
     public static function segment($index)
@@ -253,15 +245,14 @@ class router
         return (empty(self::$segments[$index]) ? null : self::$segments[$index]);
     }
 
-
     /**
      * Output an error to the browser and stop script execution.
      *
      * @access public
      * @static
-     * @param int $error_code
-     * @param string $error_string (default: '')
-     * @param string $description (default: '')
+     * @param  int    $error_code
+     * @param  string $error_string (default: '')
+     * @param  string $description  (default: '')
      * @return void
      */
     public static function error($error_code, $error_string = '', $description = '')
@@ -271,9 +262,6 @@ class router
         load::view("errors/E{$error_code}.html", $data);
         exit;
     }
-
-
-
 
     /*
     |--------------------------------------------------------------------------
@@ -286,7 +274,7 @@ class router
      *
      * @access protected
      * @static
-     * @param string $path
+     * @param  string $path
      * @return void
      */
     protected static function makePathString($path)
@@ -294,20 +282,19 @@ class router
         return str_replace(['/', '\\'], DS, $path);
     }
 
-
     /**
      * Parse url to find file, class and method to be loaded as controller.
      *
      * @access protected
      * @static
-     * @param string $url
+     * @param  string $url
      * @return array
-     *      An array of string objects:
-     *      <ul>
-     *          <li>'method' - method to be called</li>
-     *          <li>'class' - class where to call this method from</li>
-     *          <li>'file' - file where this class is from</li>
-     *      </ul>
+     *                    An array of string objects:
+     *                    <ul>
+     *                    <li>'method' - method to be called</li>
+     *                    <li>'class' - class where to call this method from</li>
+     *                    <li>'file' - file where this class is from</li>
+     *                    </ul>
      */
     protected static function urlToFile($url)
     {
@@ -321,7 +308,6 @@ class router
 
         return $data;
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -345,19 +331,17 @@ class router
         self::loadController();
     }
 
-
     /**
      * Splits request url into segments.
      *
      * @access public
      * @static
-     * @param bool $force (default: false)
+     * @param  bool $force (default: false)
      * @return void
      */
     public static function splitSegments($force = false)
     {
-        if (empty($force) && !empty(self::$domain_uri))
-        {
+        if (empty($force) && !empty(self::$domain_uri)) {
             return;
         }
 
@@ -367,14 +351,11 @@ class router
         self::$base_url = load::$config['base_url'];
 
         // Set some variables
-        if (empty(self::$base_url) && !empty($_SERVER['HTTP_HOST']))
-        {
+        if (empty(self::$base_url) && !empty($_SERVER['HTTP_HOST'])) {
             $https = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on');
             self::$domain_uri = 'http'.(empty($https) ? '' : 's').'://'.$_SERVER['HTTP_HOST'];
-            if (strpos($_SERVER['HTTP_HOST'], ':'.$_SERVER['SERVER_PORT']) === false)
-            {
-                if ((empty($https) && $_SERVER['SERVER_PORT'] != 80) || (!empty($https) && $_SERVER['SERVER_PORT'] != 443))
-                {
+            if (strpos($_SERVER['HTTP_HOST'], ':'.$_SERVER['SERVER_PORT']) === false) {
+                if ((empty($https) && $_SERVER['SERVER_PORT'] != 80) || (!empty($https) && $_SERVER['SERVER_PORT'] != 443)) {
                     self::$domain_uri .= ':'.$_SERVER['SERVER_PORT'];
                 }
             }
@@ -388,14 +369,11 @@ class router
 
         // Check config routing array
         $uri_tmp = $uri;
-        foreach (load::$config['routing'] as $key => &$item)
-        {
-            if (!empty($key) && !empty($item))
-            {
+        foreach (load::$config['routing'] as $key => &$item) {
+            if (!empty($key) && !empty($item)) {
                 $key = str_replace('#', '\\#', $key);
                 $tmp = preg_replace('#'.$key.'#', $item, $uri);
-                if ($tmp !== $uri)
-                {
+                if ($tmp !== $uri) {
                     self::$segments_requested = explode('/', $uri);
                     $uri_tmp = $tmp;
                 }
@@ -411,16 +389,13 @@ class router
         self::$segments = array_map('rawurldecode', self::$segments);
 
         // Get URL prefixes
-        foreach (load::$config['url_prefixes'] as &$item)
-        {
-            if (isset(self::$segments[0]) && self::$segments[0] == $item)
-            {
+        foreach (load::$config['url_prefixes'] as &$item) {
+            if (isset(self::$segments[0]) && self::$segments[0] == $item) {
                 array_shift(self::$segments);
                 self::$prefixes[$item] = $item;
             }
 
-            if (isset(self::$segments_requested[0]) && self::$segments_requested[0] == $item)
-            {
+            if (isset(self::$segments_requested[0]) && self::$segments_requested[0] == $item) {
                 array_shift(self::$segments_requested);
             }
         }
@@ -434,7 +409,6 @@ class router
         // Define base_url
         define('BASE_URL', self::$base_url);
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -461,15 +435,13 @@ class router
         // Controller and method count, this number is needed because of subdirectory controllers and possibility to have and have not method provided
         $count = 0;
 
-        switch (true)
-        {
+        switch (true) {
             // Controller is in subdirectory
             case (!empty(self::$segments[1]) && is_file(APP_PATH.'controllers'.DS.self::$segments[0].DS.self::$segments[1].'.php')):
                 $count = 2;
                 self::$class = self::$segments[0].'\\'.self::$segments[1];
                 self::$file = self::$segments[0].DS.self::$segments[1];
-                if (!empty(self::$segments[2]))
-                {
+                if (!empty(self::$segments[2])) {
                     $count = 3;
                     self::$method = self::$segments[2];
                 }
@@ -480,12 +452,10 @@ class router
                 $count = 1;
                 self::$class = self::$segments[0];
                 self::$file = self::$segments[0];
-                if (!is_file(APP_PATH.'controllers'.DS.self::$segments[0].'.php'))
-                {
+                if (!is_file(APP_PATH.'controllers'.DS.self::$segments[0].'.php')) {
                     self::$file .= DS.self::$segments[0];
                 }
-                if (!empty(self::$segments[1]))
-                {
+                if (!empty(self::$segments[1])) {
                     $count = 2;
                     self::$method = self::$segments[1];
                 }
@@ -501,7 +471,6 @@ class router
         array_splice(self::$segments, 0, $count);
     }
 
-
     /**
      * Loads controller found in current request sesison or by passed in parameters.
      *
@@ -509,86 +478,67 @@ class router
      *
      * @access protected
      * @static
-     * @param string $file (default: null)
-     * @param string $class (default: null)
-     * @param string &$method (default: null)
+     * @param  string $file    (default: null)
+     * @param  string $class   (default: null)
+     * @param  string &$method (default: null)
      * @return void
      */
     protected static function loadController($file = null, $class = null, &$method = null)
     {
         // Load current file if empty $file parameter
-        if (empty($file))
-        {
+        if (empty($file)) {
             $file = APP_PATH.'controllers'.DS.self::$file.'.php';
         }
 
         // Load current class if empty $class parameter
-        if (empty($class))
-        {
+        if (empty($class)) {
             $class = self::$class;
         }
 
         // Load current method if empty $method parameter
-        if (empty($method))
-        {
+        if (empty($method)) {
             $method = self::$method;
         }
 
-
         // Load pre controller hook
-        if (!empty(load::$config['before_controller']))
-        {
-            foreach (load::$config['before_controller'] as $tmp)
-            {
+        if (!empty(load::$config['before_controller'])) {
+            foreach (load::$config['before_controller'] as $tmp) {
                 call_user_func_array($tmp, [&$file, &$class, &$method]);
             }
         }
 
-
         // Check for $file
-        if (is_file($file))
-        {
+        if (is_file($file)) {
             require $file;
 
             // Namespaces support
             $class = '\\controllers\\'.$class;
 
             // Get all methods in class
-            if (is_array($methods = get_class_methods($class)))
-            {
+            if (is_array($methods = get_class_methods($class))) {
                 $methods = array_flip($methods);
             }
 
             // Call our contructor
-            if (isset($methods['construct']))
-            {
+            if (isset($methods['construct'])) {
                 $class::construct($class, $method);
             }
 
             // Check for $method
-            if (isset($methods[$method]) || isset($methods['__callStatic']))
-            {
+            if (isset($methods[$method]) || isset($methods['__callStatic'])) {
                 call_user_func_array([$class, $method], self::$segments);
-            }
-            else
-            {
+            } else {
                 $error = 'Class or method could not be found: '.$method;
             }
-        }
-        else
-        {
+        } else {
             $error = 'Controller file was not found: '.$file;
         }
 
         // Show error if there is any
-        if (!empty($error))
-        {
-            if (!empty(load::$config['debug']))
-            {
+        if (!empty($error)) {
+            if (!empty(load::$config['debug'])) {
                 self::error('500', 'Internal Server Error', $error);
-            }
-            else
-            {
+            } else {
                 self::error('404', 'Not Found');
             }
         }

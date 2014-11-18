@@ -14,7 +14,6 @@ class sessions_mongodb
     private $data = null;
     private $salt = null;
 
-
     public function __construct(&$mdb)
     {
         // Secure our sessions a little bit more
@@ -32,14 +31,12 @@ class sessions_mongodb
         ini_set('session.hash_function', 'sha512');
         ini_set('session.hash_bits_per_character', 5);
 
-
         // Set some variables
         $this->st = $mdb->sessions;
         $this->salt = md5($_SERVER['HTTP_USER_AGENT']);
 
         $this->prefix = session_name();
         $this->expire = session_cache_expire() * 60;
-
 
         // Register session handler
         session_set_save_handler(
@@ -53,18 +50,15 @@ class sessions_mongodb
         session_start();
     }
 
-
     public function open()
     {
         // Do nothing
     }
 
-
     public function close()
     {
         // Do nothing
     }
-
 
     public function read($id)
     {
@@ -72,7 +66,6 @@ class sessions_mongodb
 
         return (empty($this->data) ? null : $this->data['data']);
     }
-
 
     public function write($id, $data)
     {
@@ -85,19 +78,16 @@ class sessions_mongodb
         return true;
     }
 
-
     public function destroy($id)
     {
         $this->st->remove(['id' => $id]);
         // Also delete the cookie
-        if (headers_sent() == false)
-        {
+        if (headers_sent() == false) {
             setcookie($this->prefix, '', time() - 1, '/');
         }
 
         return true;
     }
-
 
     public function gc($max)
     {

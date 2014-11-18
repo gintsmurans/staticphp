@@ -2,9 +2,7 @@
 
 namespace controllers;
 
-
 use \core\load;
-use \core\router;
 
 /**
  * StaticPHP's base controller.
@@ -20,14 +18,13 @@ class home
      *
      * @access public
      * @static
-     * @param string & $class
-     * @param string & $method
+     * @param  string & $class
+     * @param  string & $method
      * @return void
      */
     public static function construct(& $class, & $method)
     {
     }
-
 
     /**
      * Example method.
@@ -39,8 +36,8 @@ class home
      *
      * @access public
      * @static
-     * @param string $param1 (default: null)
-     * @param string $param2 (default: null)
+     * @param  string $param1 (default: null)
+     * @param  string $param2 (default: null)
      * @return void
      */
     public static function index($param1 = null, $param2 = null)
@@ -52,7 +49,6 @@ class home
         // Pass [key => value] as second parameter, to get variables available in your view
         load::view('home/index.html');
     }
-
 
     /**
      * Example method for help page.

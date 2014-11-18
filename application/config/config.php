@@ -10,7 +10,6 @@
  */
 $config = [];
 
-
 /*
 |--------------------------------------------------------------------------
 | General
@@ -18,8 +17,6 @@ $config = [];
 */
 
 $config['base_url'] = null; // NULL for auto detect
-
-
 
 
 /*
@@ -45,7 +42,6 @@ $config['debug_ips'] = ['::1', '127.0.0.1'];
 */
 $config['debug_email'] = null;
 
-
 /*
 |--------------------------------------------------------------------------
 | Web server variables
@@ -60,9 +56,6 @@ $config['query_string'] = & $_SERVER['QUERY_STRING'];
 $config['script_name'] = & $_SERVER['SCRIPT_NAME'];
 $config['client_ip'] = & $_SERVER['REMOTE_ADDR'];
 
-
-
-
 /*
 |--------------------------------------------------------------------------
 | Uris
@@ -74,9 +67,6 @@ $config['client_ip'] = & $_SERVER['REMOTE_ADDR'];
 |--------------------------------------------------------------------------
 */
 $config['url_prefixes'] = [];
-
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -90,9 +80,6 @@ $config['url_prefixes'] = [];
 $config['autoload_configs'] = [];
 $config['autoload_models'] = [];
 $config['autoload_helpers'] = ['system'];
-
-
-
 
 /*
 |--------------------------------------------------------------------------
