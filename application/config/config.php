@@ -1,6 +1,13 @@
 <?php
 
-// Define config array
+/**
+ * Default config array
+ *
+ * (default value: [])
+ *
+ * @var mixed[]
+ * @access public
+ */
 $config = [];
 
 
@@ -41,7 +48,7 @@ $config['debug_email'] = null;
 
 /*
 |--------------------------------------------------------------------------
-| Web server variables 
+| Web server variables
 |
 | Set where various variables will be taken from
 | In most cases these should work by default

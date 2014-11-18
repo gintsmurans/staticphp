@@ -31,8 +31,19 @@ if (!empty(load::$config['autoload_configs']))
 }
 
 
-// Define our own error handlers
-# Error handler
+/**
+ * StaticPHP's error handler. Turns errors into exceptions and passes on to sp_exception_handler().
+ *
+ * Stops on @ suppressed errors.
+ *
+ * @see sp_exception_handler()
+ * @access public
+ * @param mixed $errno
+ * @param mixed $errstr
+ * @param mixed $errfile
+ * @param mixed $errline
+ * @return bool Returns whether the error was handled or not.
+ */
 function sp_error_handler($errno, $errstr, $errfile, $errline)
 {
     if (error_reporting() === 0)
@@ -47,7 +58,15 @@ function sp_error_handler($errno, $errstr, $errfile, $errline)
 }
 
 
-# Shutdown method to find out whether shutdown was because of any fatal error
+/**
+ * StaticPHP's script shutdown handler to find out whether shutdown was because of any fatal error.
+ *
+ * If the shutdown was caused by an error, the error is passed on to the sp_exception_handler().
+ *
+ * @see sp_exception_handler()
+ * @access public
+ * @return void
+ */
 function sp_error_shutdown_handler()
 {
     $last_error = error_get_last();
@@ -60,7 +79,15 @@ function sp_error_shutdown_handler()
 }
 
 
-# Exception handler
+/**
+ * StaticPHP's exception handler.
+ *
+ * If debug mode is on, sends formatted error to browser, otherwise sends error email, if debug email is provided in <i>config/config.php</i> file.
+ *
+ * @access public
+ * @param Exception|ErrorException|mixed $exception
+ * @return void
+ */
 function sp_exception_handler($exception)
 {
     if (function_exists('http_response_code') && headers_sent() === false)
@@ -78,8 +105,14 @@ function sp_exception_handler($exception)
     }
 }
 
-
-# Send error email
+/**
+ * Sends error messages.
+ *
+ * @see sp_format_exception()
+ * @access public
+ * @param Exception|ErrorException|mixed $e
+ * @return void
+ */
 function sp_send_error_email($e)
 {
     if (!empty(load::$config['debug_email']))
@@ -88,8 +121,16 @@ function sp_send_error_email($e)
     }
 }
 
-
-# Format exception
+/**
+ * Format exception and add session, server and post information for easier debugging.
+ *
+ * If $full is set to false, only string containing formatted message is returned.
+ *
+ * @access public
+ * @param Exception|ErrorException|mixed $e
+ * @param bool $full (default: false)
+ * @return string Returns formatted string of the $e exception
+ */
 function sp_format_exception($e, $full = false)
 {
     $session = & $_SESSION;

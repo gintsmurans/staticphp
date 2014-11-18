@@ -2,13 +2,54 @@
 
 namespace models;
 
+/**
+ * Database wrapper for pdo.
+ */
 class db
 {
+    /**
+     * Holds references to database links.
+     *
+     * @var mixed[][]
+     * @access private
+     * @static
+     */
     private static $db_links;
+
+    /**
+     * Cache for last statment
+     *
+     * @var resource
+     * @access private
+     * @static
+     */
     private static $last_statement;
 
 
-    // -- INIT
+    /**
+     * Init connection to the database.
+     *
+     * Connection can be made by passing configuration array to $config parameter or
+     * by passing a name of the connection that has been set up in application/config/db.php (see example in system/config/db.php).
+     *
+     * @example models\db::init();
+     * @example models\db::init(null, 'second');
+     * @example models\db::init([
+     *              'string' => 'pgsql:host=localhost;dbname=',
+     *              'username' => 'username',
+     *              'password' => 'password',
+     *              'charset' => 'UTF8',
+     *              'persistent' => true,
+     *              'wrap_column' => '`', // ` - for mysql, " - for postgresql
+     *              'fetch_mode_objects' => false,
+     *              'debug' => true,
+     *          ], 'pgsql1');
+     * @access public
+     * @static
+     * @param mixed $config (default: null)
+     * @param string $name (default: 'default')
+     * @return resource Returns pdo instance.
+     */
     public static function init($config = null, $name = 'default')
     {
         // Check if there is such configuration
@@ -49,8 +90,24 @@ class db
     }
 
 
-
-    // -- Query
+    /**
+     * Make a query.
+     *
+     * Should be used for insert and update queries, but also can be used as iterator for select queries.
+     *
+     * @example models\db::query('INSERT INTO posts (title) VALUES (?)', ['New post title'], 'pgsql1');
+     * @example $query = models\db::query('SELECT * FROM posts', null, 'pgsql1');<br />
+     *          foreach ($query as $item)<br />
+     *          {<br />
+     *              // Do something with the $item<br />
+     *          }
+     * @access public
+     * @static
+     * @param string $query
+     * @param mixed[] $data (default: null)
+     * @param string $name (default: 'default')
+     * @return PDOStatement Returns statement created by query.
+     */
     public static function query($query, $data = null, $name = 'default')
     {
         $db_link = &self::$db_links[$name]['link'];
@@ -84,24 +141,52 @@ class db
     }
 
 
-
-    // -- Fetch wrapper
+    /**
+     * Fetch one row of query. Useful if you need only one record returned.
+     *
+     * @example models\db::fetch('SELECT * FROM posts WHERE id = ?', [$post_id], 'pgsql1');
+     * @access public
+     * @static
+     * @param string $query
+     * @param mixed[] $data (default: [])
+     * @param string $name (default: 'default')
+     * @return array|object Returns array or object of the one record from database.
+     */
     public static function fetch($query, $data = [], $name = 'default')
     {
         return self::query($query, $data, $name)->fetch();
     }
 
 
-
-    // -- FetchAll wrapper
+    /**
+     * Fetch all rows.
+     *
+     * @access public
+     * @static
+     * @param string $query
+     * @param mixed[] $data (default: [])
+     * @param string $name (default: 'default')
+     * @return array[]|object[] Returns array of arrays or objects containing all rows returned by database.
+     */
     public static function fetchAll($query, $data = [], $name = 'default')
     {
         return self::query($query, $data, $name)->fetchAll();
     }
 
 
-
-    // -- Make update string from and array. Add "!" at start of the key to avoid escaping.
+    /**
+     * Make update sql string and exeute it from associative array of data.
+     *
+     * @example models\db::update('posts', ['title' => 'Different title', '!active' => 1], ['id' => $post_id]);
+     *          will make and execute query: UPDATE posts SET title = 'Different title', active = 1 WHERE id = 2.
+     * @access public
+     * @static
+     * @param string $table
+     * @param mixed $data
+     * @param mixed $where
+     * @param string $name (default: 'default')
+     * @return PDOStatement Returns statement created by query.
+     */
     public static function update($table, $data, $where, $name = 'default')
     {
         // Make SET
@@ -152,8 +237,18 @@ class db
     }
 
 
-
-    // -- Make insert string from and array. Add "!" at start of the key to avoid escaping
+    /**
+     * Make insert sql string and exeute it from associative array of data..
+     *
+     * @example models\db::insert('posts', ['title' => 'Different title', '!active' => 1]);
+     *          will make and execute query: INSERT INTO posts (title, active) VALUES ('Different title', 1).
+     * @access public
+     * @static
+     * @param string $table
+     * @param mixed $data
+     * @param string $name (default: 'default')
+     * @return PDOStatement Returns statement created by query.
+     */
     public static function insert($table, $data, $name = 'default')
     {
         foreach ((array)$data as $key => $value)
@@ -180,16 +275,27 @@ class db
     }
 
 
-
-    // -- Return link to the database connection for raw actions on it
+    /**
+     * Get PDO object connection link to the database by $name.
+     *
+     * @access public
+     * @static
+     * @param string $name (default: 'default')
+     * @return PDO Returns php's PDO object.
+     */
     public static function &dbLink($name = 'default')
     {
         return self::$db_links[$name]['link'];
     }
 
 
-
-    // -- Return the last query statement
+    /**
+     * Get last statement that was run on database through this (models\db) class.
+     *
+     * @access public
+     * @static
+     * @return PDOStatement Returns statement created by query.
+     */
     public static function &lastStatement()
     {
         if (!empty(self::$last_statement))
@@ -199,16 +305,32 @@ class db
     }
 
 
-
-    // -- Return the last query executed
+    /**
+     * Get last query that was run on database through this (models\db) class.
+     *
+     * @access public
+     * @static
+     * @return string Returns string of the query.
+     */
     public static function lastQuery()
     {
         return empty(self::$last_statement) ? null : self::$last_statement->queryString;
     }
 
 
-
-    // -- Return the last insert id is created into database
+    /**
+     * Get the last insert id created by database.
+     *
+     * Id can be returned by pdo in-built method by setting $sql to false or by querying database.
+     * If $sequence_name is provided, it will aptempt to only get last value for that sequence.
+     *
+     * @access public
+     * @static
+     * @param string $sequence_name (default: '')
+     * @param bool $sql (default: false)
+     * @param string $name (default: 'default')
+     * @return int|null Returns last insert id on success or null on failure.
+     */
     public static function lastInsertId($sequence_name = '', $sql = false, $name = 'default')
     {
         if (empty($sql))

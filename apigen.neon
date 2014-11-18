@@ -1,0 +1,8 @@
+title: "StaticPHP"
+source:
+    - application
+    - system
+exclude: "*/application/cache/*"
+
+destination: application/public/docs
+

@@ -4,6 +4,7 @@ Thumbs.db
 Desktop.ini
 /tmp/
 /vendor/
-/application/cache/
+/application/cache/*/
 /application/public/assets/vendor/
 /composer.lock
+/application/public/docs/

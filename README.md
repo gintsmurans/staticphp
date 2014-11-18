@@ -45,7 +45,9 @@ Installing via composer automatically downloads jquery and bootstrap components.
 
 ### Api
 
-_Comming Soon_
+[Api documentation](http://staticphp.gm.lv/docs/)*
+
+_* Work in progress_
 
 
 ### Example app
@@ -115,9 +117,10 @@ _Comming Soon_
 ####Before releasing a stable version
 
 * Update help page
-* Choose documentation parser and write api documentation, e.g. write descriptions for all staticphp class methods and files.
-* Database should run all queries in beginTransaction .. commit .. rollback mode.
-* Update one of the projects currently using staticphp to get the idea of whether we are not missing any required variable to be available globally in view files.
+* write api documentation, e.g. write descriptions for all staticphp class methods and files.
+* Should database run all queries in beginTransaction .. commit .. rollback mode?
+* Update one of the project currently using staticphp to get the idea of whether we are not missing any required variable to be available globally in view files.
+* √ Choose documentation parser. - apigen for now.
 * √ Check whether form validation helper still works and how it applies to Twig. - Works now and can be registered with twig by running \models\fv::twig_register();
 * √ Pages helper should register it self with Twig once loadded and if Twig is available. - Nop, pagination html can be passed in the view in variable.
 * √ Change all include to require, so that we don't expose staticphp to any security issues by doing something that can't be done.
