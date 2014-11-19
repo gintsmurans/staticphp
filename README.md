@@ -21,7 +21,7 @@ There are two ways to install staticphp framework:
 
 Run `composer create-project 4apps/staticphp ./` for stable version and `composer create-project 4apps/staticphp ./ master-dev` for latest development version from github. Composer will install all the dependecies for you.
 
-To install composer take a look [here](https://getcomposer.org/doc/00-intro.md).
+*[How to install composer?](https://getcomposer.org/doc/00-intro.md)*
 
 
 **2. Manually**
@@ -120,7 +120,7 @@ _* Work in progress_
 * Write api documentation, e.g. write descriptions for all staticphp class methods and files.
 * Should database run all queries in beginTransaction .. commit .. rollback mode?
 * Update help page
-* Update one of the project currently using staticphp to get the idea of whether we are not missing any required variable to be available globally in view files.
+* √ Update one of the project currently using staticphp to get the idea of whether we are not missing any required variable to be available globally in view files.
 * √ Choose documentation parser. - apigen for now.
 * √ Check whether form validation helper still works and how it applies to Twig. - Works now and can be registered with twig by running \models\fv::twig_register();
 * √ Pages helper should register it self with Twig once loadded and if Twig is available. - Nop, pagination html can be passed in the view in variable.

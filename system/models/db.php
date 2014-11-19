@@ -53,11 +53,11 @@ class db
     {
         // Check if there is such configuration
         if (empty($config)) {
-            if (empty(\load::$config['db']['pdo'][$name])) {
+            if (empty(\core\load::$config['db']['pdo'][$name])) {
                 return false;
             }
 
-            $config = \load::$config['db']['pdo'][$name];
+            $config = \core\load::$config['db']['pdo'][$name];
         }
 
         // Don't make a new connection if there is one connected with the name
@@ -116,14 +116,14 @@ class db
 
         // Do request
         if (!empty(self::$db_links[$name]['config']['debug'])) {
-            \load::startTimer();
+            \core\load::startTimer();
         }
 
         self::$last_statement = $db_link->prepare($query);
         self::$last_statement->execute((array) $data);
 
         if (!empty(self::$db_links[$name]['config']['debug'])) {
-            \load::stopTimer($query.' ['.implode(', ', (array) $data).']');
+            \core\load::stopTimer($query.' ['.implode(', ', (array) $data).']');
         }
 
         // Return last statement
