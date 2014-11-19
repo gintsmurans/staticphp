@@ -2,6 +2,7 @@
 ._*
 Thumbs.db
 Desktop.ini
+CHANGELOG.md
 /tmp/
 /vendor/
 /application/cache/*/
