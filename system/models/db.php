@@ -162,6 +162,39 @@ class db
     }
 
     /**
+     * Make insert sql string and exeute it from associative array of data..
+     *
+     * @example models\db::insert('posts', ['title' => 'Different title', '!active' => 1]);
+     *          will make and execute query: INSERT INTO posts (title, active) VALUES ('Different title', 1).
+     * @access public
+     * @static
+     * @param  string       $table
+     * @param  mixed        $data
+     * @param  string       $name  (default: 'default')
+     * @return PDOStatement Returns statement created by query.
+     */
+    public static function insert($table, $data, $name = 'default')
+    {
+        foreach ((array) $data as $key => $value) {
+            if ($key[0] == '!') {
+                $keys[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column'];
+                $values[] = $value;
+            } else {
+                $keys[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column'];
+                $values[] = '?';
+                $params[] = $value;
+            }
+        }
+
+        // Compile KEYS and VALUES
+        $keys = implode(', ', $keys);
+        $values = implode(', ', $values);
+
+        // Run Query
+        return self::query("INSERT INTO {$table} ({$keys}) VALUES ({$values})", $params, $name);
+    }
+
+    /**
      * Make update sql string and exeute it from associative array of data.
      *
      * @example models\db::update('posts', ['title' => 'Different title', '!active' => 1], ['id' => $post_id]);
@@ -214,36 +247,52 @@ class db
     }
 
     /**
-     * Make insert sql string and exeute it from associative array of data..
+     * Initiates a database transaction on a database link by $name.
      *
-     * @example models\db::insert('posts', ['title' => 'Different title', '!active' => 1]);
-     *          will make and execute query: INSERT INTO posts (title, active) VALUES ('Different title', 1).
+     * Turns off autocommit mode. While autocommit mode is turned off,
+     * changes made to the database via the PDO object instance are not
+     * committed until you end the transaction by calling db::commit().
+     * Calling db::rollBack() will roll back all changes to the database
+     * and return the connection to autocommit mode.
+     *
+     * @see db::commit()
      * @access public
      * @static
-     * @param  string       $table
-     * @param  mixed        $data
-     * @param  string       $name  (default: 'default')
-     * @return PDOStatement Returns statement created by query.
+     * @param string $name (default: 'default')
+     * @return bool Returns true on success or false on failure.
      */
-    public static function insert($table, $data, $name = 'default')
+    public static function beginTransaction($name = 'default')
     {
-        foreach ((array) $data as $key => $value) {
-            if ($key[0] == '!') {
-                $keys[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column'];
-                $values[] = $value;
-            } else {
-                $keys[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column'];
-                $values[] = '?';
-                $params[] = $value;
-            }
-        }
+        $db_link = &self::$db_links[$name]['link'];
+        return $db_link->beginTransaction();
+    }
 
-        // Compile KEYS and VALUES
-        $keys = implode(', ', $keys);
-        $values = implode(', ', $values);
+    /**
+     * Commit a transaction on a database link by $name.
+     *
+     * @access public
+     * @static
+     * @param string $name (default: 'default')
+     * @return bool Returns true on success or false on failure.
+     */
+    public static function commit($name = 'default')
+    {
+        $db_link = &self::$db_links[$name]['link'];
+        return $db_link->commit();
+    }
 
-        // Run Query
-        return self::query("INSERT INTO {$table} ({$keys}) VALUES ({$values})", $params, $name);
+    /**
+     * Rolls back a transaction on a database link by $name.
+     *
+     * @access public
+     * @static
+     * @param string $name (default: 'default')
+     * @return bool Returns true on success or false on failure.
+     */
+    public static function rollBack($name = 'default')
+    {
+        $db_link = &self::$db_links[$name]['link'];
+        return $db_link->rollBack();
     }
 
     /**

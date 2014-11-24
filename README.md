@@ -121,7 +121,7 @@ _* Work in progress_
 
 * Write usage guide
 * Write api documentation, e.g. write descriptions for all staticphp class methods and files.
-* Should database run all queries in beginTransaction .. commit .. rollback mode?
+* √ Should database run all queries in beginTransaction .. commit .. rollback mode? - Not for now, by default we are running connections in persistent mode, which can cause issues with transactions.
 * Update help page
 * √ Update one of the project currently using staticphp to get the idea of whether we are not missing any required variable to be available globally in view files.
 * √ Choose documentation parser. - apigen for now.
