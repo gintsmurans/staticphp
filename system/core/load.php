@@ -432,6 +432,7 @@ class load
         if (empty($globals_added)) {
             load::$config['view_engine']->addGlobal('base_url', router::$base_url);
             load::$config['view_engine']->addGlobal('config', self::$config);
+            load::$config['view_engine']->addGlobal('namespace', router::$namespace);
             load::$config['view_engine']->addGlobal('class', router::$class);
             load::$config['view_engine']->addGlobal('method', router::$method);
             load::$config['view_engine']->addGlobal('segments', router::$segments);

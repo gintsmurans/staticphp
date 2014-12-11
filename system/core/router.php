@@ -116,6 +116,17 @@ class router
     public static $file = null;
 
     /**
+     * Namespace to load controller class from.
+     *
+     * (default value: null)
+     *
+     * @var string
+     * @access public
+     * @static
+     */
+    public static $namespace = null;
+
+    /**
      * Class name to call controller methods from.
      *
      * (default value: null)
@@ -429,6 +440,7 @@ class router
         $tmp = self::urlToFile(load::$config['routing']['']);
 
         // Set default class and method
+        self::$namespace = '\\controllers\\';
         self::$class = $tmp['class'];
         self::$method = $tmp['method'];
 
@@ -439,7 +451,8 @@ class router
             // Controller is in subdirectory
             case (!empty(self::$segments[1]) && is_file(APP_PATH.'controllers'.DS.self::$segments[0].DS.self::$segments[1].'.php')):
                 $count = 2;
-                self::$class = self::$segments[0].'\\'.self::$segments[1];
+                self::$namespace .= self::$segments[0] . '\\';
+                self::$class = self::$segments[1];
                 self::$file = self::$segments[0].DS.self::$segments[1];
                 if (!empty(self::$segments[2])) {
                     $count = 3;
@@ -483,11 +496,16 @@ class router
      * @param  string &$method (default: null)
      * @return void
      */
-    protected static function loadController($file = null, $class = null, &$method = null)
+    protected static function loadController($file = null, $namespace = null, $class = null, &$method = null)
     {
         // Load current file if empty $file parameter
         if (empty($file)) {
             $file = APP_PATH.'controllers'.DS.self::$file.'.php';
+        }
+
+        // Load current namespace if empty $namespace parameter
+        if (empty($namespace)) {
+            $namespace = self::$namespace;
         }
 
         // Load current class if empty $class parameter
@@ -512,7 +530,7 @@ class router
             require $file;
 
             // Namespaces support
-            $class = '\\controllers\\'.$class;
+            $class = $namespace.$class;
 
             // Get all methods in class
             if (is_array($methods = get_class_methods($class))) {
