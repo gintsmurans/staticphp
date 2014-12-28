@@ -81,6 +81,15 @@ function sp_error_shutdown_handler()
  */
 function sp_exception_handler($exception)
 {
+    if ($exception instanceof \core\RouterException) {
+        if (!empty(load::$config['debug'])) {
+            router::error('500', 'Internal Server Error', $exception->getMessage());
+        }
+        else {
+            router::error('404', 'Not Found');
+        }
+    }
+
     if (function_exists('http_response_code') && headers_sent() === false) {
         http_response_code(500);
     }
