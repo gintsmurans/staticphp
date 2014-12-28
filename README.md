@@ -31,16 +31,16 @@ Download latest release from [Releases](https://github.com/gintsmurans/staticphp
 Download [Twig](https://github.com/twigphp/Twig/archive/v1.16.2.tar.gz). Extract archive, rename the directory to twig and put it in _./somedir/vendor/twig_ so that _Autoloader.php_ file is under _./somedir/vendor/twig/twig/lib/Twig/_. For installing Twig C php extension, please refer to this [guide](http://twig.sensiolabs.org/doc/installation.html#installing-the-c-extension).
 
 
-### Gettings started
+### Getting started
 
-Most quickest way to run your project is to use php's in-built server. To do that, cd into the _./somedir/application/public_ and run `php -S 0.0.0.0:8081`. Now open your **server_ip:8081** (or **127.0.0.1:8081**) and staticphp first page should show up. By default, running staticphp with php's cli server, turns debugging on, but you can configure that in _./somedir/applications/config/config.php_ by settings $config['environment'] or $config['debug'] variable.
+Most quickest way to run your project is to use php's in-built server. To do that, cd into the _./somedir/application/public_ and run `php -S 0.0.0.0:8081`. Now open your **server_ip:8081** (or **127.0.0.1:8081**) and staticphp first page should show up. By default, running staticphp with php's cli server, turns debugging on, but you can configure that in _./somedir/applications/config/config.php_ by setting $config['environment'] or $config['debug'] variable.
 
-_* Take a look at home controller in ./somedir/applications/controllers/home.php and views in ./somedir/applications/views/ for their basic usage._
+_* Take a look at home controller in ./somedir/applications/controllers/home.php and views in ./somedir/applications/views/ for basic framework usage._
 
 
 ### Components
 
-Installing via composer automatically downloads jquery and bootstrap components.   By default those are installed in _./somedir/application/public/assets/vendor/_. Base views shipped with staticphp are built using these components, so you can quickly get started with your project.
+Installing via composer, automatically downloads jquery and bootstrap components. By default those are installed in _./somedir/application/public/assets/vendor/_. Base views shipped with staticphp are built using these components, so you can quickly get started with your project.
 
 
 ### Api
@@ -117,8 +117,9 @@ _* Work in progress_
 
 ## TODO
 
-####Before releasing a stable version
-
+####v1.0
+* Put helpers under namespaces?
+* Decide to go with Reflection Api or not.
 * Write usage guide
 * Write api documentation, e.g. write descriptions for all staticphp class methods and files.
 * √ Should database run all queries in beginTransaction .. commit .. rollback mode? - Not for now, by default we are running connections in persistent mode, which can cause issues with transactions.
