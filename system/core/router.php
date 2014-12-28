@@ -3,6 +3,16 @@
 namespace core;
 
 /**
+ * Router exception class.
+ *
+ * Custom exception class for router exceptions to allow our exception handler to give specific output for router exceptions.
+ */
+class RouterException extends \Exception
+{
+}
+
+
+/**
  * Router class.
  *
  * Handles url parsing, routing and controller loading.
@@ -527,40 +537,57 @@ class router
 
         // Check for $file
         if (is_file($file)) {
-            require $file;
-
             // Namespaces support
             $class = $namespace.$class;
 
-            // Get all methods in class
-            if (is_array($methods = get_class_methods($class))) {
-                $methods = array_flip($methods);
-            }
+            if (empty(load::$config['use_reflection_api'])) {
+                // Get all methods in class
+                if (is_array($methods = get_class_methods($class))) {
+                    $methods = array_flip($methods);
+                }
 
-            // Call our contructor
-            if (isset($methods['construct'])) {
-                $class::construct($class, $method);
-            }
+                // Call our contructor
+                if (isset($methods['construct'])) {
+                    $class::construct($class, $method);
+                }
 
-            // Check for $method
-            if (isset($methods[$method]) || isset($methods['__callStatic'])) {
-                call_user_func_array([$class, $method], self::$segments);
-            } else {
-                $error = 'Class or method could not be found: '.$method;
+                // Call requested method
+                if (isset($methods[$method]) || isset($methods['__callStatic'])) {
+                    call_user_func_array([$class, $method], self::$segments);
+                } else {
+                    throw new RouterException('Class or method could not be found: '.$method);
+                }
+            }
+            else {
+                // Create new reflection object from the controller class
+                try {
+                    $ref = new \ReflectionClass($class);
+                }
+                catch (\Exception $e) {
+                    throw new RouterException('File "'.$file.'" was loaded, but the class '.$class.' could NOT be found');
+                }
+
+                // Call our contructor, if there is any
+                if ($ref->hasMethod('construct') === true) {
+                    $ref->getMethod('construct')->invokeArgs(null, [&$class, &$method]);
+                }
+
+                // Call requested method
+                if ($ref->hasMethod($method) === true) {
+                    $class_method = $ref->getMethod($method);
+                    $class_method->invokeArgs(null, self::$segments);
+                }
+                // Call __callStatic
+                elseif ($ref->hasMethod('__callStatic') === true) {
+                    $ref->getMethod('__callStatic')->invoke(null, $method, self::$segments);
+                }
+                // Error - method not found
+                else {
+                    throw new RouterException('Method "'.$method.'" of class "'.$class.'" could not be found');
+                }
             }
         } else {
-            $error = 'Controller file was not found: '.$file;
+            throw new RouterException('Controller file was not found: '.$file);
         }
-
-        // Show error if there is any
-        if (!empty($error)) {
-            if (!empty(load::$config['debug'])) {
-                self::error('500', 'Internal Server Error', $error);
-            } else {
-                self::error('404', 'Not Found');
-            }
-        }
-
-        unset($methods);
     }
 }
