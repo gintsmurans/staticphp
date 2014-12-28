@@ -719,5 +719,12 @@ spl_autoload_register(function ($classname) {
         require APP_PATH.$classname.'.php';
     } elseif (is_file(SYS_PATH.$classname.'.php')) {
         require SYS_PATH.$classname.'.php';
+    } else {
+        $classname = dirname($classname);
+        if (is_file(APP_PATH.$classname.'.php')) {
+            require APP_PATH.$classname.'.php';
+        } elseif (is_file(SYS_PATH.$classname.'.php')) {
+            require SYS_PATH.$classname.'.php';
+        }
     }
 }, true, true);
