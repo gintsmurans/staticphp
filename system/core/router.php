@@ -330,6 +330,20 @@ class router
         return $data;
     }
 
+    /**
+     * Fix method names to allow "-" in urls.
+     *
+     * @access protected
+     * @static
+     * @param  string $method
+     * @return string
+     */
+    protected static function fixMethodName($method)
+    {
+        return lcfirst(implode('', array_map('ucfirst', explode('-', $method))));
+    }
+
+
     /*
     |--------------------------------------------------------------------------
     | Router initialization methods
@@ -457,30 +471,33 @@ class router
         // Controller and method count, this number is needed because of subdirectory controllers and possibility to have and have not method provided
         $count = 0;
 
+        // Fix segment names to translate "-" in url's to camelCase
+        $segments = array_map(['\\core\\router', 'fixMethodName'], self::$segments);
+
         switch (true) {
             // Controller is in subdirectory
-            case (!empty(self::$segments[1]) && is_file(APP_PATH.'controllers'.DS.self::$segments[0].DS.self::$segments[1].'.php')):
+            case (!empty($segments[1]) && is_file(APP_PATH.'controllers'.DS.$segments[0].DS.$segments[1].'.php')):
                 $count = 2;
-                self::$namespace .= self::$segments[0] . '\\';
-                self::$class = self::$segments[1];
-                self::$file = self::$segments[0].DS.self::$segments[1];
-                if (!empty(self::$segments[2])) {
+                self::$namespace .= $segments[0] . '\\';
+                self::$class = $segments[1];
+                self::$file = $segments[0].DS.$segments[1];
+                if (!empty($segments[2])) {
                     $count = 3;
-                    self::$method = self::$segments[2];
+                    self::$method = $segments[2];
                 }
                 break;
 
             // Controller is not in subdirectory
-            case (!empty(self::$segments[0])):
+            case (!empty($segments[0])):
                 $count = 1;
-                self::$class = self::$segments[0];
-                self::$file = self::$segments[0];
-                if (!is_file(APP_PATH.'controllers'.DS.self::$segments[0].'.php')) {
-                    self::$file .= DS.self::$segments[0];
+                self::$class = $segments[0];
+                self::$file = $segments[0];
+                if (!is_file(APP_PATH.'controllers'.DS.$segments[0].'.php')) {
+                    self::$file .= DS.$segments[0];
                 }
-                if (!empty(self::$segments[1])) {
+                if (!empty($segments[1])) {
                     $count = 2;
-                    self::$method = self::$segments[1];
+                    self::$method = $segments[1];
                 }
                 break;
 
