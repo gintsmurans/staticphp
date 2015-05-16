@@ -222,8 +222,16 @@ class fv
         return preg_replace('/[^a-z_\-0-9\ \p{L}'.$valid.']+/iu', '', $string);
     }
 
-    // Requires iconv
-    public static function setFriendly($string)
+    public static function setClean($string)
+    {
+        $string = strip_tags($string);
+        $string = stripslashes($string);
+        $string = htmlspecialchars($string);
+
+        return $string;
+    }
+
+    public static function translit($string)
     {
         // Cache current locale, set new one as UTF8
         $current_locale = setlocale(LC_ALL, 0);
@@ -231,16 +239,24 @@ class fv
 
         // Do some magick
         $string = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
+
+        // Revert locale
+        setlocale(LC_ALL, $current_locale);
+
+        // Return
+        return $string;
+    }
+
+    // Requires iconv
+    public static function setFriendly($string)
+    {
+        $string = self::translit($string);
         $string = strip_tags($string);
         $string = strtolower($string);
         $string = str_replace([' ', "'", '--', '--'], '-', $string);
         $string = preg_replace('/[^a-z_\-0-9]*/', '', $string);
         $string = trim($string, '-');
 
-        // Revert locale
-        setlocale(LC_ALL, $current_locale);
-
-        // Return
         return $string;
     }
 
@@ -509,6 +525,7 @@ class fv
             {
                 return false;
             }
+        }
 
         return $field;
     }
