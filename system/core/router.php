@@ -460,7 +460,7 @@ class router
      */
     public static function findController()
     {
-        // Get default controller, class, method from URL
+        // Get default controller, class and method
         $tmp = self::urlToFile(load::$config['routing']['']);
 
         // Set default class and method
@@ -474,41 +474,49 @@ class router
         // Fix segment names to translate "-" in url's to camelCase
         $segments = array_map(['\\core\\router', 'fixMethodName'], self::$segments);
 
-        switch (true) {
-            // Controller is in subdirectory
-            case (!empty($segments[1]) && is_file(APP_PATH.'controllers'.DS.$segments[0].DS.$segments[1].'.php')):
-                $count = 2;
-                self::$namespace .= $segments[0] . '\\';
-                self::$class = $segments[1];
-                self::$file = $segments[0].DS.$segments[1];
-                if (!empty($segments[2])) {
-                    $count = 3;
-                    self::$method = $segments[2];
-                }
-                break;
 
-            // Controller is not in subdirectory
-            case (!empty($segments[0])):
-                $count = 1;
-                self::$class = $segments[0];
-                self::$file = $segments[0];
-                if (!is_file(APP_PATH.'controllers'.DS.$segments[0].'.php')) {
-                    self::$file .= DS.$segments[0];
+        if (count($segments) === 0) {
+            // Defaults
+            self::$file = $tmp['file'];
+        }
+        else {
+            // Look for controller, class and method in segments
+            $count = count($segments);
+            foreach ($segments as $one) {
+                if (preg_match('/^[a-zA-Z][a-zA-Z0-9-_]*$/', $segments[$count - 1]) == false) {
+                    $count -= 1;
+                    continue;
                 }
-                if (!empty($segments[1])) {
-                    $count = 2;
-                    self::$method = $segments[1];
-                }
-                break;
+                $slice = array_slice($segments, 0, $count);
+                $filename = implode(DS, $slice);
+                $path_to_file = APP_PATH.'controllers'.DS.$filename.'.php';
 
-            // Run default controller
-            default:
-                self::$file = $tmp['file'];
-                break;
+                if (is_file($path_to_file)) {
+                    $namespace = array_slice($segments, 0, $count - 1);
+                    if (!empty($namespace)) {
+                        self::$namespace .= implode('\\', $namespace) . '\\';
+                    }
+
+                    self::$class = $segments[$count - 1];
+                    self::$file = implode(DS, $slice);
+
+                    if (count($segments) > $count) {
+                        self::$method = $segments[$count];
+                    }
+                    break;
+                }
+
+                $count -= 1;
+            }
+
+            // Method also must be removed from the segments array
+            $count += 1;
         }
 
-        // Remove controller and method from segments
-        array_splice(self::$segments, 0, $count);
+        if ($count > 0) {
+            // Remove controller and method from segments
+            array_splice(self::$segments, 0, $count);
+        }
     }
 
     /**
