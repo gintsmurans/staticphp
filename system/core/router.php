@@ -284,6 +284,49 @@ class router
         exit;
     }
 
+
+    /**
+     * Ease sending JSON response back to browser
+     *
+     * @example Call function: <code>router::jsonResponse($json_data);</code> add some data: <code>$json_data['xx'] = 1;</code>
+     *          and on the end of script execution the $json_data array will be sent to client along with
+     *          content-type:text/javascript header.
+     * @access public
+     * @param mixed &$json_data
+     * @return void
+     */
+    public static function jsonResponse(&$json_data)
+    {
+        static $json_request = false;
+
+        if (isset($GLOBALS['json_response_data']) && !empty($json_data) && is_array($json_data)) {
+            $json_data = array_merge($GLOBALS['json_response_data'], $json_data);
+            $GLOBALS['json_response_data'] = & $json_data;
+        } elseif (isset($GLOBALS['json_response_data'])) {
+            $json_data = $GLOBALS['json_response_data'];
+            $GLOBALS['json_response_data'] = & $json_data;
+        } elseif (empty($json_data) || is_array($json_data) == false) {
+            $json_data = [];
+            $GLOBALS['json_response_data'] = & $json_data;
+        } else {
+            $GLOBALS['json_response_data'] = & $json_data;
+        }
+
+        // Register shutdown function once
+        if (empty($json_request)) {
+            header('Content-Type:text/javascript; charset=utf-8');
+            register_shutdown_function(function () {
+                $data = $GLOBALS['json_response_data'];
+                if (is_array($data) == false) {
+                    $data = [];
+                }
+                echo json_encode($data);
+            });
+
+            $json_request = true;
+        }
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Class helper methods
@@ -324,8 +367,8 @@ class router
 
         // Get class, method and file from $url
         $data['method'] = array_pop($tmp);
-        $data['class'] = end($tmp);
-        $data['file'] = implode('/', $tmp);
+        $data['class']  = end($tmp);
+        $data['file']   = implode('/', $tmp);
 
         return $data;
     }
@@ -381,8 +424,8 @@ class router
         }
 
         // Get some config variables
-        $uri = load::$config['request_uri'];
-        $script_path = trim(dirname(load::$config['script_name']), '/');
+        $uri            = load::$config['request_uri'];
+        $script_path    = trim(dirname(load::$config['script_name']), '/');
         self::$base_url = load::$config['base_url'];
 
         // Set some variables
@@ -465,8 +508,8 @@ class router
 
         // Set default class and method
         self::$namespace = '\\controllers\\';
-        self::$class = $tmp['class'];
-        self::$method = $tmp['method'];
+        self::$class     = $tmp['class'];
+        self::$method    = $tmp['method'];
 
         // Controller and method count, this number is needed because of subdirectory controllers and possibility to have and have not method provided
         $count = 0;
@@ -487,8 +530,8 @@ class router
                     $count -= 1;
                     continue;
                 }
-                $slice = array_slice($segments, 0, $count);
-                $filename = implode(DS, $slice);
+                $slice        = array_slice($segments, 0, $count);
+                $filename     = implode(DS, $slice);
                 $path_to_file = APP_PATH.'controllers'.DS.$filename.'.php';
 
                 if (is_file($path_to_file)) {
@@ -565,52 +608,62 @@ class router
             // Namespaces support
             $class = $namespace.$class;
 
-            if (empty(load::$config['use_reflection_api'])) {
-                // Get all methods in class
-                if (is_array($methods = get_class_methods($class))) {
-                    $methods = array_flip($methods);
-                }
-
-                // Call our contructor
-                if (isset($methods['construct'])) {
-                    $class::construct($class, $method);
-                }
-
-                // Call requested method
-                if (isset($methods[$method]) || isset($methods['__callStatic'])) {
-                    call_user_func_array([$class, $method], self::$segments);
-                } else {
-                    throw new RouterException('Class or method could not be found: '.$method);
-                }
+            // Create new reflection object from the controller class
+            try {
+                $ref = new \ReflectionClass($class);
             }
+            catch (\Exception $e) {
+                throw new RouterException('File "'.$file.'" was loaded, but the class '.$class.' could NOT be found');
+            }
+
+            // Call our contructor, if there is any
+            $response = null;
+            if ($ref->hasMethod('construct') === true) {
+                $response = $ref->getMethod('construct')->invokeArgs(null, [&$class, &$method]);
+            }
+
+            // Call requested method
+            $method_response = null;
+            if ($ref->hasMethod($method) === true) {
+                $class_method = $ref->getMethod($method);
+                $method_response = $class_method->invokeArgs(null, self::$segments);
+            }
+            // Call __callStatic
+            elseif ($ref->hasMethod('__callStatic') === true) {
+                $method_response = $ref->getMethod('__callStatic')->invoke(null, $method, self::$segments);
+            }
+            // Error - method not found
             else {
-                // Create new reflection object from the controller class
-                try {
-                    $ref = new \ReflectionClass($class);
-                }
-                catch (\Exception $e) {
-                    throw new RouterException('File "'.$file.'" was loaded, but the class '.$class.' could NOT be found');
-                }
+                throw new RouterException('Method "'.$method.'" of class "'.$class.'" could not be found');
+            }
 
-                // Call our contructor, if there is any
-                if ($ref->hasMethod('construct') === true) {
-                    $ref->getMethod('construct')->invokeArgs(null, [&$class, &$method]);
-                }
-
-                // Call requested method
-                if ($ref->hasMethod($method) === true) {
-                    $class_method = $ref->getMethod($method);
-                    $class_method->invokeArgs(null, self::$segments);
-                }
-                // Call __callStatic
-                elseif ($ref->hasMethod('__callStatic') === true) {
-                    $ref->getMethod('__callStatic')->invoke(null, $method, self::$segments);
-                }
-                // Error - method not found
-                else {
-                    throw new RouterException('Method "'.$method.'" of class "'.$class.'" could not be found');
+            // Append method response to construct response
+            if ($method_response !== null) {
+                if ($response === null) {
+                    $response = $method_response;
+                } elseif (is_array($response)) {
+                    if (is_array($method_response) == false) {
+                        throw new RouterException(
+                            "Construct method returns <em>\"".gettype($response)."\"</em>, ".
+                            "but {$method} returns <em>\"".gettype($method_response)."\"</em>"
+                        );
+                    }
+                    $response = array_merge($response, $method_response);
+                } else {
+                    $response .= $method_response;
                 }
             }
+
+            // Echo response if there was any
+            if ($response !== null) {
+                if (is_array($response)) {
+                    header('Content-Type:text/javascript; charset=utf-8');
+                    echo json_encode($response);
+                } elseif (is_string($response) || is_numeric($response)) {
+                    echo $response;
+                }
+            }
+
         } else {
             throw new RouterException('Controller file was not found: '.$file);
         }

@@ -18,10 +18,6 @@ $config = [];
 
 $config['base_url'] = null; // NULL for auto detect
 
-// Use of reflection api is experimental and a little bit slower than call_user_func_array (approximately a second slower on 500k requests).
-// However it adds more precise class and method checking and possibly will give more options in future on how url segments are passed to a controller (eg. optional url segments).
-$config['use_reflection_api'] = true;
-
 /*
 |--------------------------------------------------------------------------
 | Debug
