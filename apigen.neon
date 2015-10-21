@@ -4,7 +4,7 @@ deprecated: true
 todo: true
 download: true
 baseUrl: http://staticphp.gm.lv/docs/
-templateConfig: /root/.composer/vendor/apigen/apigen/templates/bootstrap/config.neon
+templateConfig: /root/.composer/vendor/apigen/theme-default/src/config.neon
 
 charset:
     - UTF-8
@@ -13,8 +13,7 @@ source:
     - ./
 
 exclude:
-    - "*/application/cache/*"
-    - "*/vendor/*"
-    - "*/tmp/*"
+    - "Application/Cache/*"
+    - "Vendor/*"
 
-destination: application/public/docs
+destination: Application/Public/docs
