@@ -1,5 +1,5 @@
 title: "StaticPHP"
-php: true
+php: false
 deprecated: true
 todo: true
 download: true
