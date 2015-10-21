@@ -1,0 +1,15 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # For javascript handling using controller
+    # RewriteCond %{REQUEST_FILENAME} -f
+    # RewriteRule ^js/.* index.php [L]
+
+    ## Avoid opening config
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^Config/.*$ index.php/$1 [L]
+
+    # RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ index.php/$1 [L]
+</IfModule>

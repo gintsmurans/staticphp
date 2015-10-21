@@ -12,11 +12,13 @@
     "require": {
         "php": ">=5.4",
         "twig/twig": "~1.5",
+        "robloach/component-installer": "*",
         "components/jquery": "~1.0",
         "components/bootstrap": "~3.0"
     },
     "config": {
-        "component-dir": "application/public/assets/vendor",
+        "vendor-dir": "Vendor",
+        "component-dir": "Application/Public/assets/vendor",
         "component-baseurl": "/assets/vendor"
     }
 }
