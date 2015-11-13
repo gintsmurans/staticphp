@@ -7,7 +7,8 @@ use \Core\Models\Load;
 /**
  * Router exception class.
  *
- * Custom exception class for router exceptions to allow our exception handler to give specific output for router exceptions.
+ * Custom exception class for router exceptions.
+ * Allows our exception handler to give specific output for router exceptions.
  */
 class RouterException extends \Exception
 {
@@ -23,13 +24,68 @@ class RouterException extends \Exception
 class Router
 {
     /*
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     | Variables
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     */
 
     /**
-     * Array of prefixes for current request
+     * Url of protocol, hostname, domain name and port number (if its not 80 or 443 for https).
+     *
+     * (default value: null)
+     *
+     * @var string
+     * @access public
+     * @static
+     */
+    public static $domain_url = null;
+
+    /**
+     * Variable that holds reference to base url.
+     *
+     * (default value: null)
+     *
+     * @var string
+     * @access public
+     * @static
+     */
+    public static $base_url = null;
+
+    /**
+     * Original url that is being requested.
+     *
+     * (default value: null)
+     *
+     * @var string
+     * @access public
+     * @static
+     */
+    public static $requested_url = null;
+
+    /**
+     * String containing full url to the final request.
+     *
+     * (default value: null)
+     *
+     * @var string
+     * @access public
+     * @static
+     */
+    public static $parsed_url = null;
+
+    /**
+     * Query string.
+     *
+     * (default value: null)
+     *
+     * @var string
+     * @access public
+     * @static
+     */
+    public static $query_string = null;
+
+    /**
+     * Array of prefixes for current request.
      *
      * (default value: [])
      *
@@ -40,7 +96,7 @@ class Router
     public static $prefixes = [];
 
     /**
-     * Url containing all prefixes for current request
+     * Url containing all prefixes for current request.
      *
      * (default value: null)
      *
@@ -49,6 +105,28 @@ class Router
      * @static
      */
     public static $prefixes_url = null;
+
+    /**
+     * Original request segments, before processing Config/Routing.php.
+     *
+     * (default value: [])
+     *
+     * @var string[]
+     * @access public
+     * @static
+     */
+    public static $initial_segments = [];
+
+    /**
+     * Original request url, before processing Config/Routing.php.
+     *
+     * (default value: [])
+     *
+     * @var string
+     * @access public
+     * @static
+     */
+    public static $initial_segments_url = null;
 
     /**
      * Array of final url segments, i.e. everything after slash after domain name, except prefixes.
@@ -73,62 +151,7 @@ class Router
     public static $segments_url = null;
 
     /**
-     * String containing full url to the final request.
-     *
-     * (default value: null)
-     *
-     * @var string
-     * @access public
-     * @static
-     */
-    public static $segments_full_url = null;
-
-    /**
-     * Original request segments, before processing Config/Routing.php.
-     *
-     * (default value: [])
-     *
-     * @var string[]
-     * @access public
-     * @static
-     */
-    public static $segments_requested = [];
-
-    /**
-     * Original request url, before processing Config/Routing.php.
-     *
-     * (default value: [])
-     *
-     * @var string
-     * @access public
-     * @static
-     */
-    public static $segments_requested_url = null;
-
-    /**
-     * Url of protocol, hostname, domain name and port number (if its not 80 or 443 for https).
-     *
-     * (default value: null)
-     *
-     * @var string
-     * @access public
-     * @static
-     */
-    public static $domain_uri = null;
-
-    /**
-     * Variable that holds reference to base url.
-     *
-     * (default value: null)
-     *
-     * @var string
-     * @access public
-     * @static
-     */
-    public static $base_url = null;
-
-    /**
-     * Module responsible for current request handling
+     * Module responsible for current request handling.
      *
      * (default value: null)
      *
@@ -161,6 +184,17 @@ class Router
     public static $namespace = null;
 
     /**
+     * Path to controller without module.
+     *
+     * (default value: null)
+     *
+     * @var string
+     * @access public
+     * @static
+     */
+    public static $controller = null;
+
+    /**
      * Class name to call controller methods from.
      *
      * (default value: null)
@@ -183,7 +217,7 @@ class Router
     public static $method = null;
 
     /**
-     * Url to the method.
+     * Url to a method.
      *
      * (default value: null)
      *
@@ -195,9 +229,9 @@ class Router
 
 
     /*
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     | Helper methods
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     */
 
     /**
@@ -258,7 +292,9 @@ class Router
     {
         switch ($type) {
             case 'js':
-                echo '<script type="text/javascript"> window.location.href = \'', ($site_uri === false ? $url : self::siteUrl($url)), '\'; </script>';
+                echo '<script type="text/javascript"> window.location.href = \'',
+                    ($site_uri === false ? $url : self::siteUrl($url)),
+                    '\'; </script>';
                 break;
 
             default:
@@ -321,10 +357,11 @@ class Router
     }
 
     /**
-     * Ease sending JSON response back to browser
+     * Ease sending JSON response back to browser.
      *
-     * @example Call function: <code>Router::jsonResponse($json_data);</code> add some data: <code>$json_data['xx'] = 1;</code>
-     *          and on the end of script execution the $json_data array will be sent to client along with
+     * @example Call function: <code>Router::jsonResponse($json_data);</code> add some data:
+     *          <code>$json_data['xx'] = 1;</code> and on the end of script execution the $json_data
+     *          array will be sent to client along with
      *          content-type:text/javascript header.
      * @access public
      * @param mixed &$json_data
@@ -364,20 +401,102 @@ class Router
 
 
     /*
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     | Class helper methods
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     */
+
+    /**
+     * Prints debug information.
+     *
+     * @access public
+     * @static
+     * @return void
+     */
+    public static function debug()
+    {
+        echo "Router::\$domain_url: ";
+        print_r(Router::$domain_url);
+        echo "\n";
+
+        echo "Router::\$base_url: ";
+        print_r(Router::$base_url);
+        echo "\n";
+
+        echo "Router::\$requested_url: ";
+        print_r(Router::$requested_url);
+        echo "\n";
+
+        echo "Router::\$parsed_url: ";
+        print_r(Router::$parsed_url);
+        echo "\n";
+
+        echo "Router::\$query_string: ";
+        print_r(Router::$query_string);
+        echo "\n";
+
+        echo "Router::\$prefixes: ";
+        print_r(Router::$prefixes);
+        echo "\n";
+
+        echo "Router::\$prefixes_url: ";
+        print_r(Router::$prefixes_url);
+        echo "\n";
+
+        echo "Router::\$initial_segments: ";
+        print_r(Router::$initial_segments);
+        echo "\n";
+
+        echo "Router::\$initial_segments_url: ";
+        print_r(Router::$initial_segments_url);
+        echo "\n";
+
+        echo "Router::\$segments: ";
+        print_r(Router::$segments);
+        echo "\n";
+
+        echo "Router::\$segments_url: ";
+        print_r(Router::$segments_url);
+        echo "\n";
+
+        echo "Router::\$module: ";
+        print_r(Router::$module);
+        echo "\n";
+
+        echo "Router::\$file: ";
+        print_r(Router::$file);
+        echo "\n";
+
+        echo "Router::\$namespace: ";
+        print_r(Router::$namespace);
+        echo "\n";
+
+        echo "Router::\$controller: ";
+        print_r(Router::$controller);
+        echo "\n";
+
+        echo "Router::\$class: ";
+        print_r(Router::$class);
+        echo "\n";
+
+        echo "Router::\$method: ";
+        print_r(Router::$method);
+        echo "\n";
+
+        echo "Router::\$method_url: ";
+        print_r(Router::$method_url);
+        echo "\n";
+    }
 
     /**
      * Convert / and \ to host system's directory separator.
      *
-     * @access protected
+     * @access public
      * @static
      * @param  string $path
-     * @return void
+     * @return string
      */
-    protected static function makePathString($path)
+    public static function makePathString($path)
     {
         return str_replace(['/', '\\'], DS, $path);
     }
@@ -385,7 +504,7 @@ class Router
     /**
      * Parse url to find file, class and method to be loaded as controller.
      *
-     * @access protected
+     * @access public
      * @static
      * @param  string $url
      * @return array
@@ -397,7 +516,7 @@ class Router
      *                    <li>'file' - file where this class is from</li>
      *                    </ul>
      */
-    protected static function urlToFile($url)
+    public static function urlToFile($url)
     {
         // Explode $url
         $tmp = explode('/', $url);
@@ -407,39 +526,40 @@ class Router
         }
 
         // Get class, method and file from $url
-        $data['module']    = array_shift($tmp);
-        $data['method']    = array_pop($tmp);
-        $data['class']     = end($tmp);
-        $data['file']      = $data['module'] . '/Controllers/' . implode('/', $tmp);
-        $data['namespace'] = $data['module'] . '\\Controllers\\';
+        $data['module']     = array_shift($tmp);
+        $data['method']     = array_pop($tmp);
+        $data['class']      = end($tmp);
+        $data['controller'] = implode('/', $tmp);
+        $data['file']       = $data['module'] . '/Controllers/' . $data['controller'];
+        $data['namespace']  = $data['module'] . '\\Controllers\\';
 
         return $data;
     }
 
     /**
-     * Turn urls into namespace compatible strings
-     * Example: module/controller/method-name -> Module/Controller/MethodName
+     * Turn urls into namespace compatible strings.
+     * Example: module/controller/method-name -> Module/Controller/MethodName.
      *
-     * @access protected
+     * @access public
      * @static
      * @param  string $method
      * @return string
      */
-    protected static function urlToNamescape($url)
+    public static function urlToNamespace($url)
     {
         return implode('', array_map('ucfirst', explode('-', $url)));
     }
 
     /**
-     * Reverse namespace compatible name to url
-     * Example: Module/Controller/MethodName -> module/controller/method-name
+     * Reverse namespace compatible name to url.
+     * Example: Module/Controller/MethodName -> module/controller/method-name.
      *
-     * @access protected
+     * @access public
      * @static
      * @param  string $method
      * @return string
      */
-    protected static function namespaceToUrl($namespace)
+    public static function namespaceToUrl($namespace)
     {
         $url = preg_replace('/(?<!\/|^)([A-Z])/', '-$1', $namespace);
         $url = strtolower($url);
@@ -449,15 +569,16 @@ class Router
 
 
     /*
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     | Router initialization methods
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     */
 
     /**
      * Main router initialization method.
      *
-     * This method calls <code>Router::splitSegments();</code>, <code>Router::findController()</code> and <code>Router::loadController()</code> methods.
+     * This method calls <code>Router::splitSegments();</code>, <code>Router::findController()</code> and
+     *      <code>Router::loadController()</code> methods.
      *
      * @access public
      * @static
@@ -480,7 +601,7 @@ class Router
      */
     public static function splitSegments($force = false)
     {
-        if (empty($force) && !empty(self::$domain_uri)) {
+        if (empty($force) && !empty(self::$domain_url)) {
             return;
         }
 
@@ -492,14 +613,17 @@ class Router
         // Set some variables
         if (empty(self::$base_url) && !empty($_SERVER['HTTP_HOST'])) {
             $https = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on');
-            self::$domain_uri = 'http'.(empty($https) ? '' : 's').'://'.$_SERVER['HTTP_HOST'];
+            self::$domain_url = 'http'.(empty($https) ? '' : 's').'://'.$_SERVER['HTTP_HOST'];
             if (strpos($_SERVER['HTTP_HOST'], ':'.$_SERVER['SERVER_PORT']) === false) {
-                if ((empty($https) && $_SERVER['SERVER_PORT'] != 80) || (!empty($https) && $_SERVER['SERVER_PORT'] != 443)) {
-                    self::$domain_uri .= ':'.$_SERVER['SERVER_PORT'];
+                if (
+                    (empty($https) && $_SERVER['SERVER_PORT'] != 80) ||
+                    (!empty($https) && $_SERVER['SERVER_PORT'] != 443)
+                ) {
+                    self::$domain_url .= ':'.$_SERVER['SERVER_PORT'];
                 }
             }
-            self::$domain_uri .= '/';
-            self::$base_url = self::$domain_uri.(!empty($script_path) ? $script_path.'/' : '');
+            self::$domain_url .= '/';
+            self::$base_url = self::$domain_url.(!empty($script_path) ? $script_path.'/' : '');
         }
 
         // Replace script_path in uri and remove query string
@@ -507,8 +631,11 @@ class Router
         $uri = preg_replace('/\?.*/', '', $uri);
 
         // Clear query string
-        $query_string = str_replace($uri, '', Load::$config['query_string']);
-        $query_string = trim($query_string, '/&?');
+        self::$query_string = str_replace($uri, '', Load::$config['query_string']);
+        self::$query_string = trim(self::$query_string, '/&?');
+
+        // Save original url requested
+        self::$requested_url = $uri.(empty(self::$query_string) ? '' : '?'.self::$query_string);
 
         // Check url against our routing array from configuration
         $uri_tmp = $uri;
@@ -517,8 +644,8 @@ class Router
                 $key = str_replace('#', '\\#', $key);
                 $tmp = preg_replace('#'.$key.'#', $item, $uri);
                 if ($tmp !== $uri) {
-                    self::$segments_requested_url = $uri;
-                    self::$segments_requested = explode('/', $uri);
+                    self::$initial_segments_url = $uri;
+                    self::$initial_segments = explode('/', $uri);
                     $uri_tmp = $tmp;
                 }
             }
@@ -526,7 +653,7 @@ class Router
 
         // Set segments_full_url
         $uri = $uri_tmp;
-        self::$segments_full_url = $uri.(empty($query_string) ? '' : '?'.$query_string);
+        self::$parsed_url = $uri;
 
         // Explode segments
         self::$segments = (empty($uri) ? [] : explode('/', $uri));
@@ -539,8 +666,8 @@ class Router
                 self::$prefixes[$item] = $item;
             }
 
-            if (isset(self::$segments_requested[0]) && self::$segments_requested[0] == $item) {
-                array_shift(self::$segments_requested);
+            if (isset(self::$initial_segments[0]) && self::$initial_segments[0] == $item) {
+                array_shift(self::$initial_segments);
             }
         }
 
@@ -556,13 +683,13 @@ class Router
 
 
     /*
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     | Controller loading
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     */
 
     /**
-     * Looks in segments array for module/controller/method
+     * Looks in segments array for module/controller/method.
      *
      * @access public
      * @static
@@ -571,12 +698,13 @@ class Router
     public static function findControllerInSegments()
     {
         // Fix segment names to translate "-" in url's to camelCase
-        $segments = array_map(['\\Core\\Models\\Router', 'urlToNamescape'], self::$segments);
+        $segments = array_map(['\\Core\\Models\\Router', 'urlToNamespace'], self::$segments);
 
         // First one in segments is always a module
         $module = array_shift($segments);
 
-        // Controller and method count, this number is needed because of subdirectory controllers and possibility to have and have not method provided
+        // Controller and method count, this number is needed because of subdirectory controllers and
+        // possibility to have and have not method provided
         $count = count($segments);
 
         // Namespace always starts with a module
@@ -599,16 +727,13 @@ class Router
                 }
 
                 self::$module = $module;
+                self::$controller = implode(DS, $slice);
                 self::$class = $segments[$count - 1];
-                self::$file = $module.'/Controllers/'.implode(DS, $slice);
+                self::$file = $module.'/Controllers/'.self::$controller;
 
                 if (count($segments) > $count) {
                     self::$method = lcfirst($segments[$count]);
                 }
-
-                // Set url to the method
-                self::$method_url = self::$module.'/'.implode(DS, $slice).'/'.self::$method;
-                self::$method_url = self::namespaceToUrl(self::$method_url);
 
                 break;
             }
@@ -617,12 +742,21 @@ class Router
         }
 
         if ($count > 0) {
-            // Method also must be removed from the segments array
-            $count += 1;
+            // Module and Method also must be removed from the segments array
+            $count += 2;
 
             // Remove controller and method from segments
             array_splice(self::$segments, 0, $count);
             self::$segments_url = implode('/', self::$segments);
+
+            // Set requested segments
+            if (empty(self::$initial_segments)) {
+                self::$initial_segments = self::$segments;
+                self::$initial_segments_url = self::$segments_url;
+            } else {
+                array_splice(self::$initial_segments, 0, $count);
+                self::$initial_segments_url = implode('/', self::$initial_segments);
+            }
         }
     }
 
@@ -645,10 +779,11 @@ class Router
         }
 
         // Set default class and method
-        self::$namespace = $tmp['namespace'];
-        self::$module    = $tmp['module'];
-        self::$class     = $tmp['class'];
-        self::$method    = $tmp['method'];
+        self::$namespace  = $tmp['namespace'];
+        self::$module     = $tmp['module'];
+        self::$controller = $tmp['controller'];
+        self::$class      = $tmp['class'];
+        self::$method     = $tmp['method'];
 
         if (count(self::$segments) === 0) {
             // Defaults
@@ -659,11 +794,17 @@ class Router
             self::findControllerInSegments();
 
             if (empty(self::$file)) {
-                // See whether there is a default controller after last segment
+                // Add default controller to see whether last argument is a folder and we should load default controller
+                // from this folder
                 self::$segments[] = self::$class;
+
                 self::findControllerInSegments();
             }
         }
+
+        // Set url to the method
+        self::$method_url = self::$module.'/'.str_replace(self::$module.'/Controllers/', '', self::$file).'/'.self::$method;
+        self::$method_url = self::namespaceToUrl(self::$method_url);
     }
 
     /**
@@ -671,14 +812,16 @@ class Router
      *
      * This method also calls pre-controller hook.
      *
-     * @access protected
+     * @access public
      * @static
      * @param  string $file    (default: null)
      * @param  string $class   (default: null)
      * @param  string &$method (default: null)
      * @return void
      */
-    protected static function loadController($file = null, $module = null, $namespace = null, $class = null, &$method = null)
+    public static function loadController(
+        $file = null, $module = null, $namespace = null, $class = null, &$method = null
+    )
     {
         // Load current file if $file parameter is empty
         if (empty($file)) {
@@ -739,13 +882,16 @@ class Router
             }
             // Call __callStatic
             elseif ($ref->hasMethod('__callStatic') === true) {
+                // Add method to arguments
+                $arguments = self::$segments;
+                array_unshift($arguments, $method);
+
                 $pad_args = (int)$ref->getStaticPropertyValue('pad_call_static_parameters', 0);
-                if ($pad_args > 0) {
-                    $arguments = array_pad(self::$segments, $pad_args, null);
-                } else {
-                    $arguments = self::$segments;
+                if ($pad_args > 0 && count($arguments) < $pad_args) {
+                    $arguments = array_pad($arguments, $pad_args, null);
                 }
 
+                // Invoke __callStatic
                 $method_response = $ref->getMethod('__callStatic')->invoke(null, $method, $arguments);
             }
             // Error - method not found
@@ -785,8 +931,8 @@ class Router
                 $response = $ref->getMethod('destruct')->invokeArgs(null, []);
             }
         } else {
-            $msg = 'Controller file for path: "'.self::$segments_full_url.'" was not found';
-            if (empty(self::$segments_full_url)) {
+            $msg = 'Controller file for path: "'.self::$requested_url.'" was not found';
+            if (empty(self::$requested_url)) {
                 $msg = 'Default controller was not found: "'.Load::$config['routing'][''].'"';
             }
             throw new RouterException($msg);

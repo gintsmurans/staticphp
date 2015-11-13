@@ -19,7 +19,7 @@ class Db
     private static $db_links;
 
     /**
-     * Cache for last statment
+     * Cache for last statment.
      *
      * @var resource
      * @access private

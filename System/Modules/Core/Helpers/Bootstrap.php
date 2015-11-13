@@ -179,14 +179,14 @@ Load::$config['view_engine'] = new Twig_Environment(Load::$config['view_loader']
 
 // Register default filters and functions
 // Site url filter
-$filter = new Twig_SimpleFilter('siteUrl', function ($url = null) {
-    return Router::siteUrl($url);
+$filter = new Twig_SimpleFilter('siteUrl', function ($url = null, $prefix = null, $current_prefix = true) {
+    return Router::siteUrl($url, $prefix, $current_prefix);
 });
 Load::$config['view_engine']->addFilter($filter);
 
 // Site url function
-$function = new Twig_SimpleFunction('siteUrl', function ($url = null) {
-    return Router::siteUrl($url);
+$function = new Twig_SimpleFunction('siteUrl', function ($url = null, $prefix = null, $current_prefix = true) {
+    return Router::siteUrl($url, $prefix, $current_prefix);
 });
 Load::$config['view_engine']->addFunction($function);
 

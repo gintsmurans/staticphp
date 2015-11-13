@@ -8,7 +8,7 @@
 |--------------------------------------------------------------------------
 */
 
-namespace Core\models;
+namespace Core\Models;
 
 class SessionsApc extends Sessions
 {

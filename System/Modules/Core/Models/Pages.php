@@ -2,6 +2,10 @@
 
 namespace Core\Models;
 
+
+/**
+ * Html pages model, for quick record paging.
+ */
 class Pages
 {
     private static $obj = [];

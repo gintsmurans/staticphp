@@ -34,6 +34,10 @@ namespace Core\Models;
 
 use Core\Models\Load;
 
+
+/**
+ * Form validation class.
+ */
 class fv
 {
     public static $errors = null;
