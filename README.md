@@ -125,11 +125,22 @@ _* Work in progress_
 * Unit testing.
 * Rewrite all sessions classes into one by adding an option to choose from session backend to use, possibly allowing to use multiple backends (e.g. memcached -> sql).
 * Make cache class for memcached and redis.
-* Fix issue with $controller_url not being set when default route from Routes.php config file is loaded.
 * Look for a way to extend a view from same directory as the view extending it. E.g. {% extends "layout.html" %} instead of {% extends "Defaults/Views/layout.html" %}
 
 
 ## History
+
+####v0.9.2
+* √ Fixed issue with $controller_url not being set when default route from Routes.php config file is loaded.
+* √ Core controller render method didn't have $data argument, fixed.
+* √ siteUrl twig filter now accepts all parameters that Router::siteUrl() does.
+* √ Added debug method to Router class.
+* √ Made all Router's helper methods public.
+* √ Renamed some variables of the Router class, so it makes more sense also added some new ones.
+* √ More Router fixes for correct controller handling.
+
+####v0.9.1
+* √ Documentation config update
 
 ####v0.9
 * √ Added various small helper functions, take a look in System/Modules/Core/Helpers/Other.php
