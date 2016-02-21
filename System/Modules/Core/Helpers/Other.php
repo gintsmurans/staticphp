@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Returns fixed floating number with precision of $precision. Replaces "," to "." and " " to "".
  *
@@ -64,6 +63,13 @@ function uuid4()
 }
 
 
+/**
+ * Parse query string using $delimiter
+ *
+ * @param $str string Query string
+ * @param $delimiter string Delimiter
+ * @return array
+ */
 function parseQueryString($str, $delimiter = '&')
 {
     $op = array();
@@ -81,6 +87,13 @@ function parseQueryString($str, $delimiter = '&')
 }
 
 
+/**
+ * Returns array containing week's start and week's end
+ *
+ * @param $week int A Week
+ * @param $year int of a Year
+ * @return array
+ */
 function weekRange($week, $year = null)
 {
     if (empty($year)) {
@@ -95,6 +108,58 @@ function weekRange($week, $year = null)
 }
 
 
+/**
+ * Returns array containing month's start and end timestamps
+ *
+ * @param $timestamp A timestamp for which date to calculate first and last day
+ * @return array
+ */
+function monthRangeDateTime($timestamp = null)
+{
+    if (empty($timestamp)) {
+        $timestamp = new \DateTime("now", new \DateTimeZone('UTC'));
+    }
+
+    if (is_int($timestamp)) {
+        $timestamp = new \DateTime("@{$timestamp}");
+    }
+
+    $start = clone $timestamp;
+    $start->modify('first day of this month');
+    $start->setTime(00, 00, 00);
+
+    $end = clone $timestamp;
+    $end->modify('last day of this month');
+    $end->setTime(23, 59, 59);
+
+    return array($start, $end);
+}
+
+
+/**
+ * Returns how many weeks there will be or was in a specific year.
+ *
+ * @param $year int A year
+ */
+function getIsoWeeksInYear($year)
+{
+    $date = new DateTime;
+    $date->setISODate($year, 53);
+    return ($date->format("W") === "53" ? 53 : 52);
+}
+
+
+/**
+ * Returns array containing only values with their keys whose keys are in $keys parameter.
+ * Also can return false if $required is specified and any of $keys are missing.
+ * Also can fill missing keys with $fill_missing, if its other than false
+ *
+ * @param $array array Original array
+ * @param $keys array Array of keys
+ * @param $required bool Whether return false if there are missing keys
+ * @param $fill_missing bool|mixed Fill missing keys with this value
+ * @return array
+ */
 function extractArrayByKeys($array, $keys, $required = false, $fill_missing = false)
 {
     // Check if input is an array
@@ -152,4 +217,67 @@ function tmpFilename($prefix = 'tmp_', $postfix = '')
     $random = str_replace('.', '_', $random);
     $filename = sys_get_temp_dir().'/'.$prefix.$random.$postfix;
     return $filename;
+}
+
+
+/**
+ * Group $array by $keys.
+ * When $keys == ['id', 'name'], Turns [['id' => 1, 'name' => 'Name 1'], ['id' => 2, 'name' => 'Name 2'] into
+ * [1 => ['Name 1' => ['id' => 1, 'name' => 'Name 1']], 2 => ['Name 2' => ['id' => 2, 'name' => 'Name 2']]]
+ *
+ * @param  iterator $array
+ * @param  mixed    $keys
+ * @param  bool     $unique Describes whether last key of input array is unique
+ * @return array[]  Returns array grouped by keys
+ */
+function groupArray($array, $keys = [], $unique = false)
+{
+    $keys = (array)$keys;
+    $result = [];
+
+    foreach ($array as $item) {
+        $x = &$result;
+        foreach ($keys as $key) {
+            $x = &$x[$item[$key]];
+        }
+
+        if ($unique === true) {
+            $x = $item;
+        } else {
+            $x[] = $item;
+        }
+    }
+
+    return $result;
+}
+
+
+/**
+ * Returns wheather date has a valid ISO8601 format.
+ *
+ * @param  string Date string
+ * @return bool   Returns true or false
+ */
+function validISODate($date)
+{
+    return preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $date);
+}
+
+
+/**
+ * Returns wheather datetime has a valid ISO8601 format.
+ *
+ * @param  string Datetime string
+ * @return bool   Returns true or false
+ */
+function validISODateTime($datetime)
+{
+    return preg_match(
+        '/^'.
+            '(\d{4})-(\d{2})-(\d{2})T'. // YYYY-MM-DDT ex: 2014-01-01T
+            '(\d{2}):(\d{2}):(\d{2})'.  // HH-MM-SS  ex: 17:00:00
+            '(Z|((-|\+)\d{2}:\d{2}))'.  // Z or +01:00 or -01:00
+        '$/'
+        , $datetime
+    );
 }
