@@ -70,13 +70,19 @@ class Db
         // Set config
         self::$db_links[$name]['config'] = $config;
 
-        // Open new connection to DB
-        self::$db_links[$name]['link'] = new \PDO($config['string'], $config['username'], $config['password'], [
+        // Options
+        $options = [
             \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
             \PDO::ATTR_CASE => \PDO::CASE_NATURAL,
             \PDO::ATTR_DEFAULT_FETCH_MODE => (!empty($config['fetch_mode_objects']) ? \PDO::FETCH_OBJ : \PDO::FETCH_ASSOC),
-            \PDO::ATTR_PERSISTENT => $config['persistent']
-        ]);
+
+        ];
+        if (isset($config['persistent'])) {
+            $options[\PDO::ATTR_PERSISTENT] = $config['persistent'];
+        }
+
+        // Open new connection to DB
+        self::$db_links[$name]['link'] = new \PDO($config['string'], $config['username'], $config['password'], $options);
 
         // Set encoding - mysql only
         if (!empty($config['charset']) && self::$db_links[$name]['link']->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'mysql') {

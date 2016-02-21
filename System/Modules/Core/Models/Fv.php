@@ -38,7 +38,7 @@ use Core\Models\Load;
 /**
  * Form validation class.
  */
-class fv
+class Fv
 {
     public static $errors = null;
     public static $errors_all = null;
@@ -232,7 +232,8 @@ class fv
     {
         $string = strip_tags($string);
         $string = stripslashes($string);
-        $string = htmlspecialchars($string);
+        $string = str_replace(['<', '>'], ['&lt;', '&gt;'], $string);
+        $string = trim($string, " \r\n\t");
 
         return $string;
     }
