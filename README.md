@@ -148,7 +148,7 @@ _* Work in progress_
     * Links like - /module/my-controller/my-method are now turned into Application/Modules/Module/MyController.php::myMethod($params)
 * √ PSR-0 or PSR-4 autoloading schema
     * All folder names and file names are now named using StudlyCaps
-    * We are not using <Vendor> in front of autoloading classes to avoid long includes (e.g. "use" parameters), which could be useful if more than one application is run with same instance, but for now we are skipping this.
+    * We are not using "Vendor" in front of autoloading classes to avoid long includes (e.g. "use" parameters), which could be useful if more than one application is run with same instance, but for now we are skipping this.
 * √ Added core controller
     * If used, controller now have access to self::$controller_url and self::$method_url, very useful for migrating controllers to other urls and for controller copying.
     * self::render('path_to_view.html') will automatically look into module's Views directory
@@ -177,7 +177,7 @@ _* Work in progress_
 * √ Check whether form validation helper still works and how it applies to Twig.
     * Works now and can be registered with twig by running \models\fv::twig_register();
 * √ Pages helper should register it self with Twig once loadded and if Twig is available.
-    * Nop, pagination html can be passed in the view in variable.
+    * Nop, pagination html can be passed in the view as variable.
 * √ Change all include to require, so that we don't expose StaticPHP to any security issues by doing something that can't be done.
 * √ Update StaticPHP start page.
 * √ Add filesystem helpers to core \load class.
