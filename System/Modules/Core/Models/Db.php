@@ -131,7 +131,14 @@ class Db
         self::$last_statement->execute((array) $data);
 
         if (!empty(self::$db_links[$name]['config']['debug'])) {
-            Load::stopTimer($query.' ['.implode(', ', (array) $data).']');
+            $log = $query;
+            if (!empty($data)) {
+                $log_data = array_map(function($item) {
+                    return (is_integer($item) == true ? $item : "'".$item."'");
+                }, (array)$data);
+                $log = str_replace(array_pad([], substr_count($query, '?'), '?'), $log_data, $query);
+            }
+            Load::stopTimer($log);
         }
 
         // Return last statement
