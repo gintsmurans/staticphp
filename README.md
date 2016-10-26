@@ -133,8 +133,16 @@ _* Work in progress_
 
 ## History
 
+####v0.9.4
+* √ Fixed possibility of nonexisting variable causing notices.
+* √ Updated nginx configuration example.
+* √ Added .editorconfig file
+* √ Updated composer dependencies
+* √ Few micro performance updates
+* √ Option to disable twig template engine
+
 ####v0.9.3
-* √ Fixed issue preventing to load page from subdirectory
+* √ Fixed issue preventing to load page from subdirectory.
 
 ####v0.9.2
 * √ Fixed issue with $controller_url not being set when default route from Routes.php config file is loaded.
