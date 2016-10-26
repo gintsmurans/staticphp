@@ -17,6 +17,7 @@ $config = [];
 */
 
 $config['base_url'] = null; // NULL for auto detect
+$config['disable_twig'] = false; // Option to disable twig template engine
 
 
 /*

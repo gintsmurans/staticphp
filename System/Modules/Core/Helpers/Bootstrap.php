@@ -164,55 +164,57 @@ set_exception_handler('sp_exception_handler');
 register_shutdown_function('sp_error_shutdown_handler');
 
 // Load twig
-if (is_file(BASE_PATH.'Vendor/twig/twig/lib/Twig/Autoloader.php') !== true) {
-    throw new Exception('Twig Not Found! If you installed StaticPHP manually, not using composer, please see README.md to where to place the twig library.');
+if (empty(Load::$config['disable_twig'])) {
+    if (is_file(BASE_PATH.'Vendor/twig/twig/lib/Twig/Autoloader.php') !== true) {
+        throw new Exception('Twig Not Found! If you installed StaticPHP manually, not using composer, please see README.md to where to place the twig library.');
+    }
+
+    require BASE_PATH.'Vendor/twig/twig/lib/Twig/Autoloader.php';
+    Twig_Autoloader::register();
+
+    Load::$config['view_loader'] = new Twig_Loader_Filesystem([APP_MODULES_PATH, SYS_MODULES_PATH.'Core/Views']);
+    Load::$config['view_engine'] = new Twig_Environment(Load::$config['view_loader'], array(
+        'cache' => APP_PATH.'Cache/Views/',
+        'debug' => Load::$config['debug'],
+    ));
+
+    // Register default filters and functions
+    // Site url filter
+    $filter = new Twig_SimpleFilter('siteUrl', function ($url = null, $prefix = null, $current_prefix = true) {
+        return Router::siteUrl($url, $prefix, $current_prefix);
+    });
+    Load::$config['view_engine']->addFilter($filter);
+
+    // Site url function
+    $function = new Twig_SimpleFunction('siteUrl', function ($url = null, $prefix = null, $current_prefix = true) {
+        return Router::siteUrl($url, $prefix, $current_prefix);
+    });
+    Load::$config['view_engine']->addFunction($function);
+
+    // Start timer function
+    $function = new Twig_SimpleFunction('startTimer', function () {
+        Load::startTimer();
+    });
+    Load::$config['view_engine']->addFunction($function);
+
+    // Stop timer function
+    $function = new Twig_SimpleFunction('stopTimer', function ($name) {
+        Load::stopTimer($name);
+    });
+    Load::$config['view_engine']->addFunction($function);
+
+    // Mark time function
+    $function = new Twig_SimpleFunction('markTime', function ($name) {
+        Load::markTime($name);
+    });
+    Load::$config['view_engine']->addFunction($function);
+
+    // Debug output function
+    $function = new Twig_SimpleFunction('debugOutput', function () {
+        return Load::debugOutput();
+    });
+    Load::$config['view_engine']->addFunction($function);
 }
-
-require BASE_PATH.'Vendor/twig/twig/lib/Twig/Autoloader.php';
-Twig_Autoloader::register();
-
-Load::$config['view_loader'] = new Twig_Loader_Filesystem([APP_MODULES_PATH, SYS_MODULES_PATH.'Core/Views']);
-Load::$config['view_engine'] = new Twig_Environment(Load::$config['view_loader'], array(
-    'cache' => APP_PATH.'Cache/Views/',
-    'debug' => Load::$config['debug'],
-));
-
-// Register default filters and functions
-// Site url filter
-$filter = new Twig_SimpleFilter('siteUrl', function ($url = null, $prefix = null, $current_prefix = true) {
-    return Router::siteUrl($url, $prefix, $current_prefix);
-});
-Load::$config['view_engine']->addFilter($filter);
-
-// Site url function
-$function = new Twig_SimpleFunction('siteUrl', function ($url = null, $prefix = null, $current_prefix = true) {
-    return Router::siteUrl($url, $prefix, $current_prefix);
-});
-Load::$config['view_engine']->addFunction($function);
-
-// Start timer function
-$function = new Twig_SimpleFunction('startTimer', function () {
-    Load::startTimer();
-});
-Load::$config['view_engine']->addFunction($function);
-
-// Stop timer function
-$function = new Twig_SimpleFunction('stopTimer', function ($name) {
-    Load::stopTimer($name);
-});
-Load::$config['view_engine']->addFunction($function);
-
-// Mark time function
-$function = new Twig_SimpleFunction('markTime', function ($name) {
-    Load::markTime($name);
-});
-Load::$config['view_engine']->addFunction($function);
-
-// Debug output function
-$function = new Twig_SimpleFunction('debugOutput', function () {
-    return Load::debugOutput();
-});
-Load::$config['view_engine']->addFunction($function);
 
 // Autoload helpers
 if (!empty(Load::$config['autoload_helpers'])) {

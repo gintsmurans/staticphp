@@ -439,6 +439,19 @@ class Load
             $data = (array) $data + (array) self::$config['view_data'];
         }
 
+        if (empty(Load::$config['view_engine'])) {
+            if (!empty($return)) {
+                return false;
+            }
+
+            $config = self::$config;
+            foreach ((array) $files as $key => $file) {
+                require APP_MODULES_PATH.$file;
+            }
+
+            return true;
+        }
+
         // Add default view data
         if (empty($globals_added)) {
             Load::$config['view_engine']->addGlobal('config', self::$config);
