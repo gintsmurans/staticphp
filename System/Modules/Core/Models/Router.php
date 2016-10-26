@@ -553,6 +553,7 @@ class Router
     /**
      * Reverse namespace compatible name to url.
      * Example: Module/Controller/MethodName -> module/controller/method-name.
+     * TODO: Figure out how to do this without regex
      *
      * @access public
      * @static
@@ -606,10 +607,11 @@ class Router
         }
 
         // Get some config variables
-        $uri            = Load::$config['request_uri'];
-        $script_name    = Load::$config['script_name'];
-        $script_path    = trim(dirname($script_name), '/');
-        self::$base_url = Load::$config['base_url'];
+        $uri                 = Load::$config['request_uri'];
+        $script_name         = Load::$config['script_name'];
+        $script_path         = trim(dirname($script_name), '/');
+        self::$base_url      = Load::$config['base_url'];
+        self::$requested_url = $uri;
 
         // Set some variables
         if (empty(self::$base_url) && !empty($_SERVER['HTTP_HOST'])) {
@@ -629,14 +631,16 @@ class Router
 
         // Replace script_path in uri and remove query string
         $uri = trim(empty($script_name) ? $uri : str_replace($script_name, '', $uri), '/');
-        $uri = preg_replace('/\?.*/', '', $uri);
+
+        // Extract url without query string
+        $tmp = explode('?', $uri);
+        $uri = trim($tmp[0], '/');
 
         // Clear query string
-        self::$query_string = str_replace($uri, '', Load::$config['query_string']);
-        self::$query_string = trim(self::$query_string, '/&?');
-
-        // Save original url requested
-        self::$requested_url = $uri.(empty(self::$query_string) ? '' : '?'.self::$query_string);
+        if (!empty($tmp[1])) {
+            self::$query_string = $tmp[1];
+            self::$query_string = trim(self::$query_string, '/&?');
+        }
 
         // Check url against our routing array from configuration
         $uri_tmp = $uri;
@@ -657,8 +661,10 @@ class Router
         self::$parsed_url = $uri;
 
         // Explode segments
-        self::$segments = (empty($uri) ? [] : explode('/', $uri));
-        self::$segments = array_map('rawurldecode', self::$segments);
+        if (!empty($uri)) {
+            self::$segments = explode('/', $uri);
+            self::$segments = array_map('rawurldecode', self::$segments);
+        }
 
         // Get URL prefixes
         foreach (Load::$config['url_prefixes'] as &$item) {
@@ -771,6 +777,10 @@ class Router
     public static function findController()
     {
         // Get default controller, class and method
+        if (!isset(Load::$config['routing'][''])) {
+            throw new RouterException("Missing default routing configuration: \$config['routing'][''].");
+        }
+
         $tmp = self::urlToFile(Load::$config['routing']['']);
         if ($tmp === false) {
             throw new RouterException(
@@ -789,8 +799,7 @@ class Router
         if (count(self::$segments) === 0) {
             // Defaults
             self::$file = $tmp['file'];
-        }
-        else {
+        } else {
             // Look for controller, class and method in segments
             self::findControllerInSegments();
 
