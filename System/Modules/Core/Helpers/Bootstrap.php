@@ -140,7 +140,7 @@ function sp_send_error_email($e)
  */
 function sp_format_exception($e, $full = false)
 {
-    $session = $_SESSION;
+    $session = (isset($_SESSION) ? $_SESSION : []);
     $post = $_POST;
 
     $message = str_replace("\n", "<br />", $e->getMessage());

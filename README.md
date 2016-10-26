@@ -96,14 +96,17 @@ _* Work in progress_
         }
 
         # Handle php files
-        location ~ \.php$ {
-            if (!-f $request_filename) {
+        location ~ \.php(/|$) {
+            fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+            if (!-f $document_root$fastcgi_script_name) {
                 return 404;
             }
 
-            fastcgi_pass   127.0.0.1:9000;
-            fastcgi_index  index.php;
+            fastcgi_pass  127.0.0.1:9000;
+            fastcgi_index index.php;
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param PATH_INFO       $fastcgi_path_info;
+            fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
             include /etc/nginx/fastcgi_params;
 
             # To intercept errors from fastcgi and show our error pages instead, otherwise nginx will send to browser whatever response there was from fastcgi
