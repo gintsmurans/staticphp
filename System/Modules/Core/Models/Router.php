@@ -607,7 +607,8 @@ class Router
 
         // Get some config variables
         $uri            = Load::$config['request_uri'];
-        $script_path    = trim(dirname(Load::$config['script_name']), '/');
+        $script_name    = Load::$config['script_name'];
+        $script_path    = trim(dirname($script_name), '/');
         self::$base_url = Load::$config['base_url'];
 
         // Set some variables
@@ -627,7 +628,7 @@ class Router
         }
 
         // Replace script_path in uri and remove query string
-        $uri = trim(empty($script_path) ? $uri : str_replace('/'.$script_path, '', $uri), '/');
+        $uri = trim(empty($script_name) ? $uri : str_replace($script_name, '', $uri), '/');
         $uri = preg_replace('/\?.*/', '', $uri);
 
         // Clear query string
