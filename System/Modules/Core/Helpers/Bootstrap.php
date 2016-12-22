@@ -165,12 +165,11 @@ register_shutdown_function('sp_error_shutdown_handler');
 
 // Load twig
 if (empty(Load::$config['disable_twig'])) {
-    if (is_file(BASE_PATH.'Vendor/twig/twig/lib/Twig/Autoloader.php') !== true) {
+    if (is_file(BASE_PATH.'Vendor/twig/twig/lib/Twig/Token.php') !== true) {
         throw new Exception('Twig Not Found! If you installed StaticPHP manually, not using composer, please see README.md to where to place the twig library.');
     }
 
-    require BASE_PATH.'Vendor/twig/twig/lib/Twig/Autoloader.php';
-    Twig_Autoloader::register();
+    require BASE_PATH.'Vendor/autoload.php';
 
     Load::$config['view_loader'] = new Twig_Loader_Filesystem([APP_MODULES_PATH, SYS_MODULES_PATH.'Core/Views']);
     Load::$config['view_engine'] = new Twig_Environment(Load::$config['view_loader'], array(
