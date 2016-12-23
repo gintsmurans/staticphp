@@ -356,7 +356,7 @@ class Load
      * @param  string|null  $project (default: null)
      * @return void
      */
-    public static function controller($files, $module, $project = null)
+    public static function controller($files, $module = null, $project = null)
     {
         foreach ((array) $files as $key => $name) {
             $project1 = $project;
@@ -364,7 +364,17 @@ class Load
                 $project1 = $name;
                 $name = $key;
             }
-            require((empty($project1) ? APP_MODULES_PATH : BASE_PATH.$project1.DS.'Modules'.DS).'Controllers'.DS.$name.'.php');
+
+            $file = '';
+            if (!empty($module)) {
+                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH.$project1.DS.'Modules'.DS);
+                $file .= $module.DS;
+            } else {
+                $file = (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS);
+            }
+            $file .= 'Controllers'.DS.$name.'.php';
+
+            require($file);
         }
     }
 
@@ -380,7 +390,7 @@ class Load
      * @param  string|null  $project (default: null)
      * @return void
      */
-    public static function model($files, $module, $project = null)
+    public static function model($files, $module = null, $project = null)
     {
         foreach ((array) $files as $key => $name) {
             $project1 = $project;
@@ -388,7 +398,17 @@ class Load
                 $project1 = $name;
                 $name = $key;
             }
-            require((empty($project1) ? APP_MODULES_PATH : BASE_PATH.$project1.DS.'Modules'.DS).'Models'.DS.$name.'.php');
+
+            $file = '';
+            if (!empty($module)) {
+                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH.$project1.DS.'Modules'.DS);
+                $file .= $module.DS;
+            } else {
+                $file = (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS);
+            }
+            $file .= 'Models'.DS.$name.'.php';
+
+            require($file);
         }
     }
 
@@ -404,7 +424,7 @@ class Load
      * @param  string|null  $project (default: null)
      * @return void
      */
-    public static function helper($files, $module, $project = null)
+    public static function helper($files, $module = null, $project = null)
     {
         foreach ((array) $files as $key => $name) {
             $project1 = $project;
@@ -413,7 +433,16 @@ class Load
                 $name = $key;
             }
 
-            require((empty($project1) ? APP_MODULES_PATH : BASE_PATH.$project1.DS.'Modules'.DS).$module.DS.'Helpers'.DS.$name.'.php');
+            $file = '';
+            if (!empty($module)) {
+                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH.$project1.DS.'Modules'.DS);
+                $file .= $module.DS;
+            } else {
+                $file = (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS);
+            }
+            $file .= 'Helpers'.DS.$name.'.php';
+
+            require($file);
         }
     }
 

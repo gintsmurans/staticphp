@@ -32,7 +32,7 @@ if (!empty(Load::$config['autoload_configs'])) {
             Load::config($tmp[2], $tmp[1], $tmp[0]);
         } elseif ($count == 2) {
             Load::config($tmp[1], $tmp[0]);
-        } elseif ($count == 1) {
+        } else {
             Load::config($tmp[0]);
         }
     }
@@ -224,6 +224,8 @@ if (!empty(Load::$config['autoload_helpers'])) {
             Load::helper($tmp[2], $tmp[1], $tmp[0]);
         } elseif ($count == 2) {
             Load::helper($tmp[1], $tmp[0]);
+        } else {
+            Load::helper($tmp[0]);
         }
     }
 }
