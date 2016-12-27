@@ -120,18 +120,24 @@ _* Work in progress_
     }
 
 
-## TODO
+## TODO and ideas
 
+* Rewrite Db class so that in init method $name parameter comes before $config
+* i18n and cache class usage guide
+* Cache class: postgres, mysql and sql lite support (who knows, somebody may want this:)
 * Write usage guide
 * Write api documentation, e.g. write descriptions for all StaticPHP class methods and files.
 * Update help page
 * Unit testing.
 * Rewrite all sessions classes into one by adding an option to choose from session backend to use, possibly allowing to use multiple backends (e.g. memcached -> sql).
-* Make cache class for memcached and redis.
 * Look for a way to extend a view from same directory as the view extending it. E.g. {% extends "layout.html" %} instead of {% extends "Defaults/Views/layout.html" %}
 
 
 ## History
+
+####v0.9.5
+* √ Cache class: Redis, Memcached, APC and files.
+* √ i18n class with twig integration (i18n::twigRegister(Load::$config['view_engine']))
 
 ####v0.9.4
 * √ Fixed possibility of nonexisting variable causing notices.
