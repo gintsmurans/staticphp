@@ -15,7 +15,6 @@ $config = [];
 | General
 |--------------------------------------------------------------------------
 */
-
 $config['base_url'] = null; // NULL for auto detect
 $config['disable_twig'] = false; // Option to disable twig template engine
 
@@ -25,7 +24,6 @@ $config['disable_twig'] = false; // Option to disable twig template engine
 | Debug
 |--------------------------------------------------------------------------
 */
-
 // Set environment
 $config['env'] = (
     (empty($_SERVER['app_env']) || $_SERVER['app_env'] !== 'dev') &&
@@ -44,6 +42,34 @@ $config['debug_ips']   = ['::1', '127.0.0.1'];
 $config['debug_email'] = null;
 
 /*
+| Send email function
+|
+| * Will pass arguments - $to, $subject, $message, $headers in that order
+| * Can be inline function or string for a function name
+| * default - php built-in "mail"
+*/
+$config['email_func'] = 'mail';
+/*
+    Example:
+
+$config['email_func'] = function($to, $subject, $message, $headers = ''){
+    if (function_exists('sendEmail')) {
+        sendEmail($to, $subject, $message);
+
+        $message = str_replace(
+            ['&nbsp;', '<br />', '<strong>', '</strong>'],
+            [' ', "\n", '**', '**'],
+            $message
+        );
+        $message = preg_replace('/<[^>]*>/', '', $message);
+        sendIM('**'.$subject."**\n".substr($message, 0, 400)."...");
+    } else {
+        mail($to, $subject, $message, $headers);
+    }
+};
+*/
+
+/*
 |--------------------------------------------------------------------------
 | Web server variables
 |
@@ -51,7 +77,6 @@ $config['debug_email'] = null;
 | In most cases these should work by default
 |--------------------------------------------------------------------------
 */
-
 $config['request_uri']  = & $_SERVER['REQUEST_URI'];
 $config['query_string'] = & $_SERVER['QUERY_STRING'];
 $config['script_name']  = & $_SERVER['SCRIPT_NAME'];
@@ -77,7 +102,6 @@ $config['url_prefixes'] = [];
 | Possible formats: Application/Module/Filename, Module/Filename, Filename (only to load global config)
 |--------------------------------------------------------------------------
 */
-
 $config['autoload_configs'] = [];
 $config['autoload_helpers'] = ['Defaults/Bootstrap'];
 
@@ -90,5 +114,4 @@ $config['autoload_helpers'] = ['Defaults/Bootstrap'];
 | $class and $method, meaning callback can override current controller.
 |--------------------------------------------------------------------------
 */
-
 $config['before_controller'] = [];
