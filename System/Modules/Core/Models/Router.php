@@ -306,7 +306,7 @@ class Router
                 header("Connection: close");
                 break;
         }
-        exit;
+        exit(0);
     }
 
     /**
@@ -353,7 +353,7 @@ class Router
         header('HTTP/1.0 '.$error_code.' '.$error_string);
         $data = ['description' => $description];
         Load::view("Errors/E{$error_code}.html", $data);
-        exit;
+        exit(10);
     }
 
     /**

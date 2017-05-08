@@ -225,6 +225,7 @@ class Db
     public static function update($table, $data, $where, $name = 'default')
     {
         // Make SET
+        $set = [];
         foreach ((array) $data as $key => $value) {
             if ($key[0] == '!') {
                 $set[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column']." = {$value}";

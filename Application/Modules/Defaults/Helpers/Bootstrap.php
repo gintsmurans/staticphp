@@ -8,12 +8,6 @@ use \Core\Models\Load;
 header('Content-type: text/html; charset=utf-8');
 
 
-// CLI Access
-if (!empty($GLOBALS['argv'][1])) {
-    Load::$config['request_uri'] =& $GLOBALS['argv'][1];
-}
-
-
 // Set locales
 // setlocale(LC_TIME, 'lv_LV.utf8', 'lv_LV.UTF-8');
 // setlocale(LC_NUMERIC, 'lv_LV.utf8', 'lv_LV.UTF-8');
