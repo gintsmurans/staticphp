@@ -33,7 +33,6 @@ class Request
         $cmd = implode(' ', $cmd_arr);
         exec($cmd, $output, $return_code);
 
-        echo "\"".$return_code, "\"\n\n";
         return implode("\n", $output);
     }
 
