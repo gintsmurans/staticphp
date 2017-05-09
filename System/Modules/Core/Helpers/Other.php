@@ -19,11 +19,10 @@ function fixFloat($input, $precision = -1)
  * Trim characters, can be used with array_walk
  *
  * @param $value mixed
- * @param $pos int
  * @param $character_mask string Characters to trim
  * @return mixed
  */
-function trimChars(&$value, $pos, $character_mask = " \t\n\r\0\x0B")
+function trimChars(&$value, $character_mask = " \t\n\r\0\x0B")
 {
     /*
         Unicode variant:
@@ -260,7 +259,7 @@ function groupArray($array, $keys = [], $unique = false)
  */
 function validISODate($date)
 {
-    return preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $date);
+    return preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $date) == 1;
 }
 
 
@@ -279,5 +278,5 @@ function validISODateTime($datetime)
             '(Z|((-|\+)\d{2}:\d{2}))'.  // Z or +01:00 or -01:00
         '$/'
         , $datetime
-    );
+    ) == 1;
 }

@@ -29,7 +29,7 @@ function html_css()
                     if (defined('HTML_CSS_VERSION')) {
                         $file = $file.(strpos($file, '?') !== false ? '&' : '?').HTML_CSS_VERSION;
                     }
-                    echo '<link rel="stylesheet" type="text/css" href="', $file, '" />';
+                    echo '<link rel="stylesheet" type="text/css" href="', $file, '" />', "\n";
                     break;
             }
         }
@@ -97,7 +97,7 @@ function html_dropdown($items, $selected = null, $addons = null, $add_empty = fa
         $value = (empty($as_value) ? $value : $text->{$as_value});
         $text = (empty($as_text) ? $text : $text->{$as_text});
 
-        $select .= '<option value="'.set_input_value($value).'"';
+        $select .= '<option value="'.html_escape_input($value).'"';
         if (!empty($addons[$value])) {
             $select .= ' '.$addons[$value];
         }
@@ -116,9 +116,15 @@ function html_dropdown($items, $selected = null, $addons = null, $add_empty = fa
 }
 
 // Set value for inputs
-function html_set_input_value($value)
+function html_escape_input($value)
 {
     return str_replace('"', '&quot;', $value);
+}
+
+// Set value for textareas
+function html_escape_textarea($value)
+{
+    return str_replace(['<', '>'], ['&lt;', '&gt;'], $value);
 }
 
 // Set selected for html select element

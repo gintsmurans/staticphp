@@ -41,7 +41,7 @@ class Request
     {
         $error = stripos($data, '403 Forbidden') !== false;
         $error = $error || stripos($data, '404 Not Found') !== false;
-        $error = $error || stripos($data, '500 Not Found') !== false;
+        $error = $error || stripos($data, '500 Internal Server Error') !== false;
         $error = $error || stripos($data, 'syntax error') !== false;
 
         return $error;
