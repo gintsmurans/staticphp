@@ -25,7 +25,7 @@ class Controller
         $site_url = Router::siteUrl();
         self::$method_url = $site_url.Router::$method_url.'/';
         self::$controller_url = dirname(self::$method_url).'/';
-        self::$module_url = dirname(self::$controller_url).'/';
+        self::$module_url = Router::siteUrl(strtolower(Router::$module)).'/';
 
         // Pass these to the view, too
         Load::$config['view_data']['module_url'] = self::$module_url;
