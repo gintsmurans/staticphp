@@ -170,14 +170,19 @@ function sp_exception_handler($exception)
  */
 function sp_send_error_email($e)
 {
-    if (!empty(Load::$config['debug_email'])) {
+    static $last_error = ['time' => 0];
+
+    $e_formatted = sp_format_exception($e, true);
+    if (!empty(Load::$config['debug_email']) && (time() - $last_error['time'] >= 30 || $last_error['exception'] != $e_formatted)) {
         $email_func = &Load::$config['email_func']; // We need to create this alias, otherwise php throws error
         $email_func(
             Load::$config['debug_email'], // To
             'PHP ERROR: "'.$_SERVER['HTTP_HOST'].'"', // Subject
-            sp_format_exception($e, true), // Message
+            $e_formatted, // Message
             "Content-Type: text/html; charset=utf-8" // Headers
         );
+        $last_error['time'] = time();
+        $last_error['exception'] = $e_formatted;
     }
 }
 
