@@ -82,6 +82,15 @@ if (!empty(Load::$config['autoload_configs'])) {
     }
 }
 
+
+/**
+ * Global ErrorMessage Exception for throwing and catching custom errors
+ */
+class ErrorMessage extends \Exception {
+    // Empty
+}
+
+
 /**
  * StaticPHP's error handler. Turns errors into exceptions and passes on to sp_exception_handler().
  *
