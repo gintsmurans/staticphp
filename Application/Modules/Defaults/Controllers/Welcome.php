@@ -4,6 +4,7 @@ namespace Defaults\Controllers;
 
 use \Core\Controllers\Controller;
 use \Core\Models\Load;
+use \Core\Models\Timers;
 
 /**
  * Welcome page controller.
@@ -23,7 +24,7 @@ class Welcome extends Controller
      * @param  string & $method
      * @return void
      */
-    public static function construct(& $class = null, & $method = null)
+    public static function construct($class = null, $method = null)
     {
         // (Optionally) Call parent construct for view rendering and
         // access to self::$controller_url and self::$controller_url variables
@@ -47,7 +48,7 @@ class Welcome extends Controller
     public static function index($param1 = null, $param2 = null)
     {
         // Do something heavy and add timer mark
-        Load::markTime('Before views');
+        Timers::markTime('Before views');
 
         // Load view
         // Pass [key => value] as second parameter, to get variables available in your view

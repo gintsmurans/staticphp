@@ -57,3 +57,8 @@ $config['i18n']['cache_prefix'] = 'language_';
  *  Subdirectory to use for internal cache, will suffix to App's cache dir
  */
 $config['i18n']['cache_subdir'] = 'i18n';
+
+/**
+ *  String containing db config string used in Config/Db.php
+ */
+$config['i18n']['db_config'] = 'default';

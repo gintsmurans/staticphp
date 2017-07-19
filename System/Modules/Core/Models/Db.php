@@ -2,7 +2,8 @@
 
 namespace Core\Models;
 
-use Core\Models\Load;
+use Core\Models\Config;
+use Core\Models\Timers;
 
 /**
  * Database wrapper for pdo.
@@ -55,11 +56,11 @@ class Db
     {
         // Check if there is such configuration
         if (empty($config)) {
-            if (empty(Load::$config['db']['pdo'][$name])) {
+            if (empty(Config::$items['db']['pdo'][$name])) {
                 return false;
             }
 
-            $config = Load::$config['db']['pdo'][$name];
+            $config = Config::$items['db']['pdo'][$name];
         }
 
         // Don't make a new connection if there is one connected with the name
@@ -124,7 +125,7 @@ class Db
 
         // Do request
         if (!empty(self::$db_links[$name]['config']['debug'])) {
-            Load::startTimer();
+            Timers::startTimer();
         }
 
         self::$last_statement = $db_link->prepare($query);
@@ -133,12 +134,24 @@ class Db
         if (!empty(self::$db_links[$name]['config']['debug'])) {
             $log = $query;
             if (!empty($data)) {
-                $log_data = array_map(function($item) {
-                    return (is_integer($item) == true ? $item : "'".$item."'");
-                }, (array)$data);
-                $log = str_replace(array_pad([], substr_count($query, '?'), '?'), $log_data, $query);
+                $log_data = array_map(
+                    function($item) {
+                        return (is_integer($item) == true ? $item : "'".$item."'");
+                    },
+                    (array)$data
+                );
+
+                $replace = '?';
+                $q_count = substr_count($query, $replace);
+                for ($i = 0; $i <= $q_count; ++$i) {
+                    $pos = strpos($log, $replace);
+                    if ($pos !== false) {
+                        $log = substr_replace($log, $log_data[$i], $pos, strlen($replace));
+                    }
+                }
             }
-            Load::stopTimer($log);
+
+            Timers::stopTimer($log);
         }
 
         // Return last statement

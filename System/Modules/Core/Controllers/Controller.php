@@ -2,8 +2,9 @@
 
 namespace Core\Controllers;
 
-use Core\Models\Router;
 use Core\Models\Load;
+use Core\Models\Config;
+use Core\Models\Router;
 
 
 /**
@@ -28,15 +29,15 @@ class Controller
         self::$module_url = Router::siteUrl(strtolower(preg_replace('/(.)([A-Z])/', '$1-$2', Router::$module))).'/';
 
         // Pass these to the view, too
-        Load::$config['view_data']['module_url'] = self::$module_url;
-        Load::$config['view_data']['controller_url'] = self::$controller_url;
-        Load::$config['view_data']['method_url'] = self::$method_url;
+        Config::$items['view_data']['module_url'] = self::$module_url;
+        Config::$items['view_data']['controller_url'] = self::$controller_url;
+        Config::$items['view_data']['method_url'] = self::$method_url;
 
         // Add Router's preferences
-        Load::$config['view_data']['module'] = Router::$module;
-        Load::$config['view_data']['controller'] = Router::$controller;
-        Load::$config['view_data']['class'] = Router::$class;
-        Load::$config['view_data']['method'] = Router::$method;
+        Config::$items['view_data']['module'] = Router::$module;
+        Config::$items['view_data']['controller'] = Router::$controller;
+        Config::$items['view_data']['class'] = Router::$class;
+        Config::$items['view_data']['method'] = Router::$method;
     }
 
 

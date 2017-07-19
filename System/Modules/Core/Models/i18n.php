@@ -2,10 +2,10 @@
 
 namespace Core\Models;
 
-use \Core\Models\Load;
-use \Core\Models\Router;
 use \Core\Models\Db;
 use \Core\Models\Cache;
+use \Core\Models\Config;
+use \Core\Models\Router;
 
 /**
  *  Internationalization (i18n).
@@ -190,12 +190,12 @@ class i18n
     public static function init()
     {
         // If i18n config is not already loaded, do it now
-        if (empty(Load::$config['i18n'])) {
-            Load::Config('i18n');
+        if (empty(Config::$items['i18n'])) {
+            Config::load('i18n');
         }
 
         // Default country
-        self::$config = &Load::$config['i18n'];
+        self::$config = &Config::$items['i18n'];
         self::$countries = &self::$config['available'];
         self::$current_country = reset(self::$countries);
         self::$country_code = &self::$current_country['code'];
@@ -251,7 +251,7 @@ class i18n
      */
     public static function load()
     {
-        $cached = Db::fetch('SELECT created FROM i18n_cached LIMIT 1');
+        $cached = Db::fetch('SELECT created FROM i18n_cached LIMIT 1', null, self::$config['db_config']);
         if (empty($cached)) {
             $res = Db::fetchAll(
                 '
@@ -259,7 +259,8 @@ class i18n
                     LEFT JOIN i18n_translations AS tr ON tr.key_id = keys.id AND tr.language = ?
                     ORDER BY keys.id
                 ',
-                [self::$language_key]
+                [self::$language_key],
+                self::$config['db_config']
             );
 
             foreach ($res as $item) {
@@ -307,17 +308,22 @@ class i18n
      */
     public static function translate($text, $replace = [], $escape = null)
     {
-        if (empty(self::$cache[$text])) { // A note: using isset returns false when value is NULL returned from postgresql
+        if (empty(self::$config)) {
+            throw new \Exception('Init hasn\'t been called yet');
+        }
+
+        if (empty(self::$cache[$text])) { // A note: using isset returns false when value NULL is returned from postgresql
             if (array_key_exists($text, self::$cache) === false) {
-                $record = Db::fetch('INSERT INTO i18n_keys (key) VALUES (?) RETURNING id', $text);
+                $record = Db::fetch('INSERT INTO i18n_keys (key) VALUES (?) RETURNING id', $text, self::$config['db_config']);
             } else {
-                $record = Db::fetch('SELECT id FROM i18n_keys WHERE key = ?', $text);
+                $record = Db::fetch('SELECT id FROM i18n_keys WHERE key = ?', $text, self::$config['db_config']);
             }
 
             self::$cache[$text] = $text.'*';
             Db::query(
                 'INSERT INTO i18n_translations (key_id, language, value) VALUES (?, ?, ?)',
-                [$record['id'], self::$language_key, $text.'*']
+                [$record['id'], self::$language_key, $text.'*'],
+                self::$config['db_config']
             );
 
             // Clear cache
@@ -360,10 +366,10 @@ class i18n
     public static function twigRegister($engine)
     {
         // Variables
-        Load::$config['view_data']['i18n']['country_code'] = &self::$country_code;
-        Load::$config['view_data']['i18n']['language_code'] = &self::$language_code;
-        Load::$config['view_data']['i18n']['url_prefix'] = &self::$url_prefix;
-        Load::$config['view_data']['i18n']['countries'] = &self::$countries;
+        Config::$items['view_data']['i18n']['country_code'] = &self::$country_code;
+        Config::$items['view_data']['i18n']['language_code'] = &self::$language_code;
+        Config::$items['view_data']['i18n']['url_prefix'] = &self::$url_prefix;
+        Config::$items['view_data']['i18n']['countries'] = &self::$countries;
 
         // Register filters
         $filter = new \Twig_SimpleFilter('translate', function ($text, $replace = [], $escape = null) {
@@ -413,7 +419,7 @@ class i18n
      */
     public static function cacheInvalidate()
     {
-        Db::query('DELETE FROM i18n_cached');
+        Db::query('DELETE FROM i18n_cached', null, self::$config['db_config']);
     }
 
     /**
@@ -425,7 +431,7 @@ class i18n
      */
     public static function cacheApprove()
     {
-        Db::query('INSERT INTO i18n_cached DEFAULT VALUES;');
+        Db::query('INSERT INTO i18n_cached DEFAULT VALUES;', null, self::$config['db_config']);
     }
 
     /**

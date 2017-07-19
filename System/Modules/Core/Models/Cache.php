@@ -2,7 +2,7 @@
 
 namespace Core\Models;
 
-use \Core\Models\Load;
+use \Core\Models\Config;
 
 
 /**
@@ -60,10 +60,10 @@ class Cache
         // Choose caching configuration
         if (empty($config)) {
             // If config is not already loaded, do it now
-            if (empty(Load::$config['cache'])) {
-                Load::Config('Cache');
+            if (Config::get('cache') === false) {
+                Config::load('Cache');
             }
-            $config = Load::$config['cache'][$name];
+            $config = Config::$items['cache'][$name];
         }
 
         // Create a reference to self for easier access to it

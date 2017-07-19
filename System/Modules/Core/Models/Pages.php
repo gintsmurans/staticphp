@@ -2,7 +2,6 @@
 
 namespace Core\Models;
 
-
 /**
  * Html pages model, for quick record paging.
  */

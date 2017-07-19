@@ -3,17 +3,7 @@
 namespace Core\Models;
 
 use \Core\Models\Load;
-
-/**
- * Router exception class.
- *
- * Custom exception class for router exceptions.
- * Allows our exception handler to give specific output for router exceptions.
- */
-class RouterException extends \Exception
-{
-}
-
+use \Core\Models\Config;
 
 /**
  * Router class.
@@ -607,10 +597,10 @@ class Router
         }
 
         // Get some config variables
-        $uri                 = Load::$config['request_uri'];
-        $script_name         = Load::$config['script_name'];
+        $uri                 = Config::$items['request_uri'];
+        $script_name         = Config::$items['script_name'];
         $script_path         = trim(dirname($script_name), '/');
-        self::$base_url      = Load::$config['base_url'];
+        self::$base_url      = Config::$items['base_url'];
         self::$requested_url = $uri;
 
         // Set some variables
@@ -644,7 +634,7 @@ class Router
 
         // Check url against our routing array from configuration
         $uri_tmp = $uri;
-        foreach (Load::$config['routing'] as $key => &$item) {
+        foreach (Config::$items['routing'] as $key => &$item) {
             if (!empty($key) && !empty($item)) {
                 $key = str_replace('#', '\\#', $key);
                 $tmp = preg_replace('#'.$key.'#', $item, $uri);
@@ -667,7 +657,7 @@ class Router
         }
 
         // Get URL prefixes
-        foreach (Load::$config['url_prefixes'] as &$item) {
+        foreach (Config::$items['url_prefixes'] as &$item) {
             if (isset(self::$segments[0]) && self::$segments[0] == $item) {
                 array_shift(self::$segments);
                 self::$prefixes[$item] = $item;
@@ -777,15 +767,15 @@ class Router
     public static function findController()
     {
         // Get default controller, class and method
-        if (!isset(Load::$config['routing'][''])) {
+        if (!isset(Config::$items['routing'][''])) {
             throw new RouterException("Missing default routing configuration: \$config['routing'][''].");
         }
 
-        $tmp = self::urlToFile(Load::$config['routing']['']);
+        $tmp = self::urlToFile(Config::$items['routing']['']);
         if ($tmp === false) {
             throw new RouterException(
                 "Error in default routing configuration. Should be: module/class/method, instead found: ".
-                Load::$config['routing']['']
+                Config::$items['routing']['']
             );
         }
 
@@ -859,8 +849,8 @@ class Router
         }
 
         // Load pre controller hook
-        if (!empty(Load::$config['before_controller'])) {
-            foreach (Load::$config['before_controller'] as $tmp) {
+        if (!empty(Config::$items['before_controller'])) {
+            foreach (Config::$items['before_controller'] as $tmp) {
                 call_user_func_array($tmp, [&$file, &$module, &$class, &$method]);
             }
         }
@@ -943,7 +933,7 @@ class Router
         } else {
             $msg = 'Controller file for path: "'.self::$requested_url.'" was not found';
             if (empty(self::$requested_url)) {
-                $msg = 'Default controller was not found: "'.Load::$config['routing'][''].'"';
+                $msg = 'Default controller was not found: "'.Config::$items['routing'][''].'"';
             }
             throw new RouterException($msg);
         }

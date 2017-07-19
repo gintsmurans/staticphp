@@ -1,27 +1,11 @@
 <?php
 
-
 namespace Core\Models;
 
-/**
- * LogLevel class.
- *
- * Defines multiple error level constants.
- */
-class LogLevel
-{
-    const EMERGENCY = 'emergency';
-    const ALERT = 'alert';
-    const CRITICAL = 'critical';
-    const ERROR = 'error';
-    const WARNING = 'warning';
-    const NOTICE = 'notice';
-    const INFO = 'info';
-    const DEBUG = 'debug';
-}
+use \Core\Models\Config;
 
 /**
- * Core class for loading resources, setting timers for profiling and error handling.
+ * Core class for loading resources.
  */
 class Load
 {
@@ -30,49 +14,18 @@ class Load
      *
      * (default value: [])
      *
+     * @deprecated
      * @var array
      * @access public
      * @static
      */
     public static $config = [];
 
-    /**
-     * Array for started timers.
-     *
-     * (default value: [])
-     *
-     * @var array
-     * @access protected
-     * @static
-     */
-    protected static $started_timers = [];
-
-    /**
-     * Array for finished timers.
-     *
-     * (default value: [])
-     *
-     * @var array
-     * @access protected
-     * @static
-     */
-    protected static $finished_timers = [];
-
-    /**
-     * Array for log entries.
-     *
-     * (default value: [])
-     *
-     * @var array
-     * @access protected
-     * @static
-     */
-    protected static $logs = [];
 
     /*
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     | Configuration Methods
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     */
 
     /**
@@ -80,6 +33,7 @@ class Load
      *
      * Optionally set default value if there are no config value by $key found.
      *
+     * @deprecated
      * @access public
      * @static
      * @param  string     $key
@@ -94,6 +48,7 @@ class Load
     /**
      * Set configuration value.
      *
+     * @deprecated
      * @access public
      * @static
      * @param  string $name
@@ -108,8 +63,10 @@ class Load
     /**
      * Merge configuration values.
      *
-     * Merge configuration value by $name with $value. If $overwrite is set to true, same key values will be overwritten.
+     * Merge configuration value by $name with $value. If $overwrite is set to true,
+     *  same key values will be overwritten.
      *
+     * @deprecated
      * @access public
      * @static
      * @param  string $name
@@ -153,9 +110,9 @@ class Load
     }
 
     /*
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     | Filesystem Methods
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     */
 
     /**
@@ -206,10 +163,11 @@ class Load
      * Generate hashed path.
      *
      * Generate hashed path to avoid reaching files per directory limit ({@link http://stackoverflow.com/a/466596}).
-     * By default it will create directories 2 levels deep and 2 symbols long, for example, for a filename /www/upload/files/image.jpg,
-     * it will generate filename /www/upload/files/ge/ma/image.jpg and optionally create all directories. It is also suggested
-     * for cases where image name is not important to set $randomize to true. This way generated filename becomes a sha1 hash
-     * and will provide better file distribution between directories.
+     * By default it will create directories 2 levels deep and 2 symbols long, for example,
+     * for a filename /www/upload/files/image.jpg, it will generate filename /www/upload/files/ge/ma/image.jpg and
+     * optionally create all directories. It is also suggested for cases where image name is not important to set
+     * $randomize to true. This way generated filename becomes a sha1 hash and will provide better file distribution
+     * between directories.
      *
      * @see Load::randomHash()
      * @access public
@@ -225,11 +183,18 @@ class Load
      *                  <li>'hash_file' hash_dir + filename (ge/ma/image.jpg);</li>
      *                  <li>'filename' Filename without extension;</li>
      *                  <li>'ext' File extension;</li>
-     *                  <li>'dir' Absolute path to file's containing directory, including hashed directories (/www/upload/files/ge/ma/);</li>
+     *                  <li>'dir' Absolute path to file's containing directory, including hashed directories
+     *                        (/www/upload/files/ge/ma/);</li>
      *                  <li>'file' Full path to a file.</li>
      *                  </ul>
      */
-    public static function hashedPath($filename, $randomize = false, $create_directories = false, $levels_deep = 2, $directory_name_length = 2)
+    public static function hashedPath(
+        $filename,
+        $randomize = false,
+        $create_directories = false,
+        $levels_deep = 2,
+        $directory_name_length = 2
+    )
     {
         // Explode path to get filename
         $parts = explode(DIRECTORY_SEPARATOR, $filename);
@@ -244,7 +209,13 @@ class Load
         $data['filename'] = (empty($randomize) ? implode('.', $data['filename']) : self::randomHash());
 
         if (strlen($data['filename']) < $levels_deep * $directory_name_length) {
-            throw new Exception('Filename length too small to satisfy how much sub-directories and how long each directory name should be made.');
+            throw new Exception(
+                '
+                    Filename length too small to satisfy
+                    how much sub-directories and how long
+                    each directory name should be made.
+                '
+            );
         }
 
         // Put directory together
@@ -252,7 +223,8 @@ class Load
 
         // Create hashed directory
         for ($i = 1; $i <= $levels_deep; ++$i) {
-            $data['hash_dir'] .= substr($data['filename'], -1 * $directory_name_length * $i, $directory_name_length).'/';
+            $data['hash_dir'] .= substr($data['filename'], -1 * $directory_name_length * $i, $directory_name_length);
+            $data['hash_dir'] .= '/';
         }
 
         // Put other stuff together
@@ -304,9 +276,9 @@ class Load
     }
 
     /*
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     | File Loading
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------------------------------------------------
     */
 
     /**
@@ -321,9 +293,14 @@ class Load
      * @param  string|null  $project (default: null)
      * @return void
      */
-    public static function config($files, $module = null, $project = null)
+    public static function config($files, $module = null, $project = null, &$config = null)
     {
-        $config = & self::$config;
+        if ($config === null) {
+            $config = & self::$config;
+        } else {
+            self::$config = &$config;
+        }
+
         foreach ((array) $files as $key => $name) {
             $project1 = $project;
             if (is_numeric($key) === false) {
@@ -468,7 +445,7 @@ class Load
             $data = (array) $data + (array) self::$config['view_data'];
         }
 
-        if (empty(Load::$config['view_engine'])) {
+        if (empty(Config::$items['view_engine'])) {
             if (!empty($return)) {
                 return false;
             }
@@ -483,19 +460,19 @@ class Load
 
         // Add default view data
         if (empty($globals_added)) {
-            Load::$config['view_engine']->addGlobal('config', self::$config);
-            Load::$config['view_engine']->addGlobal('base_url', Router::$base_url);
-            Load::$config['view_engine']->addGlobal('namespace', Router::$namespace);
-            Load::$config['view_engine']->addGlobal('class', Router::$class);
-            Load::$config['view_engine']->addGlobal('method', Router::$method);
-            Load::$config['view_engine']->addGlobal('segments', Router::$segments);
+            Config::$items['view_engine']->addGlobal('config', self::$config);
+            Config::$items['view_engine']->addGlobal('base_url', Router::$base_url);
+            Config::$items['view_engine']->addGlobal('namespace', Router::$namespace);
+            Config::$items['view_engine']->addGlobal('class', Router::$class);
+            Config::$items['view_engine']->addGlobal('method', Router::$method);
+            Config::$items['view_engine']->addGlobal('segments', Router::$segments);
             $globals_added = true;
         }
 
         // Load view data
         $contents = '';
         foreach ((array) $files as $key => $file) {
-            $contents .= Load::$config['view_engine']->render($file, (array) $data);
+            $contents .= Config::$items['view_engine']->render($file, (array) $data);
         }
 
         // Output or return view data
@@ -507,283 +484,4 @@ class Load
 
         return $contents;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Timer methods
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * Start timer. Timers are started incrementally, i.e. if two timers are started, first second timer needs to be stopped, then first one.
-     *
-     * @access public
-     * @static
-     * @return void
-     */
-    public static function startTimer()
-    {
-        self::$started_timers[] = microtime(true);
-    }
-
-    /**
-     * Stop timer by providing name of the timer.
-     *
-     * @access public
-     * @static
-     * @param  string $name
-     * @return float  Returns time in microseconds it took timer to execute.
-     */
-    public static function stopTimer($name)
-    {
-        self::$finished_timers[$name] = round(microtime(true) - array_shift(self::$started_timers), 5);
-
-        return self::$finished_timers[$name];
-    }
-
-    /**
-     * Mark time with a name.
-     *
-     * @access public
-     * @static
-     * @param  string $name
-     * @return float  Returns time in microseconds it took to execute from startup to the time the method was called.
-     */
-    public static function markTime($name)
-    {
-        global $microtime;
-        self::$finished_timers['*'.$name] = round(microtime(true) - $microtime, 5);
-
-        return self::$finished_timers['*'.$name];
-    }
-
-    /**
-     * Generate debug output for all timers.
-     *
-     * @access protected
-     * @static
-     * @return void
-     */
-    protected static function executionTime()
-    {
-        global $microtime;
-
-        self::info('Total execution time: '.round(microtime(true) - $microtime, 5)." seconds;");
-        self::info('Memory used: '.round(memory_get_usage() / 1024 / 1024, 4)." MB;\n");
-
-        if (!empty(self::$finished_timers)) {
-            krsort(self::$finished_timers);
-            foreach (self::$finished_timers as $key => $value) {
-                self::info("[{$value}s] {$key}");
-            }
-        }
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Logger methods
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * System is unusable.
-     *
-     * @param  string $message
-     * @param  array  $context
-     * @return void
-     */
-    public static function emergency($message, array $context = array())
-    {
-        self::log(LogLevel::EMERGENCY, $message, $context);
-    }
-
-    /**
-     * Action must be taken immediately.
-     *
-     * Example: Entire website down, database unavailable, etc. This should
-     * trigger the SMS alerts and wake you up.
-     *
-     * @param  string $message
-     * @param  array  $context
-     * @return void
-     */
-    public static function alert($message, array $context = array())
-    {
-        self::log(LogLevel::ALERT, $message, $context);
-    }
-
-    /**
-     * Critical conditions.
-     *
-     * Example: Application component unavailable, unexpected exception.
-     *
-     * @param  string $message
-     * @param  array  $context
-     * @return void
-     */
-    public static function critical($message, array $context = array())
-    {
-        self::log(LogLevel::CRITICAL, $message, $context);
-    }
-
-    /**
-     * Runtime errors that do not require immediate action but should typically
-     * be logged and monitored.
-     *
-     * @param  string $message
-     * @param  array  $context
-     * @return void
-     */
-    public static function error($message, array $context = array())
-    {
-        self::log(LogLevel::ERROR, $message, $context);
-    }
-
-    /**
-     * Exceptional occurrences that are not errors.
-     *
-     * Example: Use of deprecated APIs, poor use of an API, undesirable things
-     * that are not necessarily wrong.
-     *
-     * @param  string $message
-     * @param  array  $context
-     * @return void
-     */
-    public static function warning($message, array $context = array())
-    {
-        self::log(LogLevel::WARNING, $message, $context);
-    }
-
-    /**
-     * Normal but significant events.
-     *
-     * @param  string $message
-     * @param  array  $context
-     * @return void
-     */
-    public static function notice($message, array $context = array())
-    {
-        self::log(LogLevel::NOTICE, $message, $context);
-    }
-
-    /**
-     * Interesting events.
-     *
-     * Example: User logs in, SQL logs.
-     *
-     * @param  string $message
-     * @param  array  $context
-     * @return void
-     */
-    public static function info($message, array $context = array())
-    {
-        self::log(LogLevel::INFO, $message, $context);
-    }
-
-    /**
-     * Detailed debug information.
-     *
-     * @param  string $message
-     * @param  array  $context
-     * @return void
-     */
-    public static function debug($message, array $context = array())
-    {
-        self::log(LogLevel::DEBUG, $message, $context);
-    }
-
-    /**
-     * Logs with an arbitrary level.
-     *
-     * @param  mixed  $level
-     * @param  string $message
-     * @param  array  $context
-     * @return void
-     */
-    public static function log($level, $message, array $context = array())
-    {
-        self::$logs[] = ['level' => $level, 'message' => $message, 'context' => $context];
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Debug Output
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * Generate debug output.
-     *
-     * @see Load::emergency()
-     * @see Load::alert()
-     * @see Load::critical()
-     * @see Load::error()
-     * @see Load::warning()
-     * @see Load::notice()
-     * @see Load::info()
-     * @access public
-     * @static
-     * @return string Returns formatted html string of debug information, including timers, but also custom messages logged using logger interface.
-     */
-    public static function debugOutput()
-    {
-        // Log execution time
-        self::executionTime();
-
-        // Generate debug output
-        $output = '';
-        foreach (self::$logs as $item) {
-            $class = '';
-            switch ($item['level']) {
-                case LogLevel::EMERGENCY:
-                case LogLevel::ALERT:
-                case LogLevel::CRITICAL:
-                    $class = 'danger';
-                    break;
-
-                case LogLevel::ERROR:
-                case LogLevel::WARNING:
-                    $class = 'warning';
-                    break;
-
-                case LogLevel::NOTICE:
-                case LogLevel::INFO:
-                case LogLevel::DEBUG:
-                    $class = 'info';
-                    break;
-            }
-
-            $output .= '<span class="text-'.$class.'">'.strtoupper($item['level']).': </span>';
-            $output .= $item['message'];
-            $output .= (!empty($item['context']) ? " [".implode(',', $item['context'])."]\n" : "\n");
-        }
-
-        // Return it
-        return $output;
-    }
 }
-
-// Autoload function
-spl_autoload_register(
-    function ($classname) {
-        $classname = str_replace('\\', DS, $classname);
-        $classname = ltrim($classname, DS);
-
-        if (is_file(APP_MODULES_PATH.$classname.'.php')) {
-            require APP_MODULES_PATH.$classname.'.php';
-        }
-        elseif (is_file(APP_PATH.$classname.'.php')) {
-            require APP_PATH.$classname.'.php';
-        }
-        elseif (is_file(SYS_MODULES_PATH.$classname.'.php')) {
-            require SYS_MODULES_PATH.$classname.'.php';
-        }
-        elseif (is_file(SYS_PATH.$classname.'.php')) {
-            require SYS_PATH.$classname.'.php';
-        }
-        elseif (is_file(BASE_PATH.$classname.'.php')) {
-            require BASE_PATH.$classname.'.php';
-        }
-    },
-    true
-);
