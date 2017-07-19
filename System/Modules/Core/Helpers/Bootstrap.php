@@ -85,7 +85,7 @@ spl_autoload_register(
 Config::load(['Config', 'Routing']);
 
 // Set debug
-Config::$items['debug'] = (Config::get('debug') || in_array(Config::$config('client_ip', '127.0.0.1'), (array) Config::$config('debug_ips', [])));
+Config::$items['debug'] = (Config::get('debug') || in_array(Config::get('client_ip', '127.0.0.1'), (array) Config::get('debug_ips', [])));
 ini_set('error_reporting', (!empty(Config::$items['debug']) ? E_ALL : E_ALL & ~E_DEPRECATED & ~E_STRICT));
 ini_set('display_errors', (int)Config::$items['debug']);
 
