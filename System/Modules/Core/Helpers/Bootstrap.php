@@ -5,7 +5,6 @@ use \Core\Models\Logger;
 use \Core\Models\Config;
 use \Core\Models\Timers;
 use \Core\Models\Router;
-use \Core\Models\RouterException;
 
 /*
  * Handle cli sapi

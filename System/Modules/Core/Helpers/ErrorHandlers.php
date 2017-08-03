@@ -3,6 +3,7 @@
 use \Core\Models\Load;
 use \Core\Models\Config;
 use \Core\Models\Router;
+use \Core\Models\RouterException;
 
 /**
  * StaticPHP's error handler. Turns errors into exceptions and passes on to sp_exception_handler().
@@ -63,8 +64,7 @@ function sp_exception_handler($exception)
     if ($exception instanceof RouterException) {
         if (!empty(Config::$items['debug'])) {
             Router::error('500', 'Internal Server Error', $exception->getMessage());
-        }
-        else {
+        } else {
             Router::error('404', 'Not Found');
         }
     }
