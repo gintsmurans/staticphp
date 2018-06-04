@@ -86,7 +86,7 @@ Config::load(['Config', 'Routing']);
 // Set debug
 Config::$items['debug'] = (Config::get('debug') || in_array(Config::get('client_ip', '127.0.0.1'), (array) Config::get('debug_ips', [])));
 ini_set('error_reporting', (!empty(Config::$items['debug']) ? E_ALL : E_ALL & ~E_DEPRECATED & ~E_STRICT));
-ini_set('display_errors', (int)Config::$items['debug']);
+ini_set('display_errors', (int)Config::get('debug'));
 
 // Autoload additional config files
 $autoload_configs = Config::get('autoload_configs');
@@ -95,11 +95,11 @@ if ($autoload_configs !== false) {
         $tmp = explode('/', $item);
         $count = count($tmp);
         if ($count == 3) {
-            Load::config($tmp[2], $tmp[1], $tmp[0]);
+            Config::load($tmp[2], $tmp[1], $tmp[0]);
         } elseif ($count == 2) {
-            Load::config($tmp[1], $tmp[0]);
+            Config::load($tmp[1], $tmp[0]);
         } else {
-            Load::config($tmp[0]);
+            Config::load($tmp[0]);
         }
     }
 }
@@ -118,10 +118,10 @@ if (Config::get('disable_twig') !== true) {
 
     require BASE_PATH.'Vendor/autoload.php';
 
-    Config::$items['view_loader'] = new Twig_Loader_Filesystem([APP_MODULES_PATH, SYS_MODULES_PATH.'Core/Views']);
+    Config::$items['view_loader'] = new Twig_Loader_Filesystem([APP_MODULES_PATH, APP_PATH, SYS_MODULES_PATH.'Core/Views']);
     Config::$items['view_engine'] = new Twig_Environment(Config::$items['view_loader'], array(
         'cache' => APP_PATH.'Cache/Views/',
-        'debug' => Config::$items['debug'],
+        'debug' => Config::get('debug'),
     ));
 
     // Register default filters and functions
@@ -129,37 +129,37 @@ if (Config::get('disable_twig') !== true) {
     $filter = new Twig_SimpleFilter('siteUrl', function ($url = null, $prefix = null, $current_prefix = true) {
         return Router::siteUrl($url, $prefix, $current_prefix);
     });
-    Config::$items['view_engine']->addFilter($filter);
+    Config::get('view_engine')->addFilter($filter);
 
     // Site url function
     $function = new Twig_SimpleFunction('siteUrl', function ($url = null, $prefix = null, $current_prefix = true) {
         return Router::siteUrl($url, $prefix, $current_prefix);
     });
-    Config::$items['view_engine']->addFunction($function);
+    Config::get('view_engine')->addFunction($function);
 
     // Start timer function
     $function = new Twig_SimpleFunction('startTimer', function () {
         Timers::startTimer();
     });
-    Config::$items['view_engine']->addFunction($function);
+    Config::get('view_engine')->addFunction($function);
 
     // Stop timer function
     $function = new Twig_SimpleFunction('stopTimer', function ($name) {
         Timers::stopTimer($name);
     });
-    Config::$items['view_engine']->addFunction($function);
+    Config::get('view_engine')->addFunction($function);
 
     // Mark time function
     $function = new Twig_SimpleFunction('markTime', function ($name) {
         Timers::markTime($name);
     });
-    Config::$items['view_engine']->addFunction($function);
+    Config::get('view_engine')->addFunction($function);
 
     // Debug output function
     $function = new Twig_SimpleFunction('debugOutput', function () {
         return Logger::debugOutput();
     });
-    Config::$items['view_engine']->addFunction($function);
+    Config::get('view_engine')->addFunction($function);
 }
 
 // Autoload helpers

@@ -61,7 +61,7 @@ class Cache
         if (empty($config)) {
             // If config is not already loaded, do it now
             if (Config::get('cache') === false) {
-                Config::load('Cache');
+                Config::load('Cache', null, 'System');
             }
             $config = Config::$items['cache'][$name];
         }

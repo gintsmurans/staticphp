@@ -90,7 +90,7 @@ class i18n
     public static $language_key = null;
 
     /**
-     *  Cache key for setting and getting cached values
+     *  Cache key prefix for setting and getting cached values
      *
      * (default value: '')
      *
@@ -98,7 +98,7 @@ class i18n
      * @access public
      * @static
      */
-    private static $cache_key = '';
+    private static $cache_key_prefix = '';
 
     /**
      *  Current country's and language's cached strings.
@@ -111,6 +111,17 @@ class i18n
      */
     private static $cache = [];
 
+
+    /**
+     *  Debug: whether to cache or not to cache language translation strings
+     *
+     * (default value: false)
+     *
+     * @var bool
+     * @access public
+     * @static
+     */
+    private static $debug = false;
 
     /*
      * =============================================== Main Methods ====================================================
@@ -187,12 +198,14 @@ class i18n
      * @static
      * @return void
      */
-    public static function init()
+    public static function init($country = null, $language = null)
     {
         // If i18n config is not already loaded, do it now
         if (empty(Config::$items['i18n'])) {
-            Config::load('i18n');
+            Config::load('i18n', null, 'System');
         }
+
+        self::$debug = Config::$items['debug'];
 
         // Default country
         self::$config = &Config::$items['i18n'];
@@ -201,19 +214,35 @@ class i18n
         self::$country_code = &self::$current_country['code'];
         self::$language_code = reset(self::$current_country['languages']);
 
-        // Search for current country in URI
-        $found_country_language = false;
-        foreach (self::$countries as &$country) {
-            foreach ($country['languages'] as &$language) {
-                $test = self::urlPrefix($country, $language);
-                if (in_array($test, Router::$prefixes)) {
-                    self::$current_country = &$country;
-                    self::$country_code = &self::$current_country['code'];
-                    self::$language_code = &$language;
-                    self::$url_prefix = $test;
+        if ($country !== null && $language !== null) {
+            foreach (self::$countries as &$country_item) {
+                if ($country_item['code'] == $country) {
+                    if (in_array($country, $country_item['languages'])) {
+                        self::$current_country = &$country_item;
+                        self::$country_code = &self::$current_country['code'];
+                        self::$language_code = $language;
+                        self::$url_prefix = self::urlPrefix($country_item, $language);
 
-                    $found_country_language = true;
-                    break;
+                        $found_country_language = true;
+                        break;
+                    }
+                }
+            }
+        } else {
+            // Search for current country in URI
+            $found_country_language = false;
+            foreach (self::$countries as &$country_item) {
+                foreach ($country_item['languages'] as &$language_item) {
+                    $test = self::urlPrefix($country_item, $language_item);
+                    if (in_array($test, Router::$prefixes)) {
+                        self::$current_country = &$country_item;
+                        self::$country_code = &self::$current_country['code'];
+                        self::$language_code = &$language_item;
+                        self::$url_prefix = $test;
+
+                        $found_country_language = true;
+                        break;
+                    }
                 }
             }
         }
@@ -229,9 +258,10 @@ class i18n
             }
         }
 
+
         // Key
         self::$language_key = self::$country_code.'_'.self::$language_code;
-        self::$cache_key = self::$config['cache_prefix'].self::$language_key;
+        self::$cache_key_prefix = self::$config['cache_prefix'];
 
         // Load cache, if external
         if (self::$config['cache'] === 'external') {
@@ -249,35 +279,52 @@ class i18n
      * @static
      * @return void
      */
-    public static function load()
+    public static function load($language_key = null)
     {
-        $cached = Db::fetch('SELECT created FROM i18n_cached LIMIT 1', null, self::$config['db_config']);
+        if ($language_key === null) {
+            $language_key = self::$language_key;
+        }
+
+        $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'].'.' : '');
+        $cached = null;
+        if (self::$debug !== true) {
+            $cached = Db::fetch(
+                "
+                    SELECT created FROM {$db_scheme}i18n_cached WHERE id = ? LIMIT 1
+                ",
+                [$language_key],
+                self::$config['db_config']
+            );
+        }
         if (empty($cached)) {
             $res = Db::fetchAll(
-                '
-                    SELECT keys.key, tr.value FROM i18n_keys AS keys
-                    LEFT JOIN i18n_translations AS tr ON tr.key_id = keys.id AND tr.language = ?
+                "
+                    SELECT keys.key, tr.value FROM {$db_scheme}i18n_keys AS keys
+                    LEFT JOIN {$db_scheme}i18n_translations AS tr ON tr.key_id = keys.id AND tr.language = ?
                     ORDER BY keys.id
-                ',
-                [self::$language_key],
+                ",
+                [$language_key],
                 self::$config['db_config']
             );
 
+            self::$cache[$language_key] = [];
             foreach ($res as $item) {
-                self::$cache[$item['key']] = $item['value'];
+                self::$cache[$language_key][$item['key']] = $item['value'];
             }
 
-            self::cacheWrite($res);
-            self::cacheApprove();
+            self::cacheWrite($language_key, $res);
+            if (self::$debug !== true) {
+                self::cacheApprove($language_key);
+            }
         } else {
-            $items = self::cacheRead();
+            $items = self::cacheRead($language_key);
             if (is_array($items) === false) {
-                self::cacheInvalidate();
+                self::cacheInvalidate($language_key);
                 self::load();
                 return;
             }
 
-            self::$cache = &$items;
+            self::$cache[$language_key] = &$items;
         }
     }
 
@@ -306,33 +353,39 @@ class i18n
      * @param  null $escape Escape some types of chars, for example for javascript or html input parameters
      * @return string
      */
-    public static function translate($text, $replace = [], $escape = null)
+    public static function translate($text, $replace = [], $escape = null, $language_key = null)
     {
         if (empty(self::$config)) {
             throw new \Exception('Init hasn\'t been called yet');
         }
 
-        if (empty(self::$cache[$text])) { // A note: using isset returns false when value NULL is returned from postgresql
-            if (array_key_exists($text, self::$cache) === false) {
-                $record = Db::fetch('INSERT INTO i18n_keys (key) VALUES (?) RETURNING id', $text, self::$config['db_config']);
-            } else {
-                $record = Db::fetch('SELECT id FROM i18n_keys WHERE key = ?', $text, self::$config['db_config']);
+        if ($language_key === null) {
+            $language_key = self::$language_key;
+        } else if (!isset(self::$cache[$language_key])) {
+            self::load($language_key, true);
+        }
+
+        if (empty(self::$cache[$language_key][$text])) { // A note: using isset returns false when value NULL is returned from postgresql
+            $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'].'.' : '');
+            $record = Db::fetch("SELECT id FROM {$db_scheme}i18n_keys WHERE key = ?", $text, self::$config['db_config']);
+            if (empty($record)) {
+                $record = Db::fetch("INSERT INTO {$db_scheme}i18n_keys (key) VALUES (?) RETURNING id", $text, self::$config['db_config']);
             }
 
-            self::$cache[$text] = $text.'*';
+            self::$cache[$language_key][$text] = $text.'*';
             Db::query(
-                'INSERT INTO i18n_translations (key_id, language, value) VALUES (?, ?, ?)',
-                [$record['id'], self::$language_key, $text.'*'],
+                "INSERT INTO {$db_scheme}i18n_translations (key_id, language, value) VALUES (?, ?, ?)",
+                [$record['id'], $language_key, $text.'*'],
                 self::$config['db_config']
             );
 
             // Clear cache
-            self::cacheInvalidate();
+            self::cacheInvalidate($language_key);
         }
 
         // Set text to translation if its not empty
-        if (!empty(self::$cache[$text])) {
-            $text = self::$cache[$text];
+        if (!empty(self::$cache[$language_key][$text])) {
+            $text = self::$cache[$language_key][$text];
         }
 
         // Do some output escaping, if pointed
@@ -360,10 +413,9 @@ class i18n
      *
      * @access public
      * @static
-     * @param  object $engine Reference to twig engine
      * @return void
      */
-    public static function twigRegister($engine)
+    public static function twigRegister()
     {
         // Variables
         Config::$items['view_data']['i18n']['country_code'] = &self::$country_code;
@@ -372,17 +424,17 @@ class i18n
         Config::$items['view_data']['i18n']['countries'] = &self::$countries;
 
         // Register filters
-        $filter = new \Twig_SimpleFilter('translate', function ($text, $replace = [], $escape = null) {
-            return \Core\Models\i18n::translate($text, $replace, $escape);
+        $filter = new \Twig_SimpleFilter('translate', function ($text, $replace = [], $escape = null, $language_key = null) {
+            return \Core\Models\i18n::translate($text, $replace, $escape, $language_key);
         });
-        $engine->addFilter($filter);
+        Config::$items['view_engine']->addFilter($filter);
 
 
         // Register functions
-        $filter = new \Twig_SimpleFunction('_', function ($text, $replace = [], $escape = null) {
-            return \Core\Models\i18n::translate($text, $replace, $escape);
+        $filter = new \Twig_SimpleFunction('_', function ($text, $replace = [], $escape = null, $language_key = null) {
+            return \Core\Models\i18n::translate($text, $replace, $escape, $language_key);
         });
-        $engine->addFunction($filter);
+        Config::$items['view_engine']->addFunction($filter);
     }
 
 
@@ -397,10 +449,10 @@ class i18n
      * @static
      * @return string
      */
-    public static function cacheFile()
+    public static function cacheFile($language_key)
     {
         $cache_dir = APP_PATH.'Cache/'.self::$config['cache_subdir'].'/';
-        $cache_file = $cache_dir.self::$cache_key.'.php';
+        $cache_file = $cache_dir.self::$cache_key_prefix.$language_key.'.php';
 
         // Create directories
         if (!is_dir($cache_dir)) {
@@ -417,9 +469,14 @@ class i18n
      * @static
      * @return void
      */
-    public static function cacheInvalidate()
+    public static function cacheInvalidate($language_key)
     {
-        Db::query('DELETE FROM i18n_cached', null, self::$config['db_config']);
+        $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'].'.' : '');
+        Db::query(
+            "DELETE FROM {$db_scheme}i18n_cached WHERE id = ?;",
+            [$language_key],
+            self::$config['db_config']
+        );
     }
 
     /**
@@ -429,9 +486,14 @@ class i18n
      * @static
      * @return void
      */
-    public static function cacheApprove()
+    public static function cacheApprove($language_key)
     {
-        Db::query('INSERT INTO i18n_cached DEFAULT VALUES;', null, self::$config['db_config']);
+        $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'].'.' : '');
+        Db::query(
+            "INSERT INTO {$db_scheme}i18n_cached (id) VALUES (?);",
+            [$language_key],
+            self::$config['db_config']
+        );
     }
 
     /**
@@ -442,12 +504,12 @@ class i18n
      * @param  object $items Items to set
      * @return void
      */
-    public static function cacheWrite($res = null)
+    public static function cacheWrite($language_key, $res = null)
     {
         if (self::$config['cache'] === 'internal') {
             // Write to internal (file) cache
 
-            $cache_file = self::cacheFile();
+            $cache_file = self::cacheFile($language_key);
             $contents = "<?php\n\n# Country: ". self::$country_code ."\n# Language: ". self::$language_code ."\n\n";
 
             // Walk through the result
@@ -459,15 +521,17 @@ class i18n
 
             // Put contents to the file
             file_put_contents($cache_file, $contents);
-        } else {
-            // Write to external cache (defined by Cache model)
-            $cache = [];
-            foreach ($res as $item) {
-                $cache[$item['key']] = $item['value'];
-            }
 
-            Cache::set(self::$cache_key, $cache);
+            return;
         }
+
+        // Write to external cache (defined by Cache model)
+        $cache = [];
+        foreach ($res as $item) {
+            $cache[$item['key']] = $item['value'];
+        }
+
+        Cache::set(self::$cache_key_prefix.$language_key, $cache);
     }
 
     /**
@@ -477,13 +541,13 @@ class i18n
      * @static
      * @return array Returns array of translations
      */
-    public static function &cacheRead()
+    public static function &cacheRead($language_key)
     {
         $dummy = false;
 
         // Load from internal (file) cache
         if (self::$config['cache'] === 'internal') {
-            $cache_file = self::cacheFile();
+            $cache_file = self::cacheFile($language_key);
 
             if (is_file($cache_file) === false) {
                 return $dummy;
@@ -499,7 +563,7 @@ class i18n
         }
 
         // Load from external cache (defined by Cache model)
-        $res = Cache::get(self::$cache_key);
+        $res = Cache::get(self::$cache_key_prefix.$language_key);
         if (empty($res) || is_array($res) === false) {
             return $dummy;
         }
