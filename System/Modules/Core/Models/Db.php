@@ -390,4 +390,19 @@ class Db
             return (empty($res->id) ? null : $res->id);
         }
     }
+
+
+    /**
+     * Close connection specified by $name
+     *
+     * @access public
+     * @static
+     * @param  string   $name          (default: 'default')
+     * @return null
+     */
+    public static function close($name = 'default')
+    {
+        self::$db_links[$name]['link'] = null;
+        unset(self::$db_links[$name]);
+    }
 }

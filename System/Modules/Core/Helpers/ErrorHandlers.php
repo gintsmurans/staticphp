@@ -102,7 +102,8 @@ function sp_send_error_email($e)
             $debug_email, // To
             'PHP ERROR: "'.$_SERVER['HTTP_HOST'].'"', // Subject
             $e_formatted, // Message
-            "Content-Type: text/html; charset=utf-8" // Headers
+            "Content-Type: text/html; charset=utf-8", // Headers
+            'error'
         );
         $last_error['time'] = time();
         $last_error['exception'] = $e_formatted;

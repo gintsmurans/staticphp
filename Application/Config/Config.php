@@ -52,9 +52,9 @@ $config['email_func'] = 'mail';
 /*
     Example:
 
-$config['email_func'] = function($to, $subject, $message, $headers = ''){
+$config['email_func'] = function($to, $subject, $message, $headers = '', $type = 'regular'){
     if (function_exists('sendEmail')) {
-        sendEmail($to, $subject, $message);
+        sendEmail($to, $subject, $message, [], $type);
 
         $message = str_replace(
             ['&nbsp;', '<br />', '<strong>', '</strong>'],
