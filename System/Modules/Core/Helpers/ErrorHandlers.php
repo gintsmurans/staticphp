@@ -122,19 +122,33 @@ function sp_send_error_email($e)
  */
 function sp_format_exception($e, $full = false)
 {
-    $session = (isset($_SESSION) ? $_SESSION : []);
-    $post = $_POST;
+    // Current url
+    $url  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://');
+    $url .= (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '[unknown host name]');
+    $url .= (!empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '[unknown url]');
 
-    $message = str_replace("\n", "<br />", $e->getMessage());
+    // Post information
+    $post = (!empty($_POST) ? $_POST : '[]');
+
+    // Message
+    $message .= str_replace("\n", "<br />", $e->getMessage());
     $message .= '<br /><br /><strong>Trace:</strong><br /><table border="0" cellspacing="0" cellpadding="5" style="border: 1px #DADADA solid;"><tr><td style="border-bottom: 1px #DADADA solid;">';
     $message .= str_replace("\n", '</td></tr><tr><td style="border-bottom: 1px #DADADA solid;">', $e->getTraceAsString()).'</td></tr></table>';
 
+    // Session
+    $session = [];
+    if (is_callable('formatSession')) {
+        $session = formatSession();
+    } elseif (isset($_SESSION)) {
+        $session = $_SESSION;
+    }
     $session = str_replace(array(" ", "\n"), array('&nbsp;', '<br />'), json_encode($session, (defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : null)));
     $server = str_replace(array(" ", "\n"), array('&nbsp;', '<br />'), json_encode($_SERVER, (defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : null)));
     $post = str_replace(array(" ", "\n"), array('&nbsp;', '<br />'), json_encode($post, (defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : null)));
 
+    // Format message
     if (!empty($full)) {
-        return "<strong>Error:</strong><br />{$message}<br /><br /><strong>Sesssion Info:</strong><br />{$session}<br /><br /><strong>Post Info:</strong><br />{$post}<br /><br /><strong>Server:</strong><br />{$server}";
+        return "<strong>URL:</strong><br />{$url}<br /><br /><strong>Error:</strong><br />{$message}<br /><br /><strong>Sesssion Info:</strong><br />{$session}<br /><br /><strong>Post Info:</strong><br />{$post}<br /><br /><strong>Server:</strong><br />{$server}";
     } else {
         return "<pre><strong>Error:</strong><br />{$message}<br /></pre>";
     }
