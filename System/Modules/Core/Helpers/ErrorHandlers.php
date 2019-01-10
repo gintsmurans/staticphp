@@ -131,7 +131,7 @@ function sp_format_exception($e, $full = false)
     $post = (!empty($_POST) ? $_POST : '[]');
 
     // Message
-    $message .= str_replace("\n", "<br />", $e->getMessage());
+    $message  = str_replace("\n", "<br />", $e->getMessage());
     $message .= '<br /><br /><strong>Trace:</strong><br /><table border="0" cellspacing="0" cellpadding="5" style="border: 1px #DADADA solid;"><tr><td style="border-bottom: 1px #DADADA solid;">';
     $message .= str_replace("\n", '</td></tr><tr><td style="border-bottom: 1px #DADADA solid;">', $e->getTraceAsString()).'</td></tr></table>';
 
