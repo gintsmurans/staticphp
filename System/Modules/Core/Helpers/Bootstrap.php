@@ -120,7 +120,7 @@ if (Config::get('disable_twig') !== true) {
 
     Config::$items['view_loader'] = new Twig_Loader_Filesystem([APP_MODULES_PATH, APP_PATH, SYS_MODULES_PATH.'Core/Views']);
     Config::$items['view_engine'] = new Twig_Environment(Config::$items['view_loader'], array(
-        'cache' => APP_PATH.'Cache/Views/',
+        'cache' => Config::get('debug') == true ? false : APP_PATH.'Cache/Views/',
         'debug' => Config::get('debug'),
     ));
 
