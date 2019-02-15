@@ -70,10 +70,8 @@ class Fv
 
     public static function init()
     {
-        foreach (func_get_args() as $item)
-        {
-            if (is_array($item))
-            {
+        foreach (func_get_args() as $item) {
+            if (is_array($item)) {
                 self::$post = array_merge(self::$post, $item);
             }
         }
@@ -94,14 +92,10 @@ class Fv
 
     public static function validate()
     {
-        foreach (self::$rules as $name => $value)
-        {
-            if (!isset(self::$post[$name]))
-            {
+        foreach (self::$rules as $name => $value) {
+            if (!isset(self::$post[$name])) {
                 self::setError('missing', $name);
-            }
-            else
-            {
+            } else {
                 self::filterField($name);
                 self::validateField($name);
             }
@@ -113,23 +107,24 @@ class Fv
 
     public static function filterField($name)
     {
-        if (!empty(self::$rules[$name]['filter']))
-        {
-            foreach (self::$rules[$name]['filter'] as $item)
-            {
+        if (!empty(self::$rules[$name]['filter'])) {
+            foreach (self::$rules[$name]['filter'] as $item) {
                 $matches = $args = [];
                 $call = null;
 
-                // Get args from []
-                if (preg_match('/(\w+)\[(.*)\]/', $item, $matches))
-                {
-                    $item = $matches[1];
-                    $args = explode(',', $matches[2]);
-                    $args = str_replace('&#44;', ',', $args);
+                if (is_callable($item) == false) {
+                    // Get args from []
+                    if (preg_match('/(\w+)\[(.*)\]/', $item, $matches)) {
+                        $item = $matches[1];
+                        $args = explode(',', $matches[2]);
+                        $args = str_replace('&#44;', ',', $args);
+                    }
                 }
 
                 // Add value as first argument
                 array_unshift($args, self::$post[$name]);
+                array_push($args, $name);
+                array_push($args, self::$post);
 
                 // Call function
                 self::$post[$name] = self::callFunc($item, $args);
@@ -140,27 +135,27 @@ class Fv
 
     public static function validateField($name)
     {
-        if (!empty(self::$rules[$name]['valid']))
-        {
-            foreach (self::$rules[$name]['valid'] as $item)
-            {
+        if (!empty(self::$rules[$name]['valid'])) {
+            foreach (self::$rules[$name]['valid'] as $item) {
                 $matches = $args = [];
                 $call = null;
 
-                // Get args from []
-                if (preg_match('/(\w+)\[(.*)\]/', $item, $matches))
-                {
-                    $item = $matches[1];
-                    $args = explode(',', $matches[2]);
-                    $args = str_replace('&#44;', ',', $args);
+                if (is_callable($item) == false) {
+                    // Get args from []
+                    if (preg_match('/(\w+)\[(.*)\]/', $item, $matches)) {
+                        $item = $matches[1];
+                        $args = explode(',', $matches[2]);
+                        $args = str_replace('&#44;', ',', $args);
+                    }
                 }
 
-                // Add value as first argument
+                // Add other values
                 array_unshift($args, self::$post[$name]);
+                array_push($args, $name);
+                array_push($args, self::$post);
 
                 // Call function
-                if (self::callFunc($item, $args) === false)
-                {
+                if (self::callFunc($item, $args) === false) {
                     self::setError($item, $name, self::$post[$name]);
                 }
             }
@@ -174,10 +169,13 @@ class Fv
         self::$errors[$name][] = &$tmp;
 
         $tmp = strtr(
-            (!empty(self::$rules[$name]['errors'][$type]) ? self::$rules[$name]['errors'][$type] : (
-                empty(self::$default_errors[$type]) ? '' : self::$default_errors[$type])
+            (
+                !empty(self::$rules[$name]['errors'][$type]) ?
+                self::$rules[$name]['errors'][$type] : (
+                    empty(self::$default_errors[$type]) ? '' : self::$default_errors[$type]
+                )
             ),
-            ['!name' => $name, '!value' => $value]
+            ['!name' => self::$rules[$name]['title'] ?? $name, '!value' => $value]
         );
     }
 
@@ -197,18 +195,16 @@ class Fv
     protected static function callFunc($func, $args = null)
     {
         // Check for callable function
-        if (method_exists('\\system\\modules\\core\\models\\fv', $func))
-        {
-            $call = ['\\system\\modules\\core\\models\\fv', $func];
-        }
-        elseif (function_exists($func))
-        {
+        if (is_callable($func)) {
+            $call =& $func;
+        } elseif (method_exists(__CLASS__, $func)) {
+            $call = [__CLASS__, $func];
+        } elseif (function_exists($func)) {
             $call = $func;
         }
 
         // Call method / function
-        if (!empty($call))
-        {
+        if (!empty($call)) {
             return call_user_func_array($call, $args);
         }
     }
@@ -360,8 +356,7 @@ class Fv
     public static function length($value, $from, $to = null)
     {
         $len = strlen($value);
-        switch (true)
-        {
+        switch (true) {
             case ($to == '>'):
                 return ($len >= $from);
                 break;
@@ -417,16 +412,14 @@ class Fv
 
     public static function uploadSize($upload, $size)
     {
-        if (self::uploadRequired($upload))
-        {
+        if (self::uploadRequired($upload)) {
             return ($upload['size'] <= $size);
         }
     }
 
     public static function uploadExt($upload, $extensions)
     {
-        if (self::uploadRequired($upload))
-        {
+        if (self::uploadRequired($upload)) {
             $ext = explode(' ', $extensions);
             $tmp = explode('.', $upload['name']);
 
@@ -452,18 +445,14 @@ class Fv
     public static function isPost($isset = null)
     {
         // Check if post
-        if (strtolower($_SERVER['REQUEST_METHOD']) !== 'post')
-        {
+        if (strtolower($_SERVER['REQUEST_METHOD']) !== 'post') {
             return false;
         }
 
         // Check if isset keys in POST data
-        if ($isset !== null)
-        {
-            foreach ((array)$isset as $key)
-            {
-                if (!isset($_POST[$key]))
-                {
+        if ($isset !== null) {
+            foreach ((array)$isset as $key) {
+                if (!isset($_POST[$key])) {
                     return false;
                 }
             }
@@ -476,8 +465,7 @@ class Fv
 
     public static function setInputValue($name)
     {
-        if (($field = self::getField($name)) == false)
-        {
+        if (($field = self::getField($name)) == false) {
             return false;
         }
 
@@ -486,8 +474,7 @@ class Fv
 
     public static function setSelected($name, $test = '')
     {
-        if (($field = self::getField($name)) == false)
-        {
+        if (($field = self::getField($name)) == false) {
             return false;
         }
 
@@ -497,8 +484,7 @@ class Fv
 
     public static function setChecked($name)
     {
-        if (($field = self::getField($name)) == false)
-        {
+        if (($field = self::getField($name)) == false) {
             return false;
         }
 
@@ -508,8 +494,7 @@ class Fv
 
     public static function setValue($name)
     {
-        if (($field = self::getField($name)) == false)
-        {
+        if (($field = self::getField($name)) == false) {
             return false;
         }
 
@@ -521,14 +506,10 @@ class Fv
     {
         $field = self::$post;
 
-        foreach ((array)$name as $item)
-        {
-            if (isset($field[$item]))
-            {
+        foreach ((array)$name as $item) {
+            if (isset($field[$item])) {
                 $field =& $field[$item];
-            }
-            else
-            {
+            } else {
                 return false;
             }
         }
@@ -543,7 +524,7 @@ class Fv
     |--------------------------------------------------------------------------
     */
 
-    public static function twig_register()
+    public static function registerTwig()
     {
         // Register filters
         $filter = new \Twig_SimpleFilter('fvPlain', function ($value, $valid = '') {
