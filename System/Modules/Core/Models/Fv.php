@@ -39,13 +39,13 @@ use Core\Models\Config;
  */
 class Fv
 {
-    public static $errors = null;
-    public static $errors_all = null;
+    public $errors = null;
+    public $errors_all = null;
 
-    public static $post = [];
-    private static $rules = [];
+    public $post = [];
+    private $rules = [];
 
-    private static $default_errors = [
+    private $default_errors = [
         'missing' => 'Field "!name" is missing',
         'required' => 'Field "!name" is required',
         'email' => '"!value" is not a correct e-mail address',
@@ -68,47 +68,46 @@ class Fv
     ];
 
 
-    public static function init()
+    public function __construct()
     {
         foreach (func_get_args() as $item) {
             if (is_array($item)) {
-                self::$post = array_merge(self::$post, $item);
+                $this->post = array_merge($this->post, $item);
             }
         }
     }
 
-
-    public static function errors($errors)
+    public function errors($errors)
     {
-        self::$default_errors = array_merge(self::$default_errors, $errors);
+        $this->default_errors = array_merge($this->default_errors, $errors);
     }
 
 
-    public static function addRules($rules)
+    public function addRules($rules)
     {
-        self::$rules = array_merge(self::$rules, $rules);
+        $this->rules = array_merge($this->rules, $rules);
     }
 
 
-    public static function validate()
+    public function validate()
     {
-        foreach (self::$rules as $name => $value) {
-            if (!isset(self::$post[$name])) {
-                self::setError('missing', $name);
+        foreach ($this->rules as $name => $value) {
+            if (!isset($this->post[$name])) {
+                $this->setError('missing', $name);
             } else {
-                self::filterField($name);
-                self::validateField($name);
+                $this->filterField($name);
+                $this->validateField($name);
             }
         }
 
-        return empty(self::$errors);
+        return empty($this->errors);
     }
 
 
-    public static function filterField($name)
+    public function filterField($name)
     {
-        if (!empty(self::$rules[$name]['filter'])) {
-            foreach (self::$rules[$name]['filter'] as $item) {
+        if (!empty($this->rules[$name]['filter'])) {
+            foreach ($this->rules[$name]['filter'] as $item) {
                 $matches = $args = [];
                 $call = null;
 
@@ -122,21 +121,21 @@ class Fv
                 }
 
                 // Add value as first argument
-                array_unshift($args, self::$post[$name]);
+                array_unshift($args, $this->post[$name]);
                 array_push($args, $name);
-                array_push($args, self::$post);
+                array_push($args, $this->post);
 
                 // Call function
-                self::$post[$name] = self::callFunc($item, $args);
+                $this->post[$name] = $this->callFunc($item, $args);
             }
         }
     }
 
 
-    public static function validateField($name)
+    public function validateField($name)
     {
-        if (!empty(self::$rules[$name]['valid'])) {
-            foreach (self::$rules[$name]['valid'] as $item) {
+        if (!empty($this->rules[$name]['valid'])) {
+            foreach ($this->rules[$name]['valid'] as $item) {
                 $matches = $args = [];
                 $call = null;
 
@@ -150,49 +149,49 @@ class Fv
                 }
 
                 // Add other values
-                array_unshift($args, self::$post[$name]);
+                array_unshift($args, $this->post[$name]);
                 array_push($args, $name);
-                array_push($args, self::$post);
+                array_push($args, $this->post);
 
                 // Call function
-                if (self::callFunc($item, $args) === false) {
-                    self::setError($item, $name, self::$post[$name]);
+                if ($this->callFunc($item, $args) === false) {
+                    $this->setError($item, $name, $this->post[$name]);
                 }
             }
         }
     }
 
 
-    public static function setError($type, $name, $value = '')
+    public function setError($type, $name, $value = '')
     {
-        self::$errors_all[] = &$tmp;
-        self::$errors[$name][] = &$tmp;
+        $this->errors_all[] = &$tmp;
+        $this->errors[$name][] = &$tmp;
 
         $tmp = strtr(
             (
-                !empty(self::$rules[$name]['errors'][$type]) ?
-                self::$rules[$name]['errors'][$type] : (
-                    empty(self::$default_errors[$type]) ? '' : self::$default_errors[$type]
+                !empty($this->rules[$name]['errors'][$type]) ?
+                $this->rules[$name]['errors'][$type] : (
+                    empty($this->default_errors[$type]) ? '' : $this->default_errors[$type]
                 )
             ),
-            ['!name' => self::$rules[$name]['title'] ?? $name, '!value' => $value]
+            ['!name' => $this->rules[$name]['title'] ?? $name, '!value' => $value]
         );
     }
 
 
-    public static function hasError($name)
+    public function hasError($name)
     {
-        return !empty(self::$errors[$name]);
+        return !empty($this->errors[$name]);
     }
 
 
-    public static function getError($name)
+    public function getError($name)
     {
-        return (empty(self::$errors[$name]) ? false : self::$errors[$name]);
+        return (empty($this->errors[$name]) ? false : $this->errors[$name]);
     }
 
 
-    protected static function callFunc($func, $args = null)
+    protected function callFunc($func, $args = null)
     {
         // Check for callable function
         if (is_callable($func)) {
