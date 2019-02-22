@@ -155,6 +155,9 @@ To generate api documentation, install composer dev dependecies (`composer insta
 
 ## History
 
+####v1.1.0
+* √ Updated Twig
+
 ####v1.0.0
 * √ Removed Help/Example page descriptions - thats basically what apigen is for.
 * √ Rewrite Db class so that in init method $name parameter comes before $config.
