@@ -1,0 +1,13 @@
+@charset "utf-8";
+
+$FontPathSourceSansPro: "fonts/source-sans-pro";
+@import "../../../node_modules/npm-font-source-sans-pro/source-sans-pro.scss";
+
+$fa-font-path: "fonts/font-awesome";
+@import "../../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "../../../node_modules/@fortawesome/fontawesome-free/scss/regular.scss";
+@import "../../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+
+@import "../../../node_modules/bootstrap/scss/bootstrap.scss";
+
+@import "base/scss/theme.scss";

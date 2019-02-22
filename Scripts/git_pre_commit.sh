@@ -75,9 +75,10 @@ fi
 
 
 # Compile css, js
-if [ $(git diff-index --cached --name-only $COMMIT | grep \\.css | wc -l) -gt 0 ] || [ $(git diff-index --cached --name-only $COMMIT | grep \\.js | wc -l) -gt 0 ]; then
-    echo "*CSS or JS file(s) modified, compressing.. "
-    $BASE_PATH/Scripts/minify.py
+if [ $(git diff-index --cached --name-only $COMMIT | grep \\.js | wc -l) -gt 0 ]; then
+    echo "*JS file(s) modified, compressing.. "
+    cd $BASE_PATH
+    npm run js:build
 
     if [ "$?" != "0" ]; then
         echo

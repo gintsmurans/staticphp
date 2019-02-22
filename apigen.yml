@@ -1,24 +1,5 @@
 parameters:
     title: "StaticPHP"
-
-#title: "StaticPHP"
-#php: false
-#deprecated: true
-#todo: true
-#download: false
-#tree: true
-#baseUrl: http://staticphp.gm.lv/docs/
-#templateConfig: /root/.composer/vendor/apigen/theme-default/src/config.neon
-
-#charset:
-#    - UTF-8
-
-#source:
-#    - ./
-
-#exclude:
-#    - Application/Cache/*
-#    - Vendor/*
-#    - tmp/*
-
-#destination: Application/Public/docs
+    baseUrl: http://staticphp.gm.lv/docs/
+    source: Application/
+    source: System/

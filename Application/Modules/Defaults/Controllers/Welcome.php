@@ -58,14 +58,22 @@ class Welcome extends Controller
     }
 
     /**
-     * Example method for help page.
+     * Example method for example page.
      *
      * @access public
      * @static
      * @return void
      */
-    public static function help()
+    public static function example()
     {
-        Load::view('Defaults/Views/help.html');
+        $view_data = [
+            'included_files' => []
+        ];
+
+        foreach (get_included_files() as $file) {
+            $view_data['included_files'][] = $file;
+        }
+
+        Load::view('Defaults/Views/example.html', $view_data);
     }
 }

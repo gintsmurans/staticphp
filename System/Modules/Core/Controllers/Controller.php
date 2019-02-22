@@ -53,13 +53,14 @@ class Controller
     /**
      *  Render a view. This method instead of Load::view() prefixes paths with current module directory.
      */
-    public static function render($views, $data = [])
+    public static function render($views, $view_data = [])
     {
         $views = (array)$views;
         foreach ($views as $key => $item) {
             $views[$key] = Router::$module.DS.'Views'.DS.$item;
         }
-        Load::view($views, $data);
+
+        Load::view($views, $view_data);
     }
 
 

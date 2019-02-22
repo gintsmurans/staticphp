@@ -6,7 +6,7 @@ Simple, modular php framework.
 
 ### Requirements
 
-* PHP 5.4+
+* PHP 7.1+
 * Twig 1.5+
 
 
@@ -15,7 +15,7 @@ Simple, modular php framework.
 There are two ways to install StaticPHP framework:
 
 1. Easy one - using composer.
-2. And a little bit complicated way.
+2. Manually.
 
 **1. Using composer**
 
@@ -31,18 +31,32 @@ Download latest release from [Releases](https://github.com/gintsmurans/staticphp
 Download [Twig](https://github.com/twigphp/Twig/archive/v1.16.2.tar.gz). Extract archive, rename the directory to twig and put it in _./somedir/Vendor/twig_ so that _Autoloader.php_ file is under _./somedir/Vendor/twig/twig/lib/Twig/_. For installing Twig C php extension, please refer to this [guide](http://twig.sensiolabs.org/doc/installation.html#installing-the-c-extension).
 
 
+**3. (Optional) Npm for SCSS and Javascript**
+
+Install node and npm
+run `npm install`
+
+*[How to install node?](https://nodejs.org/en/download/package-manager/)*
+
+
 ### Getting started
 
-_* Remember to set correct permissions for Cache directory. For example: `chown www-data:www-data ./Application/Cache/`_
+_* Remember to set correct permissions for Cache directory. For example: `chown www-data:www-data ./Application/Cache/` or `chmod 777 ./Application/Cache/`_
 
-Most quickest way to run your project is to use php's in-built server. To do that, cd into the _./somedir/Application/Public_ and run `php -S 0.0.0.0:8081`. Now open your **server_ip:8081** (or **127.0.0.1:8081**) and StaticPHP first page should show up. By default, running StaticPHP with php's cli server, turns debugging on, but you can configure that in _./somedir/Applications/Config/Config.php_ by setting $config['environment'] or $config['debug'] variables.
+Most quickest way to run your project is to use php's in-built server. To do that, cd into the _./somedir/Application/Public_ and run `php -S 0.0.0.0:8081`. Now open your **server_ip:8081** (or **127.0.0.1:8081**) and StaticPHP first page should show up.
+
+**or**
+
+run `npm start`
+
+By default, running StaticPHP with php's cli server, turns debugging on, but you can configure that in _./somedir/Applications/Config/Config.php_ by setting $config['environment'] or $config['debug'] variables.
 
 _* Take a look at home controller in ./somedir/Application/Modules/Controllers/Welcome.php and views in ./somedir/Application/Modules/Views/ for basic framework usage._
 
 
-### Components
+### Assets
 
-Installing via composer, automatically downloads jquery and bootstrap components. By default those are installed in _./somedir/Application/Public/assets/vendor/_. Base views shipped with StaticPHP are built using these components, so you can quickly get started with your project.
+All assets are stored in _./somedir/Application/Public/assets/_ directory. StaticPHP uses npm to handle css (using SCSS) and js assets, but you can also do it manually.
 
 
 ### Api
@@ -55,6 +69,16 @@ _* Work in progress_
 ### Example app
 
 [A simple todo application](http://staticphp-example.gm.lv/) based on sessions. To view the source, checkout the "example" branch.
+
+
+### PHPUnit
+
+To run phpunit tests, install composer dev dependecies (`composer install --dev`) and then run `./Vendor/bin/phpunit Application/`
+
+
+### ApiGen api documentation
+
+To generate api documentation, install composer dev dependecies (`composer install --dev`), run `./Vendor/bin/apigen generate ./ --destination Application/Public/docs Application/ System/` or `npm run docs` and open http://127.0.0.1:8081/docs/
 
 
 ### Basic Nginx configuration
@@ -122,30 +146,38 @@ _* Work in progress_
 
 ## TODO and ideas
 
-* Rewrite Db class so that in init method $name parameter comes before $config
 * i18n and cache class usage guide
 * Cache class: postgres, mysql and sql lite support (who knows, somebody may want this:)
 * Write usage guide
-* Write api documentation, e.g. write descriptions for all StaticPHP class methods and files.
-* Update help page
-* Unit testing.
 * Rewrite all sessions classes into one by adding an option to choose from session backend to use, possibly allowing to use multiple backends (e.g. memcached -> sql).
 * Look for a way to extend a view from same directory as the view extending it. E.g. {% extends "layout.html" %} instead of {% extends "Defaults/Views/layout.html" %}
 
 
 ## History
 
+####v1.0.0
+* √ Removed Help/Example page descriptions - thats basically what apigen is for.
+* √ Rewrite Db class so that in init method $name parameter comes before $config.
+* √ Use composer only for php stuff.
+* √ Setup SCSS using npm scripts.
+* √ Setup webpack for js, also using npm scripts.
+* √ Expanded core clases from universal to more specific roles.
+* √ Added first PHPUnit tests.
+* √ Various Bugfixes.
+* √ Allow controllers, helpers and models to also be loaded from Application folder, same as Config already was.
+* √ Replaced apigen config file with new format.
+
 ####v0.9.5
 * √ Cache class: Redis, Memcached, APC and files.
-* √ i18n class with twig integration (i18n::twigRegister(Load::$config['view_engine']))
+* √ i18n class with twig integration (i18n::twigRegister(Load::$config['view_engine'])).
 
 ####v0.9.4
 * √ Fixed possibility of nonexisting variable causing notices.
 * √ Updated nginx configuration example.
-* √ Added .editorconfig file
-* √ Updated composer dependencies
-* √ Few micro performance updates
-* √ Option to disable twig template engine
+* √ Added .editorconfig file.
+* √ Updated composer dependencies.
+* √ Few micro performance updates.
+* √ Option to disable twig template engine.
 
 ####v0.9.3
 * √ Fixed issue preventing to load page from subdirectory.

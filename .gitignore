@@ -1,10 +1,36 @@
+#
+# Password sensitive files #
+######################
+Application/Config/Db.php
+
+# Tmp, Cache and Bootstrap #
+######################
 /Vendor/
 /Application/Cache/
+/Application/Public/assets/fonts/
 /Application/Public/assets/vendor/
 /Application/Public/uploads/
 /Application/Public/xhprof/
 /Application/Public/docs/
 
+.phpunit.result.cache
+
+# Python #
+######################
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDEs #
+######################
+*.code-workspace
 
 # OS generated files #
 ######################
@@ -17,3 +43,15 @@ Icon?
 ehthumbs.db
 Thumbs.db
 Desktop.ini
+
+# Node #
+######################
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+node_modules/
+.npm

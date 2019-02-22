@@ -45,16 +45,16 @@ git reset --hard
 
 
 # Clear twig cache
-# if [ $(git diff-tree -r --name-only --no-commit-id $COMMIT | grep \\.html | wc -l) -gt 0 ]; then
-#     echo "*Html file(s) modified, clearing twig cache.. "
-#
-#     rm -r $APP_PATH/Cache/*
-# fi
+if [ $(git diff-tree -r --name-only --no-commit-id $COMMIT | grep \\.html | wc -l) -gt 0 ]; then
+    echo "*Html file(s) modified, clearing twig cache.. "
+
+    rm -r $APP_PATH/Cache/*
+fi
 
 
 
 # Run composer update
-# if [ $(git diff-tree -r --name-only --no-commit-id $COMMIT | grep composer.json | wc -l) -gt 0 ] || [ $(git diff-tree -r --name-only --no-commit-id $COMMIT | grep composer.lock | wc -l) -gt 0 ]; then
-#     echo "*Composer component(-s) modified, running \"composer update\".. "
-#     composer update
-# fi
+if [ $(git diff-tree -r --name-only --no-commit-id $COMMIT | grep composer.json | wc -l) -gt 0 ] || [ $(git diff-tree -r --name-only --no-commit-id $COMMIT | grep composer.lock | wc -l) -gt 0 ]; then
+    echo "*Composer component(-s) modified, running \"composer update\".. "
+    composer update
+fi

@@ -1,0 +1,42 @@
+{% extends "Defaults/Views/layout.html" %}
+
+{% block content %}
+<div class="content">
+  <h1>Example</h1>
+
+  <!-- ----------------------------------------------------------------- -->
+  <div class="description">
+    <strong>Some variables and definitions:</strong>
+    <ol>
+      <li>base_url: <strong>{{ base_url }}</strong></li>
+      <li>siteUrl(): <strong>{{ siteUrl() }}</strong><br /><br /></li>
+
+      <li>BASE_PATH: <strong>{{ constant('BASE_PATH') }}</strong></li>
+      <li>APP_PATH: <strong>{{ constant('APP_PATH') }}</strong></li>
+      <li>PUBLIC_PATH: <strong>{{ constant('PUBLIC_PATH') }}</strong></li>
+    </ol>
+
+    <strong>This page:</strong>
+    <ol>
+      <li>Module: <strong>{{ module }}</strong></li>
+      <li>Class: <strong>{{ class }}</strong></li>
+      <li>Controller: <strong>{{ controller }}</strong></li>
+      <li>Method: <strong>{{ method }}</strong></li>
+
+      <li>Module url: <strong>{{ module_url }}</strong></li>
+      <li>Controller url: <strong>{{ controller_url }}</strong></li>
+      <li>Method url: <strong>{{ method_url }}</strong></li>
+    </ol>
+
+    <div>&nbsp;</div>
+
+    <strong>All included files:</strong>
+    <ol>
+      {% for file in included_files %}
+      <li>{{ file }}</li>
+      {% endfor %}
+    </ol>
+  </div>
+</div>
+
+{% endblock %}

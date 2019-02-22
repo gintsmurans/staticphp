@@ -35,24 +35,27 @@ class Db
      * by passing a name of the connection that has been set up in Application/Config/Db.php (see example in System/Config/Db.php).
      *
      * @example models\Db::init();
-     * @example models\Db::init(null, 'second');
-     * @example models\Db::init([
-     *              'string' => 'pgsql:host=localhost;dbname=',
-     *              'username' => 'username',
-     *              'password' => 'password',
-     *              'charset' => 'UTF8',
-     *              'persistent' => true,
-     *              'wrap_column' => '`', // ` - for mysql, " - for postgresql
-     *              'fetch_mode_objects' => false,
-     *              'debug' => true,
-     *          ], 'pgsql1');
+     * @example models\Db::init('second');
+     * @example models\Db::init(
+     *              'pgsql1',
+     *              [
+     *                  'string' => 'pgsql:host=localhost;dbname=',
+     *                  'username' => 'username',
+     *                  'password' => 'password',
+     *                  'charset' => 'UTF8',
+     *                  'persistent' => true,
+     *                  'wrap_column' => '`', // ` - for mysql, " - for postgresql
+     *                  'fetch_mode_objects' => false,
+     *                  'debug' => true,
+     *              ]
+     *          );
      * @access public
      * @static
-     * @param  mixed    $config (default: null)
      * @param  string   $name   (default: 'default')
+     * @param  mixed    $config (default: null)
      * @return resource Returns pdo instance.
      */
-    public static function init($config = null, $name = 'default')
+    public static function init($name = 'default', $config = null)
     {
         // Check if there is such configuration
         if (empty($config)) {
