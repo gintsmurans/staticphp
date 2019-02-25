@@ -5,7 +5,7 @@ Application/Config/Db.php
 
 # Tmp, Cache and Bootstrap #
 ######################
-/Vendor/
+/vendor/
 /Application/Cache/
 /Application/Public/assets/fonts/
 /Application/Public/assets/vendor/
