@@ -108,6 +108,10 @@ class Fv
     {
         if (!empty($this->rules[$name]['filter'])) {
             foreach ($this->rules[$name]['filter'] as $item) {
+                if (empty($item)) {
+                    return;
+                }
+
                 $matches = $args = [];
                 $call = null;
 
@@ -136,6 +140,10 @@ class Fv
     {
         if (!empty($this->rules[$name]['valid'])) {
             foreach ($this->rules[$name]['valid'] as $item) {
+                if (empty($item)) {
+                    return;
+                }
+
                 $matches = $args = [];
                 $call = null;
 
