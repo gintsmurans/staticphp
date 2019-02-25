@@ -340,7 +340,7 @@ class Fv
 
     public static function date($value, $format = '^(19|20)[0-9]{2}[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$')
     {
-        return self::valid_format($value, $format);
+        return self::format($value, $format);
     }
 
     public static function ipv4($value)
@@ -470,18 +470,18 @@ class Fv
 
 
 
-    public static function setInputValue($name)
+    public function setInputValue($name)
     {
-        if (($field = self::getField($name)) == false) {
+        if (($field = $this->getField($name)) == false) {
             return false;
         }
 
         return ' value="'.(!empty($field) ? htmlspecialchars($field) : '').'"';
     }
 
-    public static function setSelected($name, $test = '')
+    public function setSelected($name, $test = '')
     {
-        if (($field = self::getField($name)) == false) {
+        if (($field = $this->getField($name)) == false) {
             return false;
         }
 
@@ -489,9 +489,9 @@ class Fv
     }
 
 
-    public static function setChecked($name)
+    public function setChecked($name)
     {
-        if (($field = self::getField($name)) == false) {
+        if (($field = $this->getField($name)) == false) {
             return false;
         }
 
@@ -499,9 +499,9 @@ class Fv
     }
 
 
-    public static function setValue($name)
+    public function setValue($name)
     {
-        if (($field = self::getField($name)) == false) {
+        if (($field = $this->getField($name)) == false) {
             return false;
         }
 
@@ -509,9 +509,9 @@ class Fv
     }
 
 
-    private static function getField($name)
+    private function getField($name)
     {
-        $field = self::$post;
+        $field = $this->post;
 
         foreach ((array)$name as $item) {
             if (isset($field[$item])) {
@@ -535,52 +535,18 @@ class Fv
     {
         // Register filters
         $filter = new \Twig_SimpleFilter('fvPlain', function ($value, $valid = '') {
-            return \system\modules\core\models\Fv::setPlain($value);
+            return \Core\Models\Fv::setPlain($value);
         });
         Config::$items['view_engine']->addFilter($filter);
 
         $filter = new \Twig_SimpleFilter('fvFriendly', function ($value) {
-            return \system\modules\core\models\Fv::setFriendly($value);
+            return \Core\Models\Fv::setFriendly($value);
         });
         Config::$items['view_engine']->addFilter($filter);
 
         $filter = new \Twig_SimpleFilter('fvXSS', function ($value, $valid = '') {
-            return \system\modules\core\models\Fv::xss($value);
+            return \Core\Models\Fv::xss($value);
         });
         Config::$items['view_engine']->addFilter($filter);
-
-
-        // Register form functions
-        $function = new \Twig_SimpleFunction('fvHasError', function ($value) {
-            return \system\modules\core\models\Fv::hasError($value);
-        });
-        Config::$items['view_engine']->addFunction($function);
-
-        $function = new \Twig_SimpleFunction('fvError', function ($value) {
-            return \system\modules\core\models\Fv::getError($value);
-        });
-        Config::$items['view_engine']->addFunction($function);
-
-
-        // Register helper functions
-        $function = new \Twig_SimpleFunction('fvInputValue', function ($value) {
-            return \system\modules\core\models\Fv::setInputValue($value);
-        });
-        Config::$items['view_engine']->addFunction($function);
-
-        $function = new \Twig_SimpleFunction('fvSelected', function ($value, $test = '') {
-            return \system\modules\core\models\Fv::setSelected($value, $test);
-        });
-        Config::$items['view_engine']->addFunction($function);
-
-        $function = new \Twig_SimpleFunction('fvChecked', function ($value) {
-            return \system\modules\core\models\Fv::setChecked($value);
-        });
-        Config::$items['view_engine']->addFunction($function);
-
-        $function = new \Twig_SimpleFunction('fvValue', function ($value) {
-            return \system\modules\core\models\Fv::setValue($value);
-        });
-        Config::$items['view_engine']->addFunction($function);
     }
 }

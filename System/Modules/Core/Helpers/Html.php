@@ -74,7 +74,7 @@ function html_dropdown($items, $selected = null, $addons = null, $add_empty = fa
     // Add empty option
     if (!empty($add_empty)) {
         $value = key($add_empty);
-        $select .= '<option value="'.set_input_value($value).'"';
+        $select .= '<option value="'.html_escape_input($value).'"';
         if (!empty($addons[$value])) {
             $select .= ' '.$addons[$value];
         }
@@ -89,7 +89,7 @@ function html_dropdown($items, $selected = null, $addons = null, $add_empty = fa
         // If grouped dropdown
         if (is_array($text)) {
             $select .= '<optgroup label="'.$value.'">';
-            $select .= dropdown($text, $selected, $addons, false, $as_value, $as_text, true);
+            $select .= html_dropdown($text, $selected, $addons, false, $as_value, $as_text, true);
             $select .= '</optgroup>';
             continue;
         }

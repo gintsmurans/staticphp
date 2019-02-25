@@ -3,8 +3,8 @@
 /**
  * Returns fixed floating number with precision of $precision. Replaces "," to "." and " " to "".
  *
- * @param $input mixed
- * @param $precision int
+ * @param mixed $input
+ * @param int $precision
  * @return float
  */
 function fixFloat($input, $precision = -1)
@@ -18,8 +18,8 @@ function fixFloat($input, $precision = -1)
 /**
  * Trim characters, can be used with array_walk
  *
- * @param $value mixed
- * @param $character_mask string Characters to trim
+ * @param mixed $value
+ * @param string $character_mask Characters to trim
  * @return mixed
  */
 function trimChars(&$value, $character_mask = " \t\n\r\0\x0B")
@@ -35,9 +35,9 @@ function trimChars(&$value, $character_mask = " \t\n\r\0\x0B")
 /**
  * Locale specific number_format
  *
- * @param $number int|float
- * @param $decimals int Precision
- * @return float
+ * @param int|float $number
+ * @param int $decimals Precision
+ * @return string
  */
 function localeNumberFormat($number, $decimals = 2)
 {
@@ -65,8 +65,8 @@ function uuid4()
 /**
  * Parse query string using $delimiter
  *
- * @param $str string Query string
- * @param $delimiter string Delimiter
+ * @param string $str Query string
+ * @param string $delimiter Delimiter
  * @return array
  */
 function parseQueryString($str, $delimiter = '&')
@@ -89,8 +89,8 @@ function parseQueryString($str, $delimiter = '&')
 /**
  * Returns array containing week's start and week's end
  *
- * @param $week int A Week
- * @param $year int of a Year
+ * @param int $week A Week
+ * @param int $year of a Year
  * @return array
  */
 function weekRange($week, $year = null)
@@ -110,7 +110,7 @@ function weekRange($week, $year = null)
 /**
  * Returns array containing month's start and end timestamps
  *
- * @param $timestamp A timestamp for which date to calculate first and last day
+ * @param int $timestamp A timestamp for which date to calculate first and last day
  * @return array
  */
 function monthRangeDateTime($timestamp = null)
@@ -138,7 +138,7 @@ function monthRangeDateTime($timestamp = null)
 /**
  * Returns how many weeks there will be or was in a specific year.
  *
- * @param $year int A year
+ * @param int $year A year
  */
 function getIsoWeeksInYear($year)
 {
@@ -153,16 +153,16 @@ function getIsoWeeksInYear($year)
  * Also can return false if $required is specified and any of $keys are missing.
  * Also can fill missing keys with $fill_missing, if its other than false
  *
- * @param $array array Original array
- * @param $keys array Array of keys
- * @param $required bool Whether return false if there are missing keys
- * @param $fill_missing bool|mixed Fill missing keys with this value
- * @return array
+ * @param array $array Original array
+ * @param array $keys Array of keys
+ * @param bool $required Whether return false if there are missing keys
+ * @param bool|mixed $fill_missing Fill missing keys with this value
+ * @return array|bool
  */
 function extractArrayByKeys($array, $keys, $required = false, $fill_missing = false)
 {
     // Check if input is an array
-    if (is_array($array) === false) {
+    if (is_array($array) == false) {
         return false;
     }
 
@@ -186,6 +186,7 @@ function extractArrayByKeys($array, $keys, $required = false, $fill_missing = fa
 /**
  * Returns a boolean value representing whether any of the passed array elements are empty
  *
+ * @param array $array
  * @return boolean
  */
 function anyEmpty($array)
@@ -197,6 +198,7 @@ function anyEmpty($array)
 /**
  * Returns a boolean value representing whether all of the passed array elements are empty
  *
+ * @param array $array
  * @return boolean
  */
 function allEmpty($array)
@@ -208,6 +210,8 @@ function allEmpty($array)
 /**
  * Returns string pointing to a (somehow) random temporary filename
  *
+ * @param string $prefix
+ * @param string $postfix
  * @return string
  */
 function tmpFilename($prefix = 'tmp_', $postfix = '')
@@ -224,7 +228,7 @@ function tmpFilename($prefix = 'tmp_', $postfix = '')
  * When $keys == ['id', 'name'], Turns [['id' => 1, 'name' => 'Name 1'], ['id' => 2, 'name' => 'Name 2'] into
  * [1 => ['Name 1' => ['id' => 1, 'name' => 'Name 1']], 2 => ['Name 2' => ['id' => 2, 'name' => 'Name 2']]]
  *
- * @param  iterator $array
+ * @param  \Iterator $array
  * @param  mixed    $keys
  * @param  bool     $unique Describes whether last key of input array is unique
  * @return array[]  Returns array grouped by keys
@@ -254,7 +258,7 @@ function groupArray($array, $keys = [], $unique = false)
 /**
  * Returns wheather date has a valid ISO8601 format.
  *
- * @param  string Date string
+ * @param  string $date string
  * @return bool   Returns true or false
  */
 function validISODate($date)
@@ -266,7 +270,7 @@ function validISODate($date)
 /**
  * Returns wheather datetime has a valid ISO8601 format.
  *
- * @param  string Datetime string
+ * @param  string $datetime string
  * @return bool   Returns true or false
  */
 function validISODateTime($datetime)

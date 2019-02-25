@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests\Core;
+namespace Tests\Modules\Core\Helpers;
 
 
 use PHPUnit\Framework\TestCase;
 use Core\Models\Load;
 
 // Load helper here, because it cannot be loaded more than once
-Load::helper('Html', 'Core');
+Load::helper('Html', 'Core', 'System');
 
 
 class HtmlTest extends TestCase

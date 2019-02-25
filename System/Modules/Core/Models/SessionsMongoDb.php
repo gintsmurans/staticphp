@@ -13,6 +13,8 @@ class SessionsMongoDb
     private $st = null; // session table
     private $data = null;
     private $salt = null;
+    private $prefix = null;
+    private $expire = null;
 
     public function __construct(&$mdb)
     {

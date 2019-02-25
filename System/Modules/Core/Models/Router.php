@@ -145,7 +145,7 @@ class Router
      *
      * (default value: null)
      *
-     * @var strig
+     * @var string
      * @access public
      * @static
      */
@@ -156,7 +156,7 @@ class Router
      *
      * (default value: null)
      *
-     * @var strig
+     * @var string
      * @access public
      * @static
      */
@@ -354,7 +354,7 @@ class Router
      *          array will be sent to client along with
      *          content-type:text/javascript header.
      * @access public
-     * @param mixed &$json_data
+     * @param mixed $json_data
      * @return void
      */
     public static function jsonResponse(&$json_data)
@@ -497,7 +497,7 @@ class Router
      * @access public
      * @static
      * @param  string $url
-     * @return array
+     * @return array|bool
      *                    An array of string objects:
      *                    <ul>
      *                    <li>'method' - method to be called</li>
@@ -532,7 +532,7 @@ class Router
      *
      * @access public
      * @static
-     * @param  string $method
+     * @param  string $url
      * @return string
      */
     public static function urlToNamespace($url)
@@ -547,7 +547,7 @@ class Router
      *
      * @access public
      * @static
-     * @param  string $method
+     * @param  string $namespace
      * @return string
      */
     public static function namespaceToUrl($namespace)
@@ -816,7 +816,7 @@ class Router
      * @static
      * @param  string $file    (default: null)
      * @param  string $class   (default: null)
-     * @param  string &$method (default: null)
+     * @param  string $method (default: null)
      * @return void
      */
     public static function loadController(

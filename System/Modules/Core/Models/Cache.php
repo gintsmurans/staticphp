@@ -122,11 +122,11 @@ class Cache
     }
 
     /**
-     *  Remove value by key from cache.
+     *  Remove value by $key from cache.
      *
      * @access public
      * @static
-     * @return void
+     * @return bool
      */
     public static function remove($key, $name = 'default')
     {
@@ -222,7 +222,7 @@ class Cache
      *
      * @access public
      * @static
-     * @return void
+     * @return mixed
      */
     public static function files_get($cache, $key)
     {
@@ -246,7 +246,7 @@ class Cache
      *
      * @access public
      * @static
-     * @return void
+     * @return bool
      */
     public static function files_remove($cache, $key)
     {
@@ -281,7 +281,7 @@ class Cache
      *
      * @access public
      * @static
-     * @return void
+     * @return bool
      */
     public static function apc_set($cache, $key, $value, $ttl)
     {
@@ -338,7 +338,7 @@ class Cache
      *
      * @access public
      * @static
-     * @return void
+     * @return bool
      */
     public static function redis_set($cache, $key, $value, $ttl)
     {
@@ -350,7 +350,7 @@ class Cache
      *
      * @access public
      * @static
-     * @return void
+     * @return mixed
      */
     public static function redis_get($cache, $key)
     {
@@ -362,7 +362,7 @@ class Cache
      *
      * @access public
      * @static
-     * @return void
+     * @return bool
      */
     public static function redis_remove($cache, $key)
     {
@@ -403,7 +403,7 @@ class Cache
      *
      * @access public
      * @static
-     * @return void
+     * @return bool
      */
     public static function memcached_set($cache, $key, $value, $ttl)
     {
@@ -415,7 +415,7 @@ class Cache
      *
      * @access public
      * @static
-     * @return void
+     * @return mixed
      */
     public static function memcached_get($cache, $key)
     {
@@ -427,7 +427,7 @@ class Cache
      *
      * @access public
      * @static
-     * @return void
+     * @return bool
      */
     public static function memcached_remove($cache, $key)
     {

@@ -29,18 +29,18 @@ class Load
     */
 
     /**
-     * Get value from config by $key.
+     * Get value from config by $name.
      *
-     * Optionally set default value if there are no config value by $key found.
+     * Optionally set default value if there are no config value by $name found.
      *
      * @deprecated
      * @access public
      * @static
-     * @param  string     $key
+     * @param  string     $name
      * @param  mixed|null $default (default: null)
      * @return mixed      Returns mixed data
      */
-    public static function &get($key, $default = null)
+    public static function &get($name, $default = null)
     {
         return (isset(self::$config[$name]) ? self::$config[$name] : $default);
     }
@@ -72,7 +72,7 @@ class Load
      * @param  string $name
      * @param  mixed  $value
      * @param  bool   $owerwrite (default: true)
-     * @return void
+     * @return mixed
      */
     public static function merge($name, $value, $owerwrite = true)
     {
@@ -121,7 +121,7 @@ class Load
      * @author http://php.net/manual/en/function.uniqid.php#94959
      * @access public
      * @static
-     * @return void
+     * @return string
      */
     public static function uuid4()
     {
@@ -152,7 +152,7 @@ class Load
      * @see Load::uuid4()
      * @access public
      * @static
-     * @return void
+     * @return string
      */
     public static function randomHash()
     {
@@ -209,7 +209,7 @@ class Load
         $data['filename'] = (empty($randomize) ? implode('.', $data['filename']) : self::randomHash());
 
         if (strlen($data['filename']) < $levels_deep * $directory_name_length) {
-            throw new Exception(
+            throw new \Exception(
                 '
                     Filename length too small to satisfy
                     how much sub-directories and how long
@@ -431,10 +431,10 @@ class Load
      *
      * @access public
      * @static
-     * @param  strign|array $files
-     * @param  array        &$data  (default: [])
+     * @param  string|array $files
+     * @param  array        $data  (default: [])
      * @param  bool         $return (default: false)
-     * @return void|string
+     * @return string|bool
      */
     public static function view($files, &$data = [], $return = false)
     {

@@ -50,7 +50,7 @@ class i18n
      *
      * (default value: null)
      *
-     * @var array
+     * @var string
      * @access public
      * @static
      */
@@ -146,7 +146,7 @@ class i18n
      * @static
      * @param  array $country
      * @param  string $language
-     * @return void
+     * @return string
      */
     public static function urlPrefix($country, $language)
     {
@@ -214,6 +214,7 @@ class i18n
         self::$country_code = &self::$current_country['code'];
         self::$language_code = reset(self::$current_country['languages']);
 
+        $found_country_language = false;
         if ($country !== null && $language !== null) {
             foreach (self::$countries as &$country_item) {
                 if ($country_item['code'] == $country) {
@@ -230,7 +231,6 @@ class i18n
             }
         } else {
             // Search for current country in URI
-            $found_country_language = false;
             foreach (self::$countries as &$country_item) {
                 foreach ($country_item['languages'] as &$language_item) {
                     $test = self::urlPrefix($country_item, $language_item);
@@ -318,7 +318,7 @@ class i18n
             }
         } else {
             $items = self::cacheRead($language_key);
-            if (is_array($items) === false) {
+            if (is_array($items) != true) {
                 self::cacheInvalidate($language_key);
                 self::load();
                 return;
@@ -362,7 +362,7 @@ class i18n
         if ($language_key === null) {
             $language_key = self::$language_key;
         } else if (!isset(self::$cache[$language_key])) {
-            self::load($language_key, true);
+            self::load($language_key);
         }
 
         if (empty(self::$cache[$language_key][$text])) { // A note: using isset returns false when value NULL is returned from postgresql
@@ -501,7 +501,8 @@ class i18n
      *
      * @access public
      * @static
-     * @param  object $items Items to set
+     * @param  string $language_key Language key
+     * @param  object $res Items to set
      * @return void
      */
     public static function cacheWrite($language_key, $res = null)
@@ -539,7 +540,7 @@ class i18n
      *
      * @access public
      * @static
-     * @return array Returns array of translations
+     * @return array|bool Returns array of translations
      */
     public static function &cacheRead($language_key)
     {

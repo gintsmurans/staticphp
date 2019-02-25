@@ -52,33 +52,8 @@ if (php_sapi_name() === 'cli') {
 // Set microtime
 $microtime = microtime(true);
 
-// Re-Define DS as DIRECTORY_SEPARATOR
-define('DS', DIRECTORY_SEPARATOR);
-
-// Autoload function
-spl_autoload_register(
-    function ($classname) {
-        $classname = str_replace('\\', DS, $classname);
-        $classname = ltrim($classname, DS);
-
-        if (is_file(APP_MODULES_PATH.$classname.'.php')) {
-            require APP_MODULES_PATH.$classname.'.php';
-        }
-        elseif (is_file(APP_PATH.$classname.'.php')) {
-            require APP_PATH.$classname.'.php';
-        }
-        elseif (is_file(SYS_MODULES_PATH.$classname.'.php')) {
-            require SYS_MODULES_PATH.$classname.'.php';
-        }
-        elseif (is_file(SYS_PATH.$classname.'.php')) {
-            require SYS_PATH.$classname.'.php';
-        }
-        elseif (is_file(BASE_PATH.$classname.'.php')) {
-            require BASE_PATH.$classname.'.php';
-        }
-    },
-    true
-);
+// Autoload
+require_once SYS_MODULES_PATH.'Core/Helpers/Autoload.php';
 
 // Load default config file and routing
 Config::load(['Config', 'Routing']);
@@ -112,11 +87,9 @@ register_shutdown_function('sp_error_shutdown_handler');
 
 // Load twig
 if (Config::get('disable_twig') !== true) {
-    if (is_file(BASE_PATH.'Vendor/twig/twig/lib/Twig/Token.php') !== true) {
+    if (is_file(BASE_PATH.'vendor/twig/twig/lib/Twig/Token.php') !== true) {
         throw new Exception('Twig Not Found! If you installed StaticPHP manually, not using composer, please see README.md to where to place the twig library.');
     }
-
-    require BASE_PATH.'Vendor/autoload.php';
 
     Config::$items['view_loader'] = new Twig_Loader_Filesystem([APP_MODULES_PATH, APP_PATH, SYS_MODULES_PATH.'Core/Views']);
     Config::$items['view_engine'] = new Twig_Environment(Config::$items['view_loader'], array(

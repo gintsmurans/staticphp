@@ -15,7 +15,8 @@
     "css:build": "node-sass --output-style compressed --sourceMap true Application/Public/assets/index.scss Application/Public/assets/index.css",
     "css:watch": "nodemon -e scss -x \"npm run css:build\"",
     "copy-fonts": "mkdir -p Application/Public/assets/fonts/font-awesome; mkdir -p Application/Public/assets/fonts/source-sans-pro; cp -r node_modules/\\@fortawesome/fontawesome-free/webfonts/* Application/Public/assets/fonts/font-awesome/; cp -r node_modules/npm-font-source-sans-pro/fonts/* Application/Public/assets/fonts/source-sans-pro/",
-    "docs": "./Vendor/bin/apigen generate --destination Application/Public/docs Application/ System/"
+    "docs": "./vendor/bin/apigen generate --destination Application/Public/docs Application/ System/",
+    "phpstan": "./vendor/bin/phpstan analyse --level 4 --autoload-file=./System/Modules/Core/Helpers/Autoload.php ./Application ./System"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",

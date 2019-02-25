@@ -22,7 +22,7 @@ class Db
     /**
      * Cache for last statment.
      *
-     * @var resource
+     * @var \PDOStatement
      * @access private
      * @static
      */
@@ -53,7 +53,7 @@ class Db
      * @static
      * @param  string   $name   (default: 'default')
      * @param  mixed    $config (default: null)
-     * @return resource Returns pdo instance.
+     * @return resource|bool Returns pdo instance.
      */
     public static function init($name = 'default', $config = null)
     {
@@ -112,14 +112,14 @@ class Db
      * @param  string       $query
      * @param  mixed[]      $data  (default: null)
      * @param  string       $name  (default: 'default')
-     * @return PDOStatement Returns statement created by query.
+     * @return \PDOStatement|bool Returns statement created by query.
      */
     public static function query($query, $data = null, $name = 'default')
     {
         $db_link = &self::$db_links[$name]['link'];
 
         if (empty($query)) {
-            return null;
+            return false;
         }
 
         if (empty($db_link)) {
@@ -202,10 +202,13 @@ class Db
      * @param  string       $table
      * @param  mixed        $data
      * @param  string       $name  (default: 'default')
-     * @return PDOStatement Returns statement created by query.
+     * @return \PDOStatement Returns statement created by query.
      */
     public static function insert($table, $data, $name = 'default')
     {
+        $keys = [];
+        $values = [];
+        $params = [];
         foreach ((array) $data as $key => $value) {
             if ($key[0] == '!') {
                 $keys[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column'];
@@ -236,12 +239,13 @@ class Db
      * @param  mixed        $data
      * @param  mixed        $where
      * @param  string       $name  (default: 'default')
-     * @return PDOStatement Returns statement created by query.
+     * @return \PDOStatement Returns statement created by query.
      */
     public static function update($table, $data, $where, $name = 'default')
     {
         // Make SET
         $set = [];
+        $params = [];
         foreach ((array) $data as $key => $value) {
             if ($key[0] == '!') {
                 $set[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column']." = {$value}";
@@ -333,7 +337,7 @@ class Db
      * @access public
      * @static
      * @param  string $name (default: 'default')
-     * @return PDO    Returns php's PDO object.
+     * @return \PDO    Returns php's PDO object.
      */
     public static function &dbLink($name = 'default')
     {
@@ -345,7 +349,7 @@ class Db
      *
      * @access public
      * @static
-     * @return PDOStatement Returns statement created by query.
+     * @return \PDOStatement Returns statement created by query.
      */
     public static function &lastStatement()
     {

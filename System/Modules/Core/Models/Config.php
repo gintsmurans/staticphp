@@ -26,13 +26,13 @@ class Config
     */
 
     /**
-     * Get value from config by $key.
+     * Get value from config by $name.
      *
      * Optionally set default value if there are no config value by $key found.
      *
      * @access public
      * @static
-     * @param  string     $key
+     * @param  string     $name
      * @param  mixed|null $default (default: null)
      * @return mixed      Returns mixed data
      */
@@ -69,7 +69,7 @@ class Config
      * @param  string $name
      * @param  mixed  $value
      * @param  bool   $owerwrite (default: true)
-     * @return void
+     * @return mixed
      */
     public static function merge($name, $value, $owerwrite = true)
     {

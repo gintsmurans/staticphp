@@ -20,8 +20,8 @@ class Welcome extends Controller
      *
      * @access public
      * @static
-     * @param  string & $class
-     * @param  string & $method
+     * @param  string $class
+     * @param  string $method
      * @return void
      */
     public static function construct($class = null, $method = null)
