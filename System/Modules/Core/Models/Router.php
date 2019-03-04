@@ -882,9 +882,13 @@ class Router
             }
             // Call __callStatic
             elseif ($ref->hasMethod('__callStatic') === true) {
-                // Add method to arguments
                 $arguments = self::$segments;
-                array_unshift($arguments, $method);
+
+                // Add method to arguments
+                $add_method = (bool)$ref->getStaticPropertyValue('add_method_to_parameters', true);
+                if ($add_method === true) {
+                    array_unshift($arguments, $method);
+                }
 
                 $pad_args = (int)$ref->getStaticPropertyValue('pad_call_static_parameters', 0);
                 if ($pad_args > 0 && count($arguments) < $pad_args) {
