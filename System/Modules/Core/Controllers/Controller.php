@@ -5,6 +5,8 @@ namespace Core\Controllers;
 use Core\Models\Load;
 use Core\Models\Config;
 use Core\Models\Router;
+use Core\Models\Timers;
+use Core\Models\Logger;
 
 
 /**
@@ -23,10 +25,15 @@ class Controller
     public static function construct($class = null, $method = null)
     {
         // Get full urls to current controller and its method
-        $site_url = Router::siteUrl();
-        self::$method_url = $site_url.Router::$method_url.'/';
-        self::$controller_url = dirname(self::$method_url).'/';
         self::$module_url = Router::siteUrl(strtolower(preg_replace('/(.)([A-Z])/', '$1-$2', Router::$module))).'/';
+        self::$method_url = Router::siteUrl(Router::$method_url).'/';
+
+        // Handle empty method calls
+        $method = self::$method_url;
+        if (substr($method, -1, 1) == '/') {
+            $method = substr($method, 0, -1);
+        }
+        self::$controller_url = dirname("{$method}safe").'/';
 
         // Pass these to the view, too
         Config::$items['view_data']['module_url'] = self::$module_url;
