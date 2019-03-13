@@ -5,14 +5,14 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>404 Not Found</title>
+        <title>404 {{ title ? title|raw : 'Not Found' }}</title>
 
         <link href="/assets/index.css" rel="stylesheet" type="text/css" />
     </head>
-    <body role="document">
-        <div class="container" role="main">
+    <body class="error-page">
+        <div class="container">
             <br /><br /><br />
-            <h1 class="text-center">404 Not Found</h1>
+            <h1 class="text-center">404 {{ title ? title|raw : 'Not Found' }}</h1>
             <p id="description" class="text-center">{{ description|raw }}</p>
         </div>
         <script>

@@ -146,7 +146,7 @@ class Db
 
                 $replace = '?';
                 $q_count = substr_count($query, $replace);
-                for ($i = 0; $i <= $q_count; ++$i) {
+                for ($i = 0; $i < $q_count; ++$i) {
                     $pos = strpos($log, $replace);
                     if ($pos !== false) {
                         $log = substr_replace($log, $log_data[$i], $pos, strlen($replace));

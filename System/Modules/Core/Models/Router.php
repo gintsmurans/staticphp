@@ -340,9 +340,13 @@ class Router
      */
     public static function error($error_code, $error_string = '', $description = '')
     {
-        header('HTTP/1.0 '.$error_code.' '.$error_string);
-        $data = ['description' => $description];
-        Load::view("Errors/E{$error_code}.html", $data);
+        $filename = 'Error';
+        if (!empty($error_code)) {
+            header('HTTP/1.0 '.$error_code.' '.$error_string);
+            $filename = "E{$error_code}";
+        }
+        $data = ['code' => $error_code, 'title' => $error_string, 'description' => $description];
+        Load::view("Errors/{$filename}.html", $data);
         exit(10);
     }
 
@@ -838,6 +842,11 @@ class Router
             $namespace = self::$namespace;
         }
 
+        // Set current module if $module parameter is empty
+        if (empty($module)) {
+            $module = self::$module;
+        }
+
         // Load current class if $class parameter is empty
         if (empty($class)) {
             $class = self::$class;
@@ -853,6 +862,12 @@ class Router
             foreach (Config::$items['before_controller'] as $tmp) {
                 call_user_func_array($tmp, [&$file, &$module, &$class, &$method]);
             }
+        }
+
+        // Check if module has a bootstrap file
+        $bootstrapFile = APP_MODULES_PATH.$module.'/Helpers/Bootstrap.php';
+        if (is_file($bootstrapFile)) {
+            require $bootstrapFile;
         }
 
         // Check for $file
