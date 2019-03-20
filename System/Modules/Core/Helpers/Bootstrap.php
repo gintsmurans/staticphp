@@ -91,45 +91,45 @@ if (Config::get('disable_twig') !== true) {
         throw new Exception('Twig Not Found! If you installed StaticPHP manually, not using composer, please see README.md to where to place the twig library.');
     }
 
-    Config::$items['view_loader'] = new Twig_Loader_Filesystem([APP_MODULES_PATH, APP_PATH, SYS_MODULES_PATH.'Core/Views']);
-    Config::$items['view_engine'] = new Twig_Environment(Config::$items['view_loader'], array(
+    Config::$items['view_loader'] = new \Twig\Loader\FilesystemLoader([APP_MODULES_PATH, APP_PATH, SYS_MODULES_PATH.'Core/Views']);
+    Config::$items['view_engine'] = new \Twig\Environment(Config::$items['view_loader'], array(
         'cache' => Config::get('debug') == true ? false : APP_PATH.'Cache/Views/',
         'debug' => Config::get('debug'),
     ));
 
     // Register default filters and functions
     // Site url filter
-    $filter = new Twig_SimpleFilter('siteUrl', function ($url = null, $prefix = null, $current_prefix = true) {
+    $filter = new \Twig\TwigFilter('siteUrl', function ($url = null, $prefix = null, $current_prefix = true) {
         return Router::siteUrl($url, $prefix, $current_prefix);
     });
     Config::get('view_engine')->addFilter($filter);
 
     // Site url function
-    $function = new Twig_SimpleFunction('siteUrl', function ($url = null, $prefix = null, $current_prefix = true) {
+    $function = new \Twig\TwigFunction('siteUrl', function ($url = null, $prefix = null, $current_prefix = true) {
         return Router::siteUrl($url, $prefix, $current_prefix);
     });
     Config::get('view_engine')->addFunction($function);
 
     // Start timer function
-    $function = new Twig_SimpleFunction('startTimer', function () {
+    $function = new \Twig\TwigFunction('startTimer', function () {
         Timers::startTimer();
     });
     Config::get('view_engine')->addFunction($function);
 
     // Stop timer function
-    $function = new Twig_SimpleFunction('stopTimer', function ($name) {
+    $function = new \Twig\TwigFunction('stopTimer', function ($name) {
         Timers::stopTimer($name);
     });
     Config::get('view_engine')->addFunction($function);
 
     // Mark time function
-    $function = new Twig_SimpleFunction('markTime', function ($name) {
+    $function = new \Twig\TwigFunction('markTime', function ($name) {
         Timers::markTime($name);
     });
     Config::get('view_engine')->addFunction($function);
 
     // Debug output function
-    $function = new Twig_SimpleFunction('debugOutput', function () {
+    $function = new \Twig\TwigFunction('debugOutput', function () {
         return Logger::debugOutput();
     });
     Config::get('view_engine')->addFunction($function);

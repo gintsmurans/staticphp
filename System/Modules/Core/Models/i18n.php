@@ -424,14 +424,14 @@ class i18n
         Config::$items['view_data']['i18n']['countries'] = &self::$countries;
 
         // Register filters
-        $filter = new \Twig_SimpleFilter('translate', function ($text, $replace = [], $escape = null, $language_key = null) {
+        $filter = new \Twig\TwigFilter('translate', function ($text, $replace = [], $escape = null, $language_key = null) {
             return \Core\Models\i18n::translate($text, $replace, $escape, $language_key);
         });
         Config::$items['view_engine']->addFilter($filter);
 
 
         // Register functions
-        $filter = new \Twig_SimpleFunction('_', function ($text, $replace = [], $escape = null, $language_key = null) {
+        $filter = new \Twig\TwigFunction('_', function ($text, $replace = [], $escape = null, $language_key = null) {
             return \Core\Models\i18n::translate($text, $replace, $escape, $language_key);
         });
         Config::$items['view_engine']->addFunction($filter);

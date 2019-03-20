@@ -534,17 +534,17 @@ class Fv
     public static function registerTwig()
     {
         // Register filters
-        $filter = new \Twig_SimpleFilter('fvPlain', function ($value, $valid = '') {
+        $filter = new \Twig\TwigFilter('fvPlain', function ($value, $valid = '') {
             return \Core\Models\Fv::setPlain($value);
         });
         Config::$items['view_engine']->addFilter($filter);
 
-        $filter = new \Twig_SimpleFilter('fvFriendly', function ($value) {
+        $filter = new \Twig\TwigFilter('fvFriendly', function ($value) {
             return \Core\Models\Fv::setFriendly($value);
         });
         Config::$items['view_engine']->addFilter($filter);
 
-        $filter = new \Twig_SimpleFilter('fvXSS', function ($value, $valid = '') {
+        $filter = new \Twig\TwigFilter('fvXSS', function ($value, $valid = '') {
             return \Core\Models\Fv::xss($value);
         });
         Config::$items['view_engine']->addFilter($filter);
