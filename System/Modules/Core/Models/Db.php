@@ -303,6 +303,21 @@ class Db
         return $db_link->beginTransaction();
     }
 
+
+    /**
+     * Check wheather current context is in transaction
+     * @access public
+     * @static
+     * @param string $name (default: 'default')
+     * @return bool Returns true on success or false on failure.
+     */
+    public static function inTransaction($name = 'default')
+    {
+        $db_link = &self::$db_links[$name]['link'];
+        return $db_link->inTransaction();
+    }
+
+
     /**
      * Commit a transaction on a database link by $name.
      *
