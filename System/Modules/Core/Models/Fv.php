@@ -175,12 +175,17 @@ class Fv
         $this->errors_all[] = &$tmp;
         $this->errors[$name][] = &$tmp;
 
+        if (is_string($type) === false) {
+            $type = 'default';
+        }
+
         $tmp = strtr(
             (
-                !empty($this->rules[$name]['errors'][$type]) ?
-                $this->rules[$name]['errors'][$type] : (
-                    empty($this->default_errors[$type]) ? '' : $this->default_errors[$type]
-                )
+                !empty($this->rules[$name]['errors'][$type])
+                    ? $this->rules[$name]['errors'][$type]
+                    : (
+                        empty($this->default_errors[$type]) ? '' : $this->default_errors[$type]
+                    )
             ),
             ['!name' => $this->rules[$name]['title'] ?? $name, '!value' => $value]
         );
