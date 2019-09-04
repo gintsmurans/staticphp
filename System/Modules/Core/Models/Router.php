@@ -798,9 +798,16 @@ class Router
             self::findControllerInSegments();
 
             if (empty(self::$file)) {
+                // If there is still no file found, try same filename as last segment
+                self::$segments[] = end(self::$segments);
+
+                self::findControllerInSegments();
+            }
+
+            if (empty(self::$file)) {
                 // Add default controller to see whether last argument is a folder and we should load default controller
                 // from this folder
-                self::$segments[] = self::$class;
+                self::$segments[count(self::$segments) - 1] = self::$class;
 
                 self::findControllerInSegments();
             }
