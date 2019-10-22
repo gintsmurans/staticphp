@@ -122,6 +122,9 @@ function sp_send_error_email($e)
  */
 function sp_format_exception($e, $full = false)
 {
+    // Current time
+    $datetime = date('d.m.Y H:i:s');
+
     // Current url
     $url  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://');
     $url .= (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '[unknown host name]');
@@ -148,7 +151,7 @@ function sp_format_exception($e, $full = false)
 
     // Format message
     if (!empty($full)) {
-        return "<strong>URL:</strong><br />{$url}<br /><br /><strong>Error:</strong><br />{$message}<br /><br /><strong>Sesssion Info:</strong><br />{$session}<br /><br /><strong>Post Info:</strong><br />{$post}<br /><br /><strong>Server:</strong><br />{$server}";
+        return "<strong>META</strong><br />{$datetime}<br /><br /><strong>URL</strong><br />{$url}<br /><br /><strong>Error</strong><br />{$message}<br /><br /><strong>Sesssion Info</strong><br />{$session}<br /><br /><strong>Post Info</strong><br />{$post}<br /><br /><strong>Server</strong><br />{$server}";
     } else {
         return "<pre><strong>Error:</strong><br />{$message}<br /></pre>";
     }

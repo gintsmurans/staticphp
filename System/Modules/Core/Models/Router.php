@@ -141,6 +141,17 @@ class Router
     public static $segments_url = null;
 
     /**
+     * Hold default route
+     *
+     * (default value: null)
+     *
+     * @var string[]
+     * @access public
+     * @static
+     */
+    public static $default_route = null;
+
+    /**
      * Module responsible for current request handling.
      *
      * (default value: null)
@@ -784,11 +795,12 @@ class Router
         }
 
         // Set default class and method
-        self::$namespace  = $tmp['namespace'];
-        self::$module     = $tmp['module'];
-        self::$controller = $tmp['controller'];
-        self::$class      = $tmp['class'];
-        self::$method     = $tmp['method'];
+        self::$default_route = $tmp;
+        self::$namespace     = $tmp['namespace'];
+        self::$module        = $tmp['module'];
+        self::$controller    = $tmp['controller'];
+        self::$class         = $tmp['class'];
+        self::$method        = $tmp['method'];
 
         if (count(self::$segments) === 0) {
             // Defaults
@@ -885,8 +897,7 @@ class Router
             // Create new reflection object from the controller class
             try {
                 $ref = new \ReflectionClass($class);
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 throw new RouterException('File "'.$file.'" was loaded, but the class '.$class.' could NOT be found');
             }
 
@@ -901,14 +912,14 @@ class Router
             if ($ref->hasMethod($method) === true) {
                 $class_method = $ref->getMethod($method);
                 $method_response = $class_method->invokeArgs(null, self::$segments);
-            }
-            // Call __callStatic
-            elseif ($ref->hasMethod('__callStatic') === true) {
+            } elseif ($ref->hasMethod('__callStatic') === true) {
+                // Call __callStatic
                 $arguments = self::$segments;
 
                 // Add method to arguments
                 $add_method = (bool)$ref->getStaticPropertyValue('add_method_to_parameters', true);
-                if ($add_method === true) {
+                $add_default_method = (bool)$ref->getStaticPropertyValue('add_default_method_to_parameters', false);
+                if ($add_method === true && ($add_default_method === true || $method !== self::$default_route['method'])) {
                     array_unshift($arguments, $method);
                 }
 
@@ -919,9 +930,8 @@ class Router
 
                 // Invoke __callStatic
                 $method_response = $ref->getMethod('__callStatic')->invoke(null, $method, $arguments);
-            }
-            // Error - method not found
-            else {
+            } else {
+                // Error - method not found
                 throw new RouterException('Method "'.$method.'" of class "'.$class.'" could not be found');
             }
 
