@@ -329,6 +329,22 @@ class i18n
     }
 
     /**
+     *  Returns all cached string.
+     *
+     * @access public
+     * @static
+     * @return void
+     */
+    public static function cache($language_key = null)
+    {
+        if ($language_key === null) {
+            $language_key = self::$language_key;
+        }
+
+        return self::$cache[$language_key] ?? [];
+    }
+
+    /**
      *  Not sure.
      *
      * @access public

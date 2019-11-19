@@ -324,6 +324,12 @@ class Fv
     }
 
 
+    public static function setIntOrNull($value)
+    {
+        $value = (int)$value;
+        return (empty($value) ? null : $value);
+    }
+
 
 
     /**

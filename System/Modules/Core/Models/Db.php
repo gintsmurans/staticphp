@@ -204,7 +204,7 @@ class Db
      * @param  string       $name  (default: 'default')
      * @return \PDOStatement Returns statement created by query.
      */
-    public static function insert($table, $data, $name = 'default')
+    public static function insert($table, $data, $name = 'default', $returning = null)
     {
         $keys = [];
         $values = [];
@@ -225,7 +225,9 @@ class Db
         $values = implode(', ', $values);
 
         // Run Query
-        return self::query("INSERT INTO {$table} ({$keys}) VALUES ({$values})", $params, $name);
+        $query = self::query("INSERT INTO {$table} ({$keys}) VALUES ({$values}){$returning}", $params, $name);
+
+        return (empty($returning) ? $query : $query->fetch());
     }
 
     /**
@@ -265,10 +267,23 @@ class Db
             }
 
             if ($key[0] == '!') {
-                $cond[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column']." {$c} {$value}";
+                if (is_array($value)) {
+                    $c = 'NOT IN';
+                    $value = '('.implode(',', $value).')';
+                    $cond[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column']." {$c} {$value}";
+                } else {
+                    $cond[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column']." {$c} ?";
+                    $params[] = $value;
+                }
             } else {
-                $cond[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column']." {$c} ?";
-                $params[] = $value;
+                if (is_array($value)) {
+                    $c = 'IN';
+                    $value = '('.implode(',', $value).')';
+                    $cond[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column']." {$c} {$value}";
+                } else {
+                    $cond[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column']." {$c} ?";
+                    $params[] = $value;
+                }
             }
         }
 
