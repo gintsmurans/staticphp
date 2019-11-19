@@ -143,15 +143,11 @@ class TableFilters
      *
      * @access public
      * @param  string   $filter
-     * @param  callable $callback
+     * @param  callable|null $callback
      * @return void
      */
-    public function parse($filter_str, $callback)
+    public function parse($filter_str, $callback = null)
     {
-        if (is_callable($callback) == false) {
-            throw new \Exception('Callback must be executable');
-        }
-
         $filter = [];
         if (!empty($filter_str)) {
             $this->filter_str = $filter_str;
@@ -167,7 +163,14 @@ class TableFilters
 
         if (!empty($filter)) {
             foreach ($filter as $key => $value) {
-                $data = $callback($key, $value);
+                $data = [];
+                $filter_column = &$this->filter_column_map[$key];
+                if (!empty($filter_column['filter_type']) && !empty($filter_column['filter_by'])) {
+                    $data = self::runFilter($filter_column['filter_type'], $filter_column['filter_by'], $value);
+                } else {
+                    $data = $callback($key, $value);
+                }
+
                 if (isset($data['query'])) {
                     $this->filter_query[] = $data['query'];
                 }
@@ -514,5 +517,99 @@ class TableFilters
     public function tableId()
     {
         return $this->table_id;
+    }
+
+
+    /**
+     * Run local filter funcation based on $filter_type and return query for $filter_by table column.
+     *
+     * @access public
+     * @param  string   $filter_type
+     * @param  string   $filter_by
+     * @param  mixed    $value
+     * @return string[] Array of resulting query, params and data(string[])
+     */
+    public static function runFilter($filter_type, $filter_by, $value)
+    {
+        $return = [];
+        switch ($filter_type) {
+            case 'int':
+                $value = (int)$value;
+                $return['query'] = "{$filter_by} = ?";
+                $return['param'] = $value;
+                $return['data']  = [
+                    'title' => $value,
+                    'value' => $value,
+                ];
+            break;
+
+            case 'float':
+                $value = (float)$value;
+                $return['query'] = "{$filter_by} = ?";
+                $return['param'] = $value;
+                $return['data']  = [
+                    'title' => $value,
+                    'value' => $value,
+                ];
+            break;
+
+            case 'text':
+                $return['query'] = "{$filter_by} ILIKE ?";
+                $return['param'] = '%'.$value.'%';
+                $return['data']  = [
+                    'title' => $value,
+                    'value' => $value,
+                ];
+            break;
+
+            case 'date':
+                $field = $filter_by;
+                $start = preg_replace('/^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$/', '$3-$2-$1', $value);
+                if (preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $start)) {
+                    $return['query'] = "{$field} >= ? AND {$field} <= ? ";
+                    $return['param'] = [strtotime("{$start} 00:00:00"), strtotime("{$stop} 23:59:59")];
+                    $return['data']  = [
+                        'title' => $value,
+                        'value' => $value,
+                    ];
+                }
+            break;
+
+            case 'datetime':
+                $field = $filter_by;
+                $start = preg_replace('/^([0-9]{2})\.([0-9]{2})\.([0-9]{4}) ([0-9]{2}):([0-9]{2})$/', '$3-$2-$1 $4:$5', $value);
+                if (preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2})/', $start)) {
+                    $return['query'] = "{$field} = ?";
+                    $return['param'] = [strtotime("{$start}")];
+                    $return['data']  = [
+                        'title' => $value,
+                        'value' => $value,
+                    ];
+                }
+            break;
+
+            case 'dateinterval':
+                $field = $filter_by;
+                $start = preg_replace('/^([0-9]{2})\.([0-9]{2})\.([0-9]{4})?.*/', '$3-$2-$1', $value);
+                $stop = preg_replace('/.*([0-9]{2})\.([0-9]{2})\.([0-9]{4})$/', '$3-$2-$1', $value);
+                if (preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $start) && preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $stop)) {
+                    $return['query'] = "{$field} >= ? AND {$field} <= ? ";
+                    $return['param'] = [strtotime("{$start} 00:00:00"), strtotime("{$stop} 23:59:59")];
+                    $return['data']  = [
+                        'title' => $value,
+                        'value' => $value,
+                    ];
+                } else if (preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $start)) {
+                    $return['query'] = "{$field} >= ? AND {$field} <= ? ";
+                    $return['param'] = [strtotime("{$start} 00:00:00"), strtotime("{$start} 23:59:59")];
+                    $return['data']  = [
+                        'title' => $value,
+                        'value' => $value,
+                    ];
+                }
+            break;
+        }
+
+        return $return;
     }
 }
