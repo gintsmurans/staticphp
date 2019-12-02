@@ -164,10 +164,13 @@ class TableFilters
         if (!empty($filter)) {
             foreach ($filter as $key => $value) {
                 $data = [];
-                $filter_column = &$this->filter_column_map[$key];
+                $filter_column = null;
+                if (isset($this->filter_column_map[$key])) {
+                    $filter_column = $this->filter_column_map[$key];
+                }
                 if (!empty($filter_column['filter_type']) && !empty($filter_column['filter_by'])) {
                     $data = self::runFilter($filter_column['filter_type'], $filter_column['filter_by'], $value);
-                } else {
+                } elseif ($callback !== null) {
                     $data = $callback($key, $value);
                 }
 
@@ -184,7 +187,17 @@ class TableFilters
                     $this->filter_params_by_key[$key] = $data['param'];
                 }
 
-                if (isset($data['data'])) {
+                if (isset($filter_column['filter_data'])) {
+                    if (is_callable($filter_column['filter_data'])) {
+                        $test = $filter_column['filter_data']($value);
+                        if ($test !== null) {
+                            $this->filter_data[$key] = $test;
+                        }
+                    } elseif (is_array($filter_column['filter_data'])) {
+                        $this->filter_data[$key] = $filter_column['filter_data'];
+                    }
+                }
+                else if (isset($data['data'])) {
                     $this->filter_data[$key] = $data['data'];
                 }
             }
@@ -554,8 +567,14 @@ class TableFilters
             break;
 
             case 'text':
-                $return['query'] = "{$filter_by} ILIKE ?";
-                $return['param'] = '%'.$value.'%';
+                if ($value[0] == '^') {
+                    $value = substr($value, 1);
+                    $return['query'] = "{$filter_by} = ?";
+                    $return['param'] = $value;
+                } else {
+                    $return['query'] = "{$filter_by} ILIKE ?";
+                    $return['param'] = '%'.$value.'%';
+                }
                 $return['data']  = [
                     'title' => $value,
                     'value' => $value,

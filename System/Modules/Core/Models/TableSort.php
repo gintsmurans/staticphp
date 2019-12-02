@@ -167,7 +167,7 @@ class TableSort
         }
 
         $link_addon = (empty($needle_column['sort_link_attr']) ? '' : $needle_column['sort_link_attr']);
-        $link = '<a href="'.$url.'" '.$link_addon.'>'.$needle_column['title'].'</a>'.$html;
+        $link = '<div class="hidden-print"><a href="'.$url.'" '.$link_addon.'>'.$needle_column['title'].'</a></div><div class="visible-print">'.$needle_column['title'].'</div>'.$html;
         return $link;
     }
 
