@@ -169,7 +169,8 @@ class TableFilters
                     $filter_column = $this->filter_column_map[$key];
                 }
                 if (!empty($filter_column['filter_type']) && !empty($filter_column['filter_by'])) {
-                    $data = self::runFilter($filter_column['filter_type'], $filter_column['filter_by'], $value);
+                    $filter_match = isset($filter_column['filter_match']) ? $filter_column['filter_match'] : 'default';
+                    $data = self::runFilter($filter_column['filter_type'], $filter_column['filter_by'], $value, $filter_match);
                 } elseif ($callback !== null) {
                     $data = $callback($key, $value);
                 }
@@ -542,7 +543,7 @@ class TableFilters
      * @param  mixed    $value
      * @return string[] Array of resulting query, params and data(string[])
      */
-    public static function runFilter($filter_type, $filter_by, $value)
+    public static function runFilter($filter_type, $filter_by, $value, $filter_match = 'default')
     {
         $return = [];
         switch ($filter_type) {
@@ -567,12 +568,19 @@ class TableFilters
             break;
 
             case 'text':
-                if ($value[0] == '^') {
-                    $value = substr($value, 1);
-                    $return['query'] = "{$filter_by} = ?";
+                if ($value[0] == '^' || $filter_match == 'exact') {
+                    if ($value[0] == '^') {
+                        $value = substr($value, 1);
+                    }
+                    if ($value[0] == '!') {
+                        $value = substr($value, 1);
+                        $return['query'] = "{$filter_by} != ?";
+                    } else {
+                        $return['query'] = "{$filter_by} = ?";
+                    }
                     $return['param'] = $value;
                 } else {
-                    $return['query'] = "{$filter_by} ILIKE ?";
+                    $return['query'] = "{$filter_by}::TEXT ILIKE ?";
                     $return['param'] = '%'.$value.'%';
                 }
                 $return['data']  = [
@@ -586,7 +594,7 @@ class TableFilters
                 $start = preg_replace('/^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$/', '$3-$2-$1', $value);
                 if (preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $start)) {
                     $return['query'] = "{$field} >= ? AND {$field} <= ? ";
-                    $return['param'] = [strtotime("{$start} 00:00:00"), strtotime("{$stop} 23:59:59")];
+                    $return['param'] = [strtotime("{$start} 00:00:00"), strtotime("{$start} 23:59:59")];
                     $return['data']  = [
                         'title' => $value,
                         'value' => $value,

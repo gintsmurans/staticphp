@@ -63,6 +63,15 @@ class ExtendedDateTime extends \DateTime
         $this->modify('sunday this week 23:59:59');
     }
 
+    public function startOfTheDay()
+    {
+        $this->modify('00:00:00');
+    }
+
+    public function endOfTheDay() {
+        $this->modify('23:59:59');
+    }
+
     public static function _startOfTheMonth($unix_time) {
         $tmp = new ExtendedDateTime("@{$unix_time}");
         $tmp->startOfTheMonth();
