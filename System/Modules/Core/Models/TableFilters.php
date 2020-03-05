@@ -503,13 +503,14 @@ class TableFilters
 
         foreach ($this->filter_column_map as $key => $column) {
             $show_column = true;
-            if (!empty($column['show_column'])) {
+            if (isset($column['show_column'])) {
                 if (is_callable($column['show_column'])) {
                     $show_column = $column['show_column']();
                 } else {
                     $show_column = (bool)$column['show_column'];
                 }
             }
+
             $test = $this->inputField($key);
             if ($test !== false && $show_column !== false) {
                 $attributes = (!empty($column['col_attr']) ? ' '.$column['col_attr'] : '');

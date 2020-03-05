@@ -44,7 +44,7 @@ function sp_error_shutdown_handler()
 {
     $last_error = error_get_last();
 
-    if ($last_error['type'] === E_ERROR || $last_error['type'] === E_PARSE) {
+    if (!empty($last_error) && ($last_error['type'] === E_ERROR || $last_error['type'] === E_PARSE)) {
         $e = new ErrorException($last_error['message'], 0, 0, $last_error['file'], $last_error['line']);
         sp_exception_handler($e);
     }

@@ -58,7 +58,7 @@ class Pages
             return '';
         }
 
-        $pages = '<nav><ul class="pagination">';
+        $pages = '<ul class="pagination">';
         $pages .= '<li class="page-item'.(self::$obj['active_page'] == 1 ? ' disabled' : '').'"><a class="page-link" href="'.self::$base_uri.'1'.'"><span aria-hidden="true">1</span><span class="sr-only">Previous</span></a></li>';
         $pages .= '<li class="page-item'.(self::$obj['active_page'] == 1 ? ' disabled' : '').'"><a class="page-link" href="'.self::$base_uri.self::$obj['prev_page'].'"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>';
 
@@ -72,7 +72,7 @@ class Pages
 
         $pages .= '<li class="page-item'.(self::$obj['active_page'] == self::$obj['page_count'] ? ' disabled' : '').'"><a class="page-link" href="'.self::$base_uri.self::$obj['next_page'].'"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>';
         $pages .= '<li class="page-item'.(self::$obj['active_page'] == self::$obj['page_count'] ? ' disabled' : '').'"><a class="page-link" href="'.self::$base_uri.self::$obj['page_count'].'"><span aria-hidden="true">'.self::$obj['page_count'].'</span><span class="sr-only">Last</span></a></li>';
-        $pages .= '</ul></nav>';
+        $pages .= '</ul>';
 
         return $pages;
     }

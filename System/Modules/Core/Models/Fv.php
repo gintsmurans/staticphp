@@ -237,6 +237,10 @@ class Fv
 
     public static function setClean($string)
     {
+        if (is_string($string) === false) {
+            return $string;
+        }
+
         $string = strip_tags($string);
         $string = stripslashes($string);
         $string = str_replace(['<', '>'], ['&lt;', '&gt;'], $string);

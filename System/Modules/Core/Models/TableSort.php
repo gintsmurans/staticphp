@@ -168,6 +168,7 @@ class TableSort
 
         $link_addon = (empty($needle_column['sort_link_attr']) ? '' : $needle_column['sort_link_attr']);
         $link = '<div class="hidden-print d-print-none"><a href="'.$url.'" '.$link_addon.'>'.$needle_column['title'].'</a></div><div class="visible-print d-none d-print-inline">'.$needle_column['title'].'</div>'.$html;
+        $link = '<div class="d-flex align-items-center">'.$link.'</div>';
         return $link;
     }
 
@@ -184,7 +185,7 @@ class TableSort
 
         foreach ($this->sort_column_map as $key => $column) {
             $show_column = true;
-            if (!empty($column['show_column'])) {
+            if (isset($column['show_column'])) {
                 if (is_callable($column['show_column'])) {
                     $show_column = $column['show_column']();
                 } else {
@@ -193,7 +194,6 @@ class TableSort
             }
 
             $test = $this->sortLink($key);
-
             if ($test !== false && $show_column !== false) {
                 $attributes = (!empty($column['col_attr']) ? ' '.$column['col_attr'] : '');
                 $html .= '<th'.$attributes.'>'.$test.'</th>';

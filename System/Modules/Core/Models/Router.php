@@ -614,7 +614,7 @@ class Router
         // Get some config variables
         $uri                 = Config::$items['request_uri'];
         $script_name         = Config::$items['script_name'];
-        $script_path         = trim(dirname($script_name), '/');
+        $script_path         = trim(dirname($script_name), '/.');
         self::$base_url      = Config::$items['base_url'];
         self::$requested_url = $uri;
 
