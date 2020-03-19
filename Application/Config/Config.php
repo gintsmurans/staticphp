@@ -111,7 +111,7 @@ $config['autoload_helpers'] = ['Defaults/Bootstrap'];
 |
 | Currently only "before controller" hook is supported and will be called right
 | before including controller file. It passes three parametrs as references - $file,
-| $class and $method, meaning callback can override current controller.
+| $module, $class and $method, meaning callback can override current controller.
 |--------------------------------------------------------------------------
 */
 $config['before_controller'] = [];
