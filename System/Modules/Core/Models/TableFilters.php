@@ -445,8 +445,12 @@ class TableFilters
             break;
 
             case 'select':
+            case 'select-multiple':
                 if (isset($column['options']) == false || is_array($column['options']) === false) {
                     throw new \Exception("Value for {$name} should be [key => value] array");
+                }
+                if ($column['type'] == 'select-multiple') {
+                    $attributes .= ' multiple="multiple" size="3" ';
                 }
 
                 $html = '<select class="'.$classes.'"'.$attributes.'>';
@@ -558,8 +562,20 @@ class TableFilters
                 ];
             break;
 
+            case 'multi-int':
+                $value = explode(',', $value);
+                $value = (array)$value;
+                $value = array_map('intval', $value);
+                $value_txt = implode(',', $value);
+                $return['query'] = "{$filter_by} IN ({$value_txt})";
+                $return['data']  = [
+                    'title' => $value,
+                    'value' => $value,
+                ];
+            break;
+
             case 'float':
-                $value = (float)$value;
+                $value = (float)str_replace(',', '.', $value);
                 $return['query'] = "{$filter_by} = ?";
                 $return['param'] = $value;
                 $return['data']  = [

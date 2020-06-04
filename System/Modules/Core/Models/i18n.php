@@ -420,6 +420,49 @@ class i18n
     }
 
 
+    /**
+     * Update translated $text by $key.
+     *
+     * @access public
+     * @static
+     * @param  string $key Key to update
+     * @param  array $text Text to update
+     * @param  null $language_key Language key for which to update
+     * @return string
+     */
+    public static function update($key, $text, $language_key = null)
+    {
+        if (empty(self::$config)) {
+            throw new \Exception('Init hasn\'t been called yet');
+        }
+
+        if ($language_key === null) {
+            $language_key = self::$language_key;
+        } else if (!isset(self::$cache[$language_key])) {
+            self::load($language_key);
+        }
+
+        if (!isset(self::$cache[$language_key][$key])) {
+            throw new \Exception("Key \"{$key}\" doesn't exist");
+        }
+
+        $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'].'.' : '');
+        $record = Db::fetch("SELECT id FROM {$db_scheme}i18n_keys WHERE key = ?", $key, self::$config['db_config']);
+        if (empty($record)) {
+            throw new \Exception("Key \"{$key}\" doesn't exist #2");
+        }
+
+        Db::query(
+            "UPDATE {$db_scheme}i18n_translations SET value = ? WHERE key_id = ?",
+            [$text, $record['id']],
+            self::$config['db_config']
+        );
+
+        // Clear cache
+        self::cacheInvalidate($language_key);
+    }
+
+
     /*
      * =============================================== Twig ============================================================
      */
