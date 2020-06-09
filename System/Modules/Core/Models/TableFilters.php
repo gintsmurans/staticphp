@@ -563,6 +563,10 @@ class TableFilters
             break;
 
             case 'multi-int':
+                if ($value == '') {
+                    return;
+                }
+
                 $value = explode(',', $value);
                 $value = (array)$value;
                 $value = array_map('intval', $value);
