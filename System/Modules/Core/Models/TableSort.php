@@ -226,6 +226,11 @@ class TableSort
     public function sortBy()
     {
         $sort_id = $this->sort_column_map['_id'];
+        $sort_by = $this->sort_column_map[$sort_id]['sort_by'];
+        if (is_callable($sort_by)) {
+            return $sort_by($this->sort_column_map[$sort_id]['direction']);
+        }
+
         return $this->sort_column_map[$sort_id]['sort_by'];
     }
 
@@ -239,6 +244,10 @@ class TableSort
     public function sortDirection()
     {
         $sort_id = $this->sort_column_map['_id'];
+        $sort_by = $this->sort_column_map[$sort_id]['sort_by'];
+        if (is_callable($sort_by)) {
+            return ''; // Custom sort function
+        }
         return $this->sort_column_map[$sort_id]['direction'];
     }
 }
