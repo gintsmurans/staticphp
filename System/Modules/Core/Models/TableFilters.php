@@ -169,8 +169,12 @@ class TableFilters
                     $filter_column = $this->filter_column_map[$key];
                 }
                 if (!empty($filter_column['filter_type']) && !empty($filter_column['filter_by'])) {
-                    $filter_match = isset($filter_column['filter_match']) ? $filter_column['filter_match'] : 'default';
-                    $data = self::runFilter($filter_column['filter_type'], $filter_column['filter_by'], $value, $filter_match);
+                    if (is_callable($filter_column['filter_by'])) {
+                        $data = $filter_column['filter_by']($value);
+                    } else {
+                        $filter_match = isset($filter_column['filter_match']) ? $filter_column['filter_match'] : 'default';
+                        $data = self::runFilter($filter_column['filter_type'], $filter_column['filter_by'], $value, $filter_match);
+                    }
                 } elseif ($callback !== null) {
                     $data = $callback($key, $value);
                 }
