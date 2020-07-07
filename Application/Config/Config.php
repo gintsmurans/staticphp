@@ -1,5 +1,20 @@
 <?php
 
+use Symfony\Component\Dotenv\Dotenv;
+
+
+/**
+ * We are gonna start with loading of the .env files
+ */
+$dotenv = new Dotenv();
+if (file_exists(BASE_PATH.'/.env')) {
+    $dotenv->load(BASE_PATH.'/.env');
+}
+if (file_exists(APP_PATH.'/.env')) {
+    $dotenv->overload(APP_PATH.'/.env');
+}
+
+
 /**
  * Default config array
  *
@@ -18,19 +33,22 @@ $config = [];
 $config['base_url'] = null; // NULL for auto detect
 $config['disable_twig'] = false; // Option to disable twig template engine
 
-
 /*
 |--------------------------------------------------------------------------
 | Debug
 |--------------------------------------------------------------------------
 */
 // Set environment
-$config['env'] = (
-    (empty($_SERVER['app_env']) || $_SERVER['app_env'] !== 'dev') &&
-        php_sapi_name() != 'cli-server' ? 'live' : 'dev'
-);
-$config['debug']       = ($config['env'] !== 'dev' ? false : true);
+$config['environment'] = !empty($_ENV['APP_ENV']) ? $_ENV['APP_ENV'] : 'unknown';
+$config['debug']       = ($config['environment'] !== 'dev' ? false : true);
 $config['debug_ips']   = ['::1', '127.0.0.1'];
+
+/*
+| Logging
+|
+| * logging_enabled - whether send error emails or not
+*/
+$config['logging_enabled'] = false;
 
 /*
 | Send errors to this email address.

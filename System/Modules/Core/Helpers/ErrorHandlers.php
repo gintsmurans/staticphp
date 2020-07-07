@@ -75,7 +75,7 @@ function sp_exception_handler($exception)
 
     if (!empty(Config::$items['debug'])) {
         echo sp_format_exception($exception);
-    } else {
+    } elseif (!empty(Config::$items['logging_enabled']) && Config::$items['logging_enabled'] == true) {
         sp_send_error_email($exception);
     }
 
