@@ -25,29 +25,8 @@ function sp_error_handler($errno, $errstr, $errfile, $errline)
         return false;
     }
 
-    $e = new ErrorException($errstr, 0, $errno, $errfile, $errline);
-    sp_exception_handler($e);
-
-    return true;
-}
-
-/**
- * StaticPHP's script shutdown handler to find out whether shutdown was because of any fatal error.
- *
- * If the shutdown was caused by an error, the error is passed on to the sp_exception_handler().
- *
- * @see sp_exception_handler()
- * @access public
- * @return void
- */
-function sp_error_shutdown_handler()
-{
-    $last_error = error_get_last();
-
-    if (!empty($last_error) && ($last_error['type'] === E_ERROR || $last_error['type'] === E_PARSE)) {
-        $e = new ErrorException($last_error['message'], 0, 0, $last_error['file'], $last_error['line']);
-        sp_exception_handler($e);
-    }
+    // Throw all the errors as exceptions, so they can be handled as they should
+    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 }
 
 /**
@@ -75,7 +54,7 @@ function sp_exception_handler($exception)
 
     if (!empty(Config::$items['debug'])) {
         echo sp_format_exception($exception);
-    } elseif (!empty(Config::$items['logging_enabled']) && Config::$items['logging_enabled'] == true) {
+    } elseif (!empty(Config::$items['send_errors']) && Config::$items['send_errors'] == true) {
         sp_send_error_email($exception);
     }
 

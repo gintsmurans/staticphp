@@ -83,7 +83,6 @@ if ($autoload_configs !== false) {
 Load::helper('ErrorHandlers', 'Core', 'System');
 set_error_handler('sp_error_handler', (!empty(Config::$items['debug']) ? E_ALL : E_ALL & ~E_DEPRECATED & ~E_STRICT));
 set_exception_handler('sp_exception_handler');
-register_shutdown_function('sp_error_shutdown_handler');
 
 // Load twig
 if (Config::get('disable_twig') !== true) {

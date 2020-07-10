@@ -46,9 +46,9 @@ $config['debug_ips']   = ['::1', '127.0.0.1'];
 /*
 | Logging
 |
-| * logging_enabled - whether send error emails or not
+| * send_errors - whether send error emails or not
 */
-$config['logging_enabled'] = false;
+$config['send_errors'] = false;
 
 /*
 | Send errors to this email address.
