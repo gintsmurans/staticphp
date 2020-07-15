@@ -4,6 +4,7 @@ use \Core\Models\Load;
 use \Core\Models\Config;
 use \Core\Models\Router;
 use \Core\Models\RouterException;
+use \Core\Models\SpErrorException;
 
 /**
  * StaticPHP's error handler. Turns errors into exceptions and passes on to sp_exception_handler().
@@ -26,7 +27,7 @@ function sp_error_handler($errno, $errstr, $errfile, $errline)
     }
 
     // Throw all the errors as exceptions, so they can be handled as they should
-    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+    throw new SpErrorException($errstr, 0, $errno, $errfile, $errline);
 }
 
 /**
