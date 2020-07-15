@@ -1,58 +1,113 @@
 const path = require('path');
+const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 
 
-var config = {
+const config = {
     mode: 'production',
-    entry: ['./Application/Public/assets/index.js'],
+    context: path.resolve(__dirname, './Application/Public'),
+    entry: {
+        default: './assets/index.js',
+    },
     output: {
-        filename: 'index.bundle.js',
-        path: path.resolve(__dirname, 'Application/Public/assets/'),
+        filename: '[name].bundle.js',
+        path: path.resolve(__dirname, 'Application/Public/assets/dist/js/'),
         libraryTarget: 'var',
-        library: 'App'
+        library: '[name]Module',
     },
     resolve: {
         alias: {
-            utils: path.resolve(__dirname, 'Application/Public/assets/base/js/utils.js')
-        }
+            utils: path.resolve(__dirname, 'Application/Public/assets/base/js/utils.js'),
+        },
     },
     module: {
         rules: [
             {
+                enforce: 'pre',
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: 'eslint-loader',
+            },
+            {
                 test: /\.m?js$/,
-                exclude: /(node_modules|bower_components)/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['@babel/preset-env']
-                    }
-                }
-            }
-        ]
+                use: [
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: [
+                                [
+                                    '@babel/preset-env',
+                                    {
+                                        targets: 'last 2 versions, ie >= 10',
+                                        modules: false,
+                                        useBuiltIns: 'entry',
+                                        corejs: 3,
+                                    },
+                                ],
+                            ],
+                        },
+                    },
+                ],
+            },
+            {
+                test: /\.js*$/,
+                use: [
+                    {
+                        loader: 'strip-trailing-space-loader',
+                        options: {
+                            line_endings: 'unix',
+                        },
+                    },
+                ],
+            },
+        ],
     },
     optimization: {
+        splitChunks: {
+            cacheGroups: {
+                commons: {
+                    test: /[\\/]node_modules[\\/]|Application\/Public\/assets\/base\/js/,
+                    name: 'vendors',
+                    chunks: 'all',
+                },
+            },
+        },
+        usedExports: true,
+        sideEffects: true,
         minimize: false,
         minimizer: [
             new TerserPlugin({
+                sourceMap: true,
                 terserOptions: {
-                  output: {
-                    comments: false,
-                  },
+                    output: {
+                        comments: false,
+                    },
                 },
             }),
         ],
     },
     stats: {
-        colors: true
+        colors: true,
     },
-    devtool: false
+    plugins: [
+        new webpack.SourceMapDevToolPlugin({
+            filename: '[file].map',
+            fallbackModuleFilenameTemplate: '[absolute-resource-path]',
+            moduleFilenameTemplate: '[absolute-resource-path]',
+        }),
+    ],
+    devtool: false,
 };
 
 module.exports = (env, argv) => {
-    if (argv.mode == 'production') {
-        config.output.filename = 'index.min.js';
+    config.plugins.push(new webpack.DefinePlugin({
+        APP_ENV: JSON.stringify(argv.mode),
+    }));
+
+    if (argv.mode === 'production') {
+        config.output.filename = '[name].min.js';
         config.optimization.minimize = true;
-        config.devtool = 'source-map';
     }
+
     return config;
 };

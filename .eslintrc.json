@@ -1,0 +1,52 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "extends": "airbnb-base",
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "paths": [
+                    "./Application/Public/assets/base/js/"
+                ]
+            }
+        }
+    },
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly",
+
+        "$": "readonly",
+        "jQuery": "readonly",
+        "BASE_URL": "readonly",
+        "BASE_URI": "readonly",
+        "mainModule": "readonly",
+        "translateStrings": "readonly",
+
+        "APP_ENV": "readonly"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "rules": {
+        "no-new": 0,
+        "indent": ["error", 4],
+        "func-names": [ "off" ],
+        "comma-dangle": ["error", {
+            "arrays": "always-multiline",
+            "objects": "always-multiline",
+            "imports": "always-multiline",
+            "exports": "always-multiline",
+            "functions": "never"
+        }],
+        "prefer-arrow-callback": [ "off" ],
+        "import/prefer-default-export": "off",
+        "import/newline-after-import": ["error", { "count": 2 }],
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+        "max-classes-per-file": [ "off" ],
+        "no-use-before-define": ["error", { "functions": true, "classes": false }],
+        "no-multiple-empty-lines": ["error", { "max": 2, "maxBOF": 1}]
+    }
+}
