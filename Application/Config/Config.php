@@ -120,8 +120,8 @@ $config['url_prefixes'] = [];
 | Possible formats: Application/Module/Filename, Module/Filename, Filename (only to load global config)
 |--------------------------------------------------------------------------
 */
-$config['autoload_configs'] = [];
-$config['autoload_helpers'] = ['Defaults/Bootstrap'];
+$config['autoload_configs'] = ['App'];
+$config['autoload_helpers'] = ['Bootstrap'];
 
 /*
 |--------------------------------------------------------------------------

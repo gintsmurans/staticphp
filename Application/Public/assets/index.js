@@ -1,20 +1,21 @@
-// -- GLOBAL STUFF ---
-// jQuery
-import * as jQuery from 'jquery';
-window.$ = jQuery;
-window.jQuery = jQuery;
+import $ from 'jquery';
+import { Utils } from 'utils';
 
-// Bootstrap
-import 'bootstrap';
+
+// Assign stuff to global context
+window.$ = $;
+window.jQuery = $;
+
+// Require few other libraries
+require('popper.js');
+require('bootstrap');
 
 // -- BASE --
 // import init from './base/js/default.js';
-// init();
-
-// Utils
-import {Utils} from 'utils';
+// init($);
 
 // Export all
 export {
-    Utils
+    $,
+    Utils,
 };

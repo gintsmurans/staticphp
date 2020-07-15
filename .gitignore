@@ -5,13 +5,14 @@ Application/Config/Db.php
 
 # Tmp, Cache and Bootstrap #
 ######################
-/vendor/
-/Application/Cache/
-/Application/Public/assets/fonts/
-/Application/Public/assets/vendor/
-/Application/Public/uploads/
-/Application/Public/xhprof/
-/Application/Public/docs/
+vendor/
+Application/Cache/
+Application/Public/assets/dist/
+Application/Public/assets/fonts/
+Application/Public/assets/vendor/
+Application/Public/uploads/
+Application/Public/xhprof/
+Application/Public/docs/
 
 .phpunit.result.cache
 
@@ -31,6 +32,7 @@ pip-delete-this-directory.txt
 # IDEs #
 ######################
 *.code-workspace
+.vscode
 
 # OS generated files #
 ######################

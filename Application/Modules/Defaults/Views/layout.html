@@ -48,9 +48,17 @@
         </div>
 
         {% if config.debug == true %}
-        <script src="{{ base_url }}assets/dist/js/default.bundle.js?{{ js_version }}"></script>
+            <script type="text/javascript" src="{{ base_url }}assets/dist/js/vendors.bundle.js?{{ date().timestamp }}"></script>
+
+            {% if js_include %}
+            <script type="text/javascript" src="{{ base_url }}assets/dist/js/{{ js_include }}.bundle.js?{{ date().timestamp }}"></script>
+            {% endif %}
         {% else %}
-        <script src="{{ base_url }}assets/dist/js/default.min.js?{{ js_version }}"></script>
+            <script src="{{ base_url }}assets/dist/js/vendors.min.js?{{ js_version }}"></script>
+
+            {% if js_include %}
+            <script src="{{ base_url }}assets/dist/js/{{ js_include }}.min.js?{{ js_version }}"></script>
+            {% endif %}
         {% endif %}
 
         {% block scripts %}{% endblock%}

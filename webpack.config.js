@@ -7,7 +7,7 @@ const config = {
     mode: 'production',
     context: path.resolve(__dirname, './Application/Public'),
     entry: {
-        default: './assets/index.js',
+        defaults: './assets/index.js',
     },
     output: {
         filename: '[name].bundle.js',
