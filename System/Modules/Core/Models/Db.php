@@ -258,40 +258,48 @@ class Db
         }
 
         // Make WHERE
-        foreach ((array) $where as $key => $value) {
-            $c = '=';
-            $expl = explode(' ', $key);
-            if (count($expl) > 1) {
-                $key = $expl[0];
-                $c = $expl[1];
+        $cond = '';
+        if (\is_array($where)) {
+            $cond = [];
+
+            foreach ($where as $key => $value) {
+                $c = '=';
+                $expl = explode(' ', $key);
+                if (count($expl) > 1) {
+                    $key = $expl[0];
+                    $c = $expl[1];
+                }
+
+                if ($key[0] == '!') {
+                    if (is_array($value)) {
+                        $c = 'NOT IN';
+                        $value = '('.implode(',', $value).')';
+                        $cond[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column']." {$c} {$value}";
+                    } else {
+                        $cond[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column']." {$c} ?";
+                        $params[] = $value;
+                    }
+                } else {
+                    if (is_array($value)) {
+                        $c = 'IN';
+                        $value = '('.implode(',', $value).')';
+                        $cond[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column']." {$c} {$value}";
+                    } else {
+                        $cond[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column']." {$c} ?";
+                        $params[] = $value;
+                    }
+                }
             }
 
-            if ($key[0] == '!') {
-                if (is_array($value)) {
-                    $c = 'NOT IN';
-                    $value = '('.implode(',', $value).')';
-                    $cond[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column']." {$c} {$value}";
-                } else {
-                    $cond[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column']." {$c} ?";
-                    $params[] = $value;
-                }
-            } else {
-                if (is_array($value)) {
-                    $c = 'IN';
-                    $value = '('.implode(',', $value).')';
-                    $cond[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column']." {$c} {$value}";
-                } else {
-                    $cond[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column']." {$c} ?";
-                    $params[] = $value;
-                }
+            if (!empty($cond)) {
+                $cond = 'WHERE '.implode(' AND ', $cond);
             }
+        } else {
+            $cond = "WHERE {$where}";
         }
 
-        // Compile SET and WHERE
+        // Compile SET
         $set = implode(', ', $set);
-        if (!empty($cond)) {
-            $cond = 'WHERE '.implode(' AND ', $cond);
-        }
 
         // Run Query
         return self::query("UPDATE {$table} SET {$set} {$cond};", $params, $name);
