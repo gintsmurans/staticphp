@@ -1,0 +1,176 @@
+<?php
+
+namespace Core\Models;
+
+
+class RecordObject implements \Iterator,  \JsonSerializable, \ArrayAccess
+{
+    protected $record = [];
+    protected $original_record = [];
+    protected $formatted_record = [];
+
+    protected $skip_format = false;
+
+
+    /** =========================================== Class Magic ==================================================== */
+    public function __construct($record, $skip_format = false)
+    {
+        $this->record = $record;
+        $this->original_record = $record;
+        $this->skip_format = $skip_format;
+
+        if ($skip_format !== true) {
+            $this->format();
+        }
+    }
+
+
+    public function __get(string $name)
+    {
+        if (isset($this->record[$name])) {
+            return $this->record[$name];
+        }
+
+        if (isset($this->formatted_record[$name])) {
+            return $this->formatted_record[$name];
+        }
+
+        return $this[$name];
+    }
+
+
+    public function __set(string $name, mixed $value)
+    {
+        if (isset($this->record[$name])) {
+            $this->record[$name] = $value;
+        }
+
+        if (isset($this->formatted_record[$name])) {
+            $this->formatted_record[$name] = $value;
+        }
+    }
+
+    public function __toString() {
+        return json_encode($this);
+    }
+
+    public function __debugInfo() {
+        return [
+            'record' => $this->record,
+            'formatted_record' => $this->formatted_record,
+        ];
+    }
+
+
+
+    /** =========================================== JSON ==================================================== */
+    public function jsonSerialize()
+    {
+        return $this->record + $this->formatted_record;
+    }
+
+
+
+    /** =========================================== Instance methods ==================================================== */
+    public function record()
+    {
+        return $this->record;
+    }
+
+    public function originalRecord()
+    {
+        return $this->original_record;
+    }
+
+    public function format()
+    {
+        foreach ($this->record as $key => $value) {
+            if (strpos($key, 'additional_fields_') !== false) {
+                $new_key = str_replace('additional_fields_', '', $key);
+                $this->formatted_record[$new_key] = $this->record[$key];
+                unset($this->record[$key]);
+
+                if (!empty($this->formatted_record[$new_key])) {
+                    $this->formatted_record[$new_key] = json_decode($this->formatted_record[$new_key], true);
+                }
+            }
+        }
+    }
+
+    public function save()
+    {
+        $this->original_record = $this->record;
+    }
+
+    public function reload()
+    {
+        $this->original_record = $this->record;
+        if ($this->skip_format !== true) {
+            $this->format();
+        }
+    }
+
+
+
+    /** =========================================== Iterator Implementation ==================================================== */
+    public function rewind()
+    {
+        reset($this->record);
+    }
+
+    public function current()
+    {
+        $var = current($this->record);
+        return $var;
+    }
+
+    public function key()
+    {
+        $var = key($this->record);
+        return $var;
+    }
+
+    public function next()
+    {
+        $var = next($this->record);
+        return $var;
+    }
+
+    public function valid()
+    {
+        $key = key($this->record);
+        $var = ($key !== null && $key !== false);
+        return $var;
+    }
+
+
+
+    /** =========================================== ArrayAccess Implementation ==================================================== */
+    public function offsetSet($offset, $value) {
+        if (is_null($offset)) {
+            throw new \Exception("Adding empty array entries is not allowed");
+        } else {
+            $this->record[$offset] = $value;
+        }
+    }
+
+    public function offsetExists($offset) {
+        return isset($this->record[$offset]) || isset($this->formatted_record[$offset]);
+    }
+
+    public function offsetUnset($offset) {
+        unset($this->record[$offset], $this->formatted_record[$offset]);
+    }
+
+    public function offsetGet($offset) {
+        if (isset($this->record[$offset])) {
+            return $this->record[$offset];
+        }
+
+        if (isset($this->formatted_record[$offset])) {
+            return $this->formatted_record[$offset];
+        }
+
+        throw new \Exception("\"{$offset}\" not found.");
+    }
+}
