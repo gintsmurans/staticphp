@@ -94,6 +94,7 @@ if (Config::get('disable_twig') !== true) {
     Config::$items['view_engine'] = new \Twig\Environment(Config::$items['view_loader'], array(
         'cache' => Config::get('debug') == true ? false : APP_PATH.'Cache/Views/',
         'debug' => Config::get('debug'),
+        'strict_variables' => Config::get('debug'),
     ));
 
     // Register default filters and functions

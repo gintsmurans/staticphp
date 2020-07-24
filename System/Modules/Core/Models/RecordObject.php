@@ -16,12 +16,12 @@ class RecordObject implements \Iterator,  \JsonSerializable, \ArrayAccess
     public function __construct($record, $skip_format = false)
     {
         $this->record = $record;
-        $this->original_record = $record;
         $this->skip_format = $skip_format;
 
         if ($skip_format !== true) {
             $this->format();
         }
+        $this->original_record = $this->record;
     }
 
 
@@ -104,10 +104,10 @@ class RecordObject implements \Iterator,  \JsonSerializable, \ArrayAccess
 
     public function reload()
     {
-        $this->original_record = $this->record;
         if ($this->skip_format !== true) {
             $this->format();
         }
+        $this->original_record = $this->record;
     }
 
 
