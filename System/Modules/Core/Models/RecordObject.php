@@ -5,6 +5,9 @@ namespace Core\Models;
 
 class RecordObject implements \Iterator,  \JsonSerializable, \ArrayAccess
 {
+    const DataRecord = 0;
+    const DataFormattedRecord = 1;
+
     protected $record = [];
     protected $original_record = [];
     protected $formatted_record = [];
@@ -72,6 +75,19 @@ class RecordObject implements \Iterator,  \JsonSerializable, \ArrayAccess
 
 
     /** =========================================== Instance methods ==================================================== */
+    public function get(string $name, int $from = null)
+    {
+        if (($from === null || $from == RecordObject::DataRecord) && isset($this->record[$name])) {
+            return $this->record[$name];
+        }
+
+        if (($from === null || $from == RecordObject::DataFormattedRecord) && isset($this->formatted_record[$name])) {
+            return $this->formatted_record[$name];
+        }
+
+        return false;
+    }
+
     public function record()
     {
         return $this->record;

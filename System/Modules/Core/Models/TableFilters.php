@@ -457,6 +457,7 @@ class TableFilters
                     $attributes .= ' multiple="multiple" size="3" ';
                 }
 
+                $classes .= ' form-select form-select-sm';
                 $html = '<select class="'.$classes.'"'.$attributes.'>';
                 if (count($column['options']) == 0 && isset($this->filter_data[$name])) {
                     $html .= '<option value="'.$this->filter_data[$name]['value'].'">'.$this->filter_data[$name]['title'].'</option>';
@@ -557,6 +558,10 @@ class TableFilters
         $return = [];
         switch ($filter_type) {
             case 'int':
+                if ($value === 'null') {
+                    return;
+                }
+
                 $value = (int)$value;
                 $return['query'] = "{$filter_by} = ?";
                 $return['param'] = $value;
