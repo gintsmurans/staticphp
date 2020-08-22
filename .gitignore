@@ -2,6 +2,7 @@
 # Password sensitive files #
 ######################
 Application/Config/Db.php
+.env
 
 # Tmp, Cache and Bootstrap #
 ######################
