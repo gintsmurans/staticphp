@@ -1,0 +1,11 @@
+version: '3.0'
+services:
+  # PHP Service
+  app:
+    build: ./docker/web
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app/:/srv/sites/web:cached
+    networks:
+      - default

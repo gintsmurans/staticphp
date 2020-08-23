@@ -1,60 +1,28 @@
-#
-# Password sensitive files #
-######################
-Application/Config/Db.php
-.env
+# App folder is it self a git repository
+app
 
-# Tmp, Cache and Bootstrap #
-######################
-vendor/
-Application/Cache/
-Application/Public/assets/dist/
-Application/Public/assets/fonts/
-Application/Public/assets/vendor/
-Application/Public/uploads/
-Application/Public/xhprof/
-Application/Public/docs/
-
-.phpunit.result.cache
-
-# Python #
-######################
-__pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# IDEs #
-######################
-*.code-workspace
-.vscode
-
-# OS generated files #
-######################
+# Docker project generated files to ignore
+#  if you want to ignore files created by your editor/tools,
+#  please consider a global .gitignore https://help.github.com/articles/ignoring-files
+.vagrant*
+bin
+docker/docker
+.*.swp
+a.out
+*.orig
+build_src
+.flymake*
+.idea
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-Icon?
-ehthumbs.db
-Thumbs.db
-Desktop.ini
-
-# Node #
-######################
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-node_modules/
-.npm
+docs/_build
+docs/_static
+docs/_templates
+.gopath/
+.dotcloud
+*.test
+bundles/
+.hg/
+.git/
+vendor/pkg/
+pyenv
+Vagrantfile
