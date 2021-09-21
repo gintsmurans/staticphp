@@ -1,5 +1,5 @@
 parameters:
     title: "StaticPHP"
     baseUrl: http://staticphp.gm.lv/docs/
-    source: Application/
-    source: System/
+    source: src/Application/
+    source: src/System/

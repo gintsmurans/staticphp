@@ -1,11 +1,17 @@
-version: '3.0'
 services:
   # PHP Service
-  app:
-    build: ./docker/web
+  develop:
+    build:
+      context: ./docker/develop
+      args:
+        - META_PATH
+        - SRC_MOUNT_PATH
+        - RUNTIME_PATH
+    env_file:
+      - .env
     ports:
       - "5000:5000"
     volumes:
-      - ./app/:/srv/sites/web:cached
+      - ./:/srv/sites/web/:cached
     networks:
       - default

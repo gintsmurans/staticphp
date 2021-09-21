@@ -1,22 +1,26 @@
 {
   "name": "staticphp",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
   "license": "MIT",
   "private": true,
+  "main": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "install": "npm run composer:init && npm run js:init && npm run css:init && npm run copy-fonts && npm run js:build && npm run js:build:dev && npm run css:build",
-    "start": "php -S 0.0.0.0:8081 -t Application/Public",
+    "start": "php -S 0.0.0.0:8081 -t src/Application/Public",
     "composer:init": "[ -f package-lock.json ] || composer install",
-    "js:init": "[ -f Application/Public/assets/index.js ] || cp Application/Public/assets/index.sample.js Application/Public/assets/index.js",
+    "js:init": "[ -f src/Application/Public/assets/index.js ] || cp src/Application/Public/assets/index.sample.js src/Application/Public/assets/index.js",
     "js:build": "webpack --mode production",
     "js:build:dev": "webpack --mode development",
     "js:watch": "webpack --watch --mode development",
-    "css:init": "[ -f Application/Public/assets/index.scss ] || cp Application/Public/assets/index.sample.scss Application/Public/assets/index.scss",
-    "css:build": "node-sass --output-style compressed --sourceMap true Application/Public/assets/index.scss Application/Public/assets/index.css",
+    "css:init": "[ -f src/Application/Public/assets/index.scss ] || cp src/Application/Public/assets/index.sample.scss src/Application/Public/assets/index.scss",
+    "css:build": "node-sass --output-style compressed --sourceMap true src/Application/Public/assets/index.scss src/Application/Public/assets/index.css",
     "css:watch": "nodemon -e scss -x \"npm run css:build\"",
-    "copy-fonts": "mkdir -p Application/Public/assets/fonts/font-awesome; mkdir -p Application/Public/assets/fonts/source-sans-pro; cp -r node_modules/\\@fortawesome/fontawesome-free/webfonts/* Application/Public/assets/fonts/font-awesome/; cp -r node_modules/npm-font-source-sans-pro/fonts/* Application/Public/assets/fonts/source-sans-pro/",
-    "docs": "./vendor/bin/apigen generate --destination Application/Public/docs Application/ System/",
-    "phpstan": "./vendor/bin/phpstan analyse --level 4 --autoload-file=./System/Modules/Core/Helpers/Autoload.php ./Application ./System"
+    "copy-fonts": "mkdir -p src/Application/Public/assets/fonts/font-awesome; mkdir -p src/Application/Public/assets/fonts/source-sans-pro; cp -r node_modules/\\@fortawesome/fontawesome-free/webfonts/* src/Application/Public/assets/fonts/font-awesome/; cp -r node_modules/npm-font-source-sans-pro/fonts/* src/Application/Public/assets/fonts/source-sans-pro/",
+    "docs": "./vendor/bin/apigen generate --destination src/Application/Public/docs src/Application/ src/System/",
+    "phpstan": "./vendor/bin/phpstan analyse --level 4 --autoload-file=./src/System/Modules/Core/Helpers/Autoload.php ./src/Application ./src/System"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",

@@ -156,15 +156,15 @@ To generate api documentation, install composer dev dependecies (`composer insta
 ## History
 
 ####v1.1.0
-* √ Updated Twig
+* √ Updated Twig
 
 ####v1.0.0
-* √ Removed Help/Example page descriptions - thats basically what apigen is for.
+* √ Removed Help/Example page descriptions - thats basically what apigen is for.
 * √ Rewrite Db class so that in init method $name parameter comes before $config.
 * √ Use composer only for php stuff.
 * √ Setup SCSS using npm scripts.
 * √ Setup webpack for js, also using npm scripts.
-* √ Expanded core clases from universal to more specific roles.
+* √ Expanded core clases from universal to more specific roles.
 * √ Added first PHPUnit tests.
 * √ Various Bugfixes.
 * √ Allow controllers, helpers and models to also be loaded from Application folder, same as Config already was.
@@ -186,16 +186,16 @@ To generate api documentation, install composer dev dependecies (`composer insta
 * √ Fixed issue preventing to load page from subdirectory.
 
 ####v0.9.2
-* √ Fixed issue with $controller_url not being set when default route from Routes.php config file is loaded.
+* √ Fixed issue with $controller_url not being set when default route from Routes.php config file is loaded.
 * √ Core controller render method didn't have $data argument, fixed.
-* √ siteUrl twig filter now accepts all parameters that Router::siteUrl() does.
-* √ Added debug method to Router class.
+* √ siteUrl twig filter now accepts all parameters that Router::siteUrl() does.
+* √ Added debug method to Router class.
 * √ Made all Router's helper methods public.
 * √ Renamed some variables of the Router class, so it makes more sense also added some new ones.
-* √ More Router fixes for correct controller handling.
+* √ More Router fixes for correct controller handling.
 
 ####v0.9.1
-* √ Documentation config update
+* √ Documentation config update
 
 ####v0.9
 * √ Added various small helper functions, take a look in System/Modules/Core/Helpers/Other.php
@@ -208,18 +208,18 @@ To generate api documentation, install composer dev dependecies (`composer insta
     * If used, controller now have access to self::$controller_url and self::$method_url, very useful for migrating controllers to other urls and for controller copying.
     * self::render('path_to_view.html') will automatically look into module's Views directory
     * self::write($params) will echo json encoded string if $params is an array
-* √ Json reponse has been used very often so far, maybe we should make some kind of output filtering method that outputs content based on output type?
+* √ Json reponse has been used very often so far, maybe we should make some kind of output filtering method that outputs content based on output type?
     * If an array is returned from a controller method, its turned into a json encoded string and is sent back to the browser
 * √ Put helpers under namespaces?
     * No, functions should be in global scope
 * √ Decide to go with Reflection Api or not.
     * Yes for Reflection Api
-* √ Css and js minifying - git hooks, also css and js versioning.
+* √ Css and js minifying - git hooks, also css and js versioning.
     * Added minify.py under Scripts, this also makes javascript source maps
     * Added all the stuff related to this in default views
     * Added git pre-commit hook that can check whether css, js file was modified and based on that execute minify.py
     * Added git post-receive hook that can check whether css or js file was modified and base on that increase css or js version by calling a url with wget
-* √ Script to clear Twig cache. Also a git hook?
+* √ Script to clear Twig cache. Also a git hook?
     * Added a git post-receive script that can check whether any html file was modified, and if was, can clear twig cache
 
 

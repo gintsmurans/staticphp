@@ -5,19 +5,19 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 const config = {
     mode: 'production',
-    context: path.resolve(__dirname, './Application/Public'),
+    context: path.resolve(__dirname, './src/Application/Public'),
     entry: {
         defaults: './assets/index.js',
     },
     output: {
         filename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'Application/Public/assets/dist/js/'),
+        path: path.resolve(__dirname, 'src/Application/Public/assets/dist/js/'),
         libraryTarget: 'var',
         library: '[name]Module',
     },
     resolve: {
         alias: {
-            utils: path.resolve(__dirname, 'Application/Public/assets/base/js/utils.js'),
+            utils: path.resolve(__dirname, 'src/Application/Public/assets/base/js/utils.js'),
         },
     },
     module: {
@@ -66,7 +66,7 @@ const config = {
         splitChunks: {
             cacheGroups: {
                 commons: {
-                    test: /[\\/]node_modules[\\/]|Application\/Public\/assets\/base\/js/,
+                    test: /[\\/]node_modules[\\/]|src\/Application\/Public\/assets\/base\/js/,
                     name: 'vendors',
                     chunks: 'all',
                 },

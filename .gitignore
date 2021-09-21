@@ -1,9 +1,70 @@
-# App folder is it self a git repository
-app
+#
+# Password sensitive files
+###################################################################################################
+.env
+docker/*/data/
 
+# Tmp, Cache and Bootstrap
+###################################################################################################
+/build/
+/dist/
+/tmp/
+vendor/
+src/Application/Cache/
+src/Application/Public/assets/dist/
+src/Application/Public/assets/fonts/
+src/Application/Public/assets/vendor/
+src/Application/Public/uploads/
+src/Application/Public/xhprof/
+src/Application/Public/docs/
+
+.phpunit.result.cache
+
+# Python
+###################################################################################################
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDEs #
+###################################################################################################
+*.code-workspace
+.vscode
+
+# OS generated files
+###################################################################################################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Node
+###################################################################################################
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+node_modules/
+.npm
+
+# Docker
+###################################################################################################
 # Docker project generated files to ignore
-#  if you want to ignore files created by your editor/tools,
-#  please consider a global .gitignore https://help.github.com/articles/ignoring-files
 .vagrant*
 bin
 docker/docker
