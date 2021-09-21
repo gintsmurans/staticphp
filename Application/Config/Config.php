@@ -2,6 +2,8 @@
 
 use Symfony\Component\Dotenv\Dotenv;
 
+use \Core\Models\Logger;
+
 
 /**
  * We are gonna start with loading of the .env files
@@ -45,19 +47,13 @@ $config['debug_ips']   = ['::1', '127.0.0.1'];
 
 /*
 | Logging
-|
-| * send_errors - whether send error emails or not
 */
-$config['send_errors'] = false;
+$config['logging'] = [
+    'display_level' => !empty($_ENV['LOGGING_DISPLAY_LEVEL']) ? $_ENV['LOGGING_DISPLAY_LEVEL'] : Logger::ERROR,
+    'log_level' => !empty($_ENV['LOGGING_LOG_LEVEL']) ? $_ENV['LOGGING_LOG_LEVEL'] : Logger::ERROR,
+    'report_level' => !empty($_ENV['LOGGING_REPORT_LEVEL']) ? $_ENV['LOGGING_REPORT_LEVEL'] : Logger::ERROR,
 
-/*
-| Send errors to this email address.
-|
-| * Core will only send error emails when debug is turned off.
-| * Emails are sent using php's mail function, if you intend to use this feature,
-|   make sure your system is configured to be able to send emails.
-*/
-$config['debug_email'] = null;
+    'report_email' => !empty($_ENV['LOGGING_REPORT_EMAIL']) ? $_ENV['LOGGING_REPORT_EMAIL'] : null,
 
 /*
 | Send email function
@@ -65,12 +61,9 @@ $config['debug_email'] = null;
 | * Will pass arguments - $to, $subject, $message, $headers in that order
 | * Can be inline function or string for a function name
 | * default - php built-in "mail"
-*/
-$config['email_func'] = 'mail';
-/*
-    Example:
 
-$config['email_func'] = function($to, $subject, $message, $headers = '', $type = 'regular'){
+  Example:
+'report_email_func' => function($to, $subject, $message, $headers = '', $type = 'regular'){
     if (function_exists('sendEmail')) {
         sendEmail($to, $subject, $message, [], $type);
 
@@ -86,6 +79,8 @@ $config['email_func'] = function($to, $subject, $message, $headers = '', $type =
     }
 };
 */
+    'report_email_func' => 'mail',
+];
 
 /*
 |--------------------------------------------------------------------------

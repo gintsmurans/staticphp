@@ -622,7 +622,7 @@ class Router
         if (empty(self::$base_url) && !empty($_SERVER['HTTP_HOST'])) {
             $https = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on');
             self::$domain_url = 'http'.(empty($https) ? '' : 's').'://'.$_SERVER['HTTP_HOST'];
-            if (strpos($_SERVER['HTTP_HOST'], ':'.$_SERVER['SERVER_PORT']) === false) {
+            if (preg_match('/:[0-9]+$/', $_SERVER['HTTP_HOST']) === false) {
                 if (
                     (empty($https) && $_SERVER['SERVER_PORT'] != 80) ||
                     (!empty($https) && $_SERVER['SERVER_PORT'] != 443)

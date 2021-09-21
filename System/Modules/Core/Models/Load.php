@@ -460,6 +460,7 @@ class Load
 
         // Add default view data
         if (empty($globals_added)) {
+            Config::$items['view_engine']->addGlobal('env', $_ENV);
             Config::$items['view_engine']->addGlobal('config', self::$config);
             Config::$items['view_engine']->addGlobal('session', $_SESSION ?? []);
             Config::$items['view_engine']->addGlobal('cookie', $_COOKIE ?? []);

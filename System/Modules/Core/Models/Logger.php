@@ -4,11 +4,25 @@ namespace Core\Models;
 
 use \Core\Models\Timers;
 
+
 /**
  * Core logger class.
  */
 class Logger
 {
+    const errorLevels = [
+        'none' => 1000,
+        'emergency' => 800,
+        'alert' => 700,
+        'critical' => 600,
+        'error' => 500,
+        'warning' => 400,
+        'notice' => 300,
+        'info' => 200,
+        'debug' => 100,
+    ];
+
+    const NONE = 'none';
     const EMERGENCY = 'emergency';
     const ALERT = 'alert';
     const CRITICAL = 'critical';
@@ -29,6 +43,33 @@ class Logger
      */
     protected static $logs = [];
 
+    /*
+    |-------------------------------------------------------------------------------------------------------------------
+    | Helpers
+    |-------------------------------------------------------------------------------------------------------------------
+    */
+
+    /**
+     * Compare string error levels
+     *
+     * @param  string $errorLevel1 Set error level
+     * @param  string $errorLevel2 Error level to compare to
+     * @return bool
+     */
+    public static function contains(string $errorLevel1, string $errorLevel2): bool
+    {
+        if (empty(self::errorLevels[$errorLevel1])) {
+            return null;
+        }
+        $errorLevelInt1 = self::errorLevels[$errorLevel1];
+
+        if (empty(self::errorLevels[$errorLevel2])) {
+            return null;
+        }
+        $errorLevelInt2 = self::errorLevels[$errorLevel2];
+
+        return ($errorLevelInt1 <= $errorLevelInt2);
+    }
 
     /*
     |-------------------------------------------------------------------------------------------------------------------

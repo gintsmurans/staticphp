@@ -665,6 +665,19 @@ class TableFilters
                     ];
                 }
             break;
+
+            case 'sql_date':
+                $field = $filter_by;
+                $start = preg_replace('/^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$/', '$3-$2-$1', $value);
+                if (preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $start)) {
+                    $return['query'] = "{$field} >= ? AND {$field} <= ? ";
+                    $return['param'] = ["{$start} 00:00:00", "{$start} 23:59:59"];
+                    $return['data']  = [
+                        'title' => $value,
+                        'value' => $value,
+                    ];
+                }
+            break;
         }
 
         return $return;

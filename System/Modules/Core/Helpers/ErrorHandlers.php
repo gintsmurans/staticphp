@@ -1,7 +1,7 @@
 <?php
 
-use \Core\Models\Load;
 use \Core\Models\Config;
+use \Core\Models\Logger;
 use \Core\Models\Router;
 use \Core\Models\RouterException;
 use \Core\Models\SpErrorException;
@@ -41,6 +41,7 @@ function sp_error_handler($errno, $errstr, $errfile, $errline)
  */
 function sp_exception_handler($exception)
 {
+    // RouterException is a special case
     if ($exception instanceof RouterException) {
         if (!empty(Config::$items['debug'])) {
             Router::error('500', 'Internal Server Error', $exception->getMessage());
@@ -53,9 +54,17 @@ function sp_exception_handler($exception)
         http_response_code(500);
     }
 
-    if (!empty(Config::$items['debug'])) {
-        echo sp_format_exception($exception);
-    } elseif (!empty(Config::$items['send_errors']) && Config::$items['send_errors'] == true) {
+    if (Logger::contains(Config::$items['logging']['display_level'], 'error')) {
+        $errorMsg = sp_format_exception($exception, false, true);
+        echo $errorMsg;
+    }
+
+    if (Logger::contains(Config::$items['logging']['log_level'], 'error')) {
+        $errorMsg = sp_format_exception($exception, true, false);
+        error_log($errorMsg);
+    }
+
+    if (Logger::contains(Config::$items['logging']['report_level'], 'error')) {
         sp_send_error_email($exception);
     }
 
@@ -74,10 +83,10 @@ function sp_send_error_email($e)
 {
     static $last_error = ['time' => 0];
 
-    $e_formatted = sp_format_exception($e, true);
-    $debug_email = Config::get('debug_email');
-    $email_func = Config::get('email_func');
-    if ($debug_email !== false && $email_func !== false && (time() - $last_error['time'] >= 30 || $last_error['exception'] != $e_formatted)) {
+    $e_formatted = sp_format_exception($e, true, true);
+    $debug_email = Config::$items['logging']['report_email'];
+    $email_func = Config::$items['logging']['report_email_func'];
+    if (!empty($debug_email) && is_callable($email_func) && (time() - $last_error['time'] >= 30 || $last_error['exception'] != $e_formatted)) {
         $email_func(
             $debug_email, // To
             'PHP ERROR: "'.$_SERVER['HTTP_HOST'].'"', // Subject
@@ -100,7 +109,7 @@ function sp_send_error_email($e)
  * @param bool $full (default: false)
  * @return string Returns formatted string of the $e exception
  */
-function sp_format_exception($e, $full = false)
+function sp_format_exception($e, $full = false, $markup = true)
 {
     // Current time
     $datetime = date('d.m.Y H:i:s');
@@ -110,13 +119,17 @@ function sp_format_exception($e, $full = false)
     $url .= (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '[unknown host name]');
     $url .= (!empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '[unknown url]');
 
-    // Post information
-    $post = (!empty($_POST) ? $_POST : '[]');
-
     // Message
-    $message  = str_replace("\n", "<br />", $e->getMessage());
-    $message .= '<br /><br /><strong>Trace:</strong><br /><table border="0" cellspacing="0" cellpadding="5" style="border: 1px #DADADA solid;"><tr><td style="border-bottom: 1px #DADADA solid;">';
-    $message .= str_replace("\n", '</td></tr><tr><td style="border-bottom: 1px #DADADA solid;">', $e->getTraceAsString()).'</td></tr></table>';
+    $message = '';
+    if ($markup === true) {
+        $message  = str_replace("\n", "<br />", $e->getMessage());
+        $message .= '<br /><br /><strong>Trace:</strong><br /><table border="0" cellspacing="0" cellpadding="5" style="border: 1px #DADADA solid;"><tr><td style="border-bottom: 1px #DADADA solid;">';
+        $message .= str_replace("\n", '</td></tr><tr><td style="border-bottom: 1px #DADADA solid;">', $e->getTraceAsString()).'</td></tr></table>';
+    } else {
+        $message = $e->getMessage();
+        $message .= "\n\nTrace:";
+        $message .= $e->getTraceAsString();
+    }
 
     // Session
     $session = [];
@@ -125,14 +138,35 @@ function sp_format_exception($e, $full = false)
     } elseif (isset($_SESSION)) {
         $session = $_SESSION;
     }
-    $session = str_replace(array(" ", "\n"), array('&nbsp;', '<br />'), json_encode($session, (defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : null)));
-    $server = str_replace(array(" ", "\n"), array('&nbsp;', '<br />'), json_encode($_SERVER, (defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : null)));
-    $post = str_replace(array(" ", "\n"), array('&nbsp;', '<br />'), json_encode($post, (defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : null)));
+    $session = json_encode($session, (defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : null));
+
+    // Server
+    $server = json_encode($_SERVER, (defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : null));
+
+    // Post
+    $post = !empty($_POST) ? json_encode($_POST, (defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : null)) : '{}';
 
     // Format message
-    if (!empty($full)) {
-        return "<strong>META</strong><br />{$datetime}<br /><br /><strong>URL</strong><br />{$url}<br /><br /><strong>Error</strong><br />{$message}<br /><br /><strong>Sesssion Info</strong><br />{$session}<br /><br /><strong>Post Info</strong><br />{$post}<br /><br /><strong>Server</strong><br />{$server}";
-    } else {
-        return "<pre><strong>Error:</strong><br />{$message}<br /></pre>";
+    if ($markup === true) {
+        $session = str_replace(array(" ", "\n"), array('&nbsp;', '<br />'), $session);
+        $server = str_replace(array(" ", "\n"), array('&nbsp;', '<br />'), $server);
+        $post = str_replace(array(" ", "\n"), array('&nbsp;', '<br />'), $post);
     }
+
+    $msg = '';
+    if ($full === true) {
+        if ($markup === true) {
+            $msg = "<pre><strong>META</strong><br />{$datetime}<br /><br /><strong>URL</strong><br />{$url}<br /><br /><strong>Error</strong><br />{$message}<br /><br /><strong>Sesssion Info</strong><br />{$session}<br /><br /><strong>Post Info</strong><br />{$post}<br /><br /><strong>Server</strong><br />{$server}</pre>";
+        } else {
+            $msg = "META\n{$datetime}\n\nURL\n{$url}\n\nError\n{$message}\n\nSesssion Info\n{$session}\n\nPost Info\n{$post}\n\nServer\n{$server}";
+        }
+    } else {
+        if ($markup === true) {
+            $msg = "<pre><strong>Error:</strong><br />{$message}<br /></pre>";
+        } else {
+            $msg = "Error:\n{$message}\n";
+        }
+    }
+
+    return $msg;
 }
