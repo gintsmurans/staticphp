@@ -462,6 +462,7 @@ class Load
         if (empty($globals_added)) {
             Config::$items['view_engine']->addGlobal('config', self::$config);
             Config::$items['view_engine']->addGlobal('session', $_SESSION ?? []);
+            Config::$items['view_engine']->addGlobal('cookie', $_COOKIE ?? []);
             Config::$items['view_engine']->addGlobal('base_url', Router::$base_url);
             Config::$items['view_engine']->addGlobal('namespace', Router::$namespace);
             Config::$items['view_engine']->addGlobal('class', Router::$class);
