@@ -1,15 +1,9 @@
 #!/bin/bash
 
-source ${META_PATH}/scripts/console.bash
+source ./docker/develop/scripts/console.bash
 
-# Go to web directory
-cd ${SRC_MOUNT_PATH}
-
-# Copy fonts
-npm run copy-fonts
-
-# Update config
-envsubst < ${META_PATH}/conf/supervisord.services.conf > /etc/supervisor/conf.d/services.conf
+echo_info "Update browserslist database"
+npx browserslist@latest --update-db
 
 # Start supervisord process
 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf -n

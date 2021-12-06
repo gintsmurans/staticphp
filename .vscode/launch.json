@@ -1,0 +1,35 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    // TODO: Not tested
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Listen for XDebug",
+            "type": "php",
+            "request": "launch",
+            "port": 9100,
+            "pathMappings": {
+                "/srv/sites/dobelemill.org/pm/": "${workspaceRoot}",
+            }
+        },
+        {
+            "name": "Launch currently open script",
+            "type": "php",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "${fileDirname}",
+            "port": 9200
+        },
+        {
+            "name": "Attach to Chrome",
+            "type": "chrome",
+            "request": "attach",
+            "port": 9222,
+            "url": "http://pm.dobelemill.local.test/*",
+            "webRoot": "${workspaceFolder}/Application/Public"
+        }
+    ]
+}

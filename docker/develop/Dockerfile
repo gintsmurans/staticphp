@@ -6,9 +6,6 @@ MAINTAINER gm@gm.lv
 
 # Gather args
 ARG PHP_VERSION=8.1
-ARG META_PATH
-ARG SRC_MOUNT_PATH
-ARG RUNTIME_PATH
 
 # Avoid interactive cli blockers
 ENV DEBIAN_FRONTEND noninteractive
@@ -52,46 +49,30 @@ RUN wget -O /tmp/composer-setup.php https://getcomposer.org/installer \
 # ---------------------------------------------------------------------------
 # Install node.js and npm
 # ---------------------------------------------------------------------------
-RUN wget -O - https://deb.nodesource.com/setup_14.x | bash \
+RUN wget -O - https://deb.nodesource.com/setup_16.x | bash \
     && apt-get install nodejs -yq \
-    && wget -O /usr/lib/ssl/cert.pem https://curl.haxx.se/ca/cacert.pem
+    && wget -O /usr/lib/ssl/cert.pem https://curl.haxx.se/ca/cacert.pem \
+    && npm install -g npm@latest
 
 
 # ---------------------------------------------------------------------------
-# Copy meta files
+# Copy files, Install dependecies
 # ---------------------------------------------------------------------------
-COPY ./conf $META_PATH/conf
-COPY ./scripts $META_PATH/scripts
-COPY ./data $META_PATH/data
 
+WORKDIR /srv/sites/web
 
-# ---------------------------------------------------------------------------
-# Install requirments and cachable stuff
-# ---------------------------------------------------------------------------
-RUN mkdir -p /srv/cache/ && mkdir -p $SRC_MOUNT_PATH \
-    && mkdir /srv/cache/vendor && mkdir /srv/cache/node_modules \
-    && ln -sfn /srv/cache/vendor $SRC_MOUNT_PATH/vendor \
-    && ln -sfn /srv/cache/node_modules $SRC_MOUNT_PATH/node_modules \
-    && chmod 777 $SRC_MOUNT_PATH/vendor \
-    && chmod 777 $SRC_MOUNT_PATH/node_modules
-
-WORKDIR /srv/cache/
+# Copy all files
+COPY . ./
 
 # PHP
-RUN cp $META_PATH/data/composer.json /srv/cache/ \
-    && cp $META_PATH/data/composer.lock /srv/cache/ \
-    && composer install --ignore-platform-reqs
+# RUN composer install
 
 # NPM
-#RUN cp $META_PATH/data/package.json /srv/cache/ \
-#    && cp $META_PATH/data/package-lock.json /srv/cache/ \
-#    && npm install
-
-#RUN npm rebuild node-sass
-#RUN npx browserslist@latest --update-db
+RUN npm install --no-optional \
+    && npm cache clean --force
 
 # Python
-RUN pip3 install -r $META_PATH/data/requirements.txt
+RUN python3 -m pip install -r requirements.txt
 
 
 # ---------------------------------------------------------------------------
@@ -99,6 +80,8 @@ RUN pip3 install -r $META_PATH/data/requirements.txt
 # ---------------------------------------------------------------------------
 WORKDIR $RUNTIME_PATH
 
-CMD ["/root/meta/scripts/run.bash"]
+RUN envsubst < ./docker/develop/conf/supervisord.services.conf > /etc/supervisor/conf.d/services.conf
+
+CMD ["/srv/sites/web/docker/develop/scripts/run.bash"]
 
 EXPOSE 5000

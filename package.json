@@ -8,9 +8,9 @@
   "main": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "npm run composer:init && npm run js:init && npm run css:init && npm run copy-fonts && npm run js:build && npm run js:build:dev && npm run css:build",
+    "install": "npm run composer:init && npm run js:init && npm run css:init && npm run copy-fonts",
     "start": "php -S 0.0.0.0:8081 -t src/Application/Public",
-    "composer:init": "[ -f package-lock.json ] || composer install",
+    "composer:init": "[ -f composer.lock ] || composer install",
     "js:init": "[ -f src/Application/Public/assets/index.js ] || cp src/Application/Public/assets/index.sample.js src/Application/Public/assets/index.js",
     "js:build": "webpack --mode production",
     "js:build:dev": "webpack --mode development",
@@ -20,29 +20,32 @@
     "css:watch": "nodemon -e scss -x \"npm run css:build\"",
     "copy-fonts": "mkdir -p src/Application/Public/assets/fonts/font-awesome; mkdir -p src/Application/Public/assets/fonts/source-sans-pro; cp -r node_modules/\\@fortawesome/fontawesome-free/webfonts/* src/Application/Public/assets/fonts/font-awesome/; cp -r node_modules/npm-font-source-sans-pro/fonts/* src/Application/Public/assets/fonts/source-sans-pro/",
     "docs": "./vendor/bin/apigen generate --destination src/Application/Public/docs src/Application/ src/System/",
-    "phpstan": "./vendor/bin/phpstan analyse --level 4 --autoload-file=./src/System/Modules/Core/Helpers/Autoload.php ./src/Application ./src/System"
+    "phpstan": "./vendor/bin/phpstan analyse --level 4 --autoload-file=./src/System/Modules/Core/Helpers/Autoload.php ./src/Application ./src/System",
+    "files:sync": "rsync -a --progress --delete --update --omit-dir-times --filter=':- .gitignore' --exclude '.git' /srv/sites/web/ /srv/sites/web_mounted/",
+    "files:watch": "nodemon -e \"*\" --ignore 'node_modules/' --ignore 'Application/Public/assets/vendor/' --ignore 'vendor/' -x \"npm run files:sync\""
   },
-  "devDependencies": {
+  "dependencies": {
     "@babel/core": "^7.10.5",
     "@babel/preset-env": "^7.10.4",
     "@fortawesome/fontawesome-free": "^5.14.0",
+    "@popperjs/core": "^2.10.2",
     "babel-loader": "^8.1.0",
     "bootstrap": "^4.5.0",
-    "eslint": "^7.5.0",
-    "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-import-resolver-webpack": "^0.12.2",
-    "eslint-loader": "^4.0.2",
-    "eslint-plugin-import": "^2.22.0",
+    "eslint": "^8.3.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-import-resolver-webpack": "^0.13.2",
+    "eslint-plugin-compat": "^4.0.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-webpack-plugin": "^3.1.1",
     "jquery": "^3.5.1",
-    "node-sass": "^4.14.1",
     "nodemon": "^2.0.4",
     "npm-font-source-sans-pro": "^1.0.2",
-    "popper.js": "^1.14.7",
     "sass": "^1.26.10",
     "strip-trailing-space-loader": "^1.1.0",
+    "terser": "^5.10.0",
     "terser-webpack-plugin": "^3.0.8",
-    "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
-  },
-  "dependencies": {}
+    "webpack": "^5.64.4",
+    "webpack-cli": "^4.9.1",
+    "webpack-plugin-replace": "^1.2.0"
+  }
 }

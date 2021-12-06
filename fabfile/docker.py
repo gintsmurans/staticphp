@@ -11,37 +11,35 @@ from fabfile.config import CONFIG
 
 
 if __name__ == "__main__":
-    print("\033[0;31mThis file is not meant to be run on its own! Please use \"fab\" command.\033[0m")
+    print(
+        '\033[0;31mThis file is not meant to be run on its own! Please use "fab" command.\033[0m'
+    )
     sys.exit(-1)
 
 
 # ! Logging
 
-cl = logging.getLogger('console')
-
+cl = logging.getLogger("console")
 
 
 # ! Helpers
 
+
 def setDefaultEnv(ctx):
     # Local commands need env variables
     ctx.config.run.replace_env = False
-    ctx.config.run.env['DOCKER_SCAN_SUGGEST'] = 'false'
+    ctx.config.run.env["DOCKER_SCAN_SUGGEST"] = "false"
 
-    if platform.uname().machine == 'arm64':
-        ctx.config.run.env['DOCKER_BUILDKIT'] = '0'
+    if platform.uname().machine == "arm64":
+        ctx.config.run.env["DOCKER_BUILDKIT"] = "0"
 
 
 # ! Run development environment
 
+
 @task
 def requirements(ctx):
     setDefaultEnv(ctx)
-
-    # This is required for node_modules caching
-    ctx.run("cp ./requirements.txt ./docker/develop/data/")
-    ctx.run("cp ./{composer.json,composer.lock} ./docker/develop/data/")
-    ctx.run("cp ./{package.json,package-lock.json} ./docker/develop/data/")
 
 
 @task(pre=[requirements])
@@ -56,30 +54,37 @@ def install(ctx):
     ctx.run("docker-compose build develop")
     ctx.run("docker compose up --detach develop")
 
+
 @task
 def up(ctx):
     setDefaultEnv(ctx)
     ctx.run("docker compose up --detach develop")
+
 
 @task
 def down(ctx):
     setDefaultEnv(ctx)
     ctx.run("docker compose down")
 
+
 @task
 def uninstall(ctx):
     setDefaultEnv(ctx)
     ctx.run("docker compose down -v --rmi all --remove-orphans")
+
 
 @task
 def help(ctx):
     setDefaultEnv(ctx)
 
     cl.info(f"To run commands on docker: `sudo docker compose exec develop bash`.")
-    cl.info(f"To view logs: `sudo docker compose logs develop`. Add -f before develop for monitoring.")
+    cl.info(
+        f"To view logs: `sudo docker compose logs develop`. Add -f before develop for monitoring."
+    )
 
 
 # ! Build deployable packages
+
 
 @task(pre=[requirements])
 def build(ctx):
@@ -100,6 +105,7 @@ def cleanup(ctx):
 
 # ! Deployment
 
+
 @task(pre=[build])
 def deploy(ctx):
     cl.error("Not configured!")
@@ -112,11 +118,18 @@ def deploy_alone(ctx):
 
 # ! Other
 
+
 @task()
 def dump_db_schema(ctx):
     setDefaultEnv(ctx)
 
-    cl.info("Dumping DB schema .. ", extra={'end': ''})
-    ctx.run(f"docker compose exec -u postgres -T pgdb pg_dump -w --schema-only --no-owner --no-privileges -f /tmp/data/db_schema.sql pm", hide=True)
-    ctx.run(f"mv {CONFIG['base_path']}/docker/pgdb/data/db_schema.sql {CONFIG['base_path']}/Application/Files/db_schema.sql", hide=True)
+    cl.info("Dumping DB schema .. ", extra={"end": ""})
+    ctx.run(
+        f"docker compose exec -u postgres -T pgdb pg_dump -w --schema-only --no-owner --no-privileges -f /tmp/data/db_schema.sql pm",
+        hide=True,
+    )
+    ctx.run(
+        f"mv {CONFIG['base_path']}/docker/pgdb/data/db_schema.sql {CONFIG['base_path']}/Application/Files/db_schema.sql",
+        hide=True,
+    )
     cl.info("Done", extra={"skip_addons": True})
