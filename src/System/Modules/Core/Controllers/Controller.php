@@ -5,8 +5,6 @@ namespace Core\Controllers;
 use Core\Models\Load;
 use Core\Models\Config;
 use Core\Models\Router;
-use Core\Models\Timers;
-use Core\Models\Logger;
 
 
 /**
@@ -25,15 +23,9 @@ class Controller
     public static function construct($class = null, $method = null)
     {
         // Get full urls to current controller and its method
-        self::$module_url = Router::siteUrl(strtolower(preg_replace('/(.)([A-Z])/', '$1-$2', Router::$module))).'/';
-        self::$method_url = Router::siteUrl(Router::$method_url).'/';
-
-        // Handle empty method calls
-        $method = self::$method_url;
-        if (substr($method, -1, 1) == '/') {
-            $method = substr($method, 0, -1);
-        }
-        self::$controller_url = dirname("{$method}safe").'/';
+        self::$module_url = self::moduleUrl();
+        self::$method_url = self::methodUrl();
+        self::$controller_url = self::controllerUrl();
 
         // Pass these to the view, too
         Config::$items['view_data']['module_url'] = self::$module_url;
@@ -56,6 +48,34 @@ class Controller
         // Not implemented
     }
 
+    /**
+     * Generates module url
+     */
+    public static function moduleUrl()
+    {
+        return Router::siteUrl(strtolower(preg_replace('/(.)([A-Z])/', '$1-$2', Router::$module))) . '/';
+    }
+
+    /**
+     * Generates method url
+     */
+    public static function methodUrl()
+    {
+        return Router::siteUrl(Router::$method_url) . '/';
+    }
+
+    /**
+     * Generates controller url
+     */
+    public static function controllerUrl()
+    {
+        // Handle empty method calls
+        $method = self::methodUrl();
+        if (substr($method, -1, 1) == '/') {
+            $method = substr($method, 0, -1);
+        }
+        return dirname("{$method}safe") . '/';
+    }
 
     /**
      *  Render a view. This method instead of Load::view() prefixes paths with current module directory.
@@ -64,7 +84,7 @@ class Controller
     {
         $views = (array)$views;
         foreach ($views as $key => $item) {
-            $views[$key] = Router::$module.DS.'Views'.DS.$item;
+            $views[$key] = Router::$module . DS . 'Views' . DS . $item;
         }
 
         Load::view($views, $view_data);
