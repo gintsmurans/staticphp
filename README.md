@@ -7,7 +7,7 @@ Simple, modular php framework.
 ### Requirements
 
 -   PHP 8.1+
--   Twig 1.5+
+-   Twig 3.0+
 
 ### Installation
 
