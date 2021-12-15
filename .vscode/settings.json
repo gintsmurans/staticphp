@@ -4,6 +4,7 @@
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "editor.insertSpaces": true,
+    "files.insertFinalNewline": true,
     "editor.tabSize": 4,
     "editor.quickSuggestions": {
         "comments": true
@@ -14,18 +15,19 @@
     // "emmet.includeLanguages": {
     //     "twig": "html"
     // },
-
     "twig-language-2.indentStyle": "space",
     "twig-language-2.forceIndent": false,
     "twig-language-2.formatting": false,
-    // "[twig]": {
-    //     "editor.defaultFormatter": "mblode.twig-language-2"
-    // },
-
+    "[twig]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "mblode.twig-language-2"
+    },
+    "[html]": {
+        "editor.formatOnSave": false,
+    },
     "python.pythonPath": "/usr/bin/python3",
     "python.languageServer": "Pylance",
     "python.formatting.provider": "black",
-
     "php.suggest.basic": false,
     "[php]": {
         "editor.defaultFormatter": "junstyle.php-cs-fixer"

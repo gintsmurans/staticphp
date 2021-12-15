@@ -1,74 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="">
-        <meta name="author" content="">
 
-        <title>StaticPHP Framework</title>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-        <link href="{{ base_url }}assets/index.css?{{ css_version }}" rel="stylesheet" type="text/css" />
+    <title>StaticPHP Framework</title>
 
-        {% block headers %}{% endblock %}
-    </head>
-    <body>
+    <link href="{{ base_url }}assets/dist/css/index.css?{{ asset_version }}" rel="stylesheet" type="text/css" />
 
-        <!-- Fixed navbar -->
-        <div class="header">
-            <div class="navbar navbar-expand-lg navbr-light bg-light">
-                <div class="container">
-                    <a href="{{ base_url }}" class="navbar-brand">StaticPHP</a>
-                    <button class="navbar-toggler" data-toggle="collapse" data-target="#headerMenuCollapse">
-                        <span class="fas fa-bars"></span>
-                    </button>
+    {% block headers %}{% endblock %}
+</head>
 
-                    <div class="collapse navbar-collapse" id="headerMenuCollapse">
-                        <ul class="navbar-nav ml-auto">
-                            {% if config.debug == true %}
-                            <li class="nav-item">
-                                <a class="nav-link{{ method == 'example' ? ' active' }}" href="{{ base_url }}defaults/welcome/example">Example</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link{{ method == 'testMe' ? ' active' }}" href="{{ base_url }}defaults/test/test">Test Page</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link{{ method == 'testMe' ? ' active' }}" href="{{ base_url }}defaults/test/test/json">jSON Test Page</a>
-                            </li>
-                            {% endif %}
-                        </ul>
-                    </div>
+<body>
+
+    <!-- Fixed navbar -->
+    <div class="header">
+        <div class="navbar navbar-expand-lg navbr-light bg-light">
+            <div class="container">
+                <a href="{{ base_url }}" class="navbar-brand">StaticPHP</a>
+                <button class="navbar-toggler" data-toggle="collapse" data-target="#headerMenuCollapse">
+                    <span class="fas fa-bars"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="headerMenuCollapse">
+                    <ul class="navbar-nav ml-auto">
+                        {% if config.debug == true %}
+                        <li class="nav-item">
+                            <a class="nav-link{{ method == 'example' ? ' active' }}"
+                                href="{{ base_url }}defaults/welcome/example">Example</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link{{ method == 'testMe' ? ' active' }}"
+                                href="{{ base_url }}defaults/test/test">Test Page</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link{{ method == 'testMe' ? ' active' }}"
+                                href="{{ base_url }}defaults/test/test/json">jSON Test Page</a>
+                        </li>
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="container">
-            {% block content %}{% endblock%}
-        </div>
+    <div class="container">
+        {% block content %}{% endblock%}
+    </div>
 
-        {% if config.debug == true %}
-            <script type="text/javascript" src="{{ base_url }}assets/dist/js/vendors.bundle.js?{{ date().timestamp }}"></script>
+    {% if config.debug == true %}
+        <script type="text/javascript" src="{{ base_url }}assets/dist/js/vendors.bundle.js?{{ asset_version }}"></script>
 
-            {% if js_include %}
-            <script type="text/javascript" src="{{ base_url }}assets/dist/js/{{ js_include }}.bundle.js?{{ date().timestamp }}"></script>
-            {% endif %}
-        {% else %}
-            <script src="{{ base_url }}assets/dist/js/vendors.min.js?{{ js_version }}"></script>
-
-            {% if js_include %}
-            <script src="{{ base_url }}assets/dist/js/{{ js_include }}.min.js?{{ js_version }}"></script>
-            {% endif %}
+        {% if js_include %}
+        <script type="text/javascript"
+            src="{{ base_url }}assets/dist/js/{{ js_include }}.bundle.js?{{ asset_version }}"></script>
         {% endif %}
+    {% else %}
+        <script src="{{ base_url }}assets/dist/js/vendors.min.js?{{ asset_version }}"></script>
 
-        {% block scripts %}{% endblock%}
+        {% if js_include %}
+        <script src="{{ base_url }}assets/dist/js/{{ js_include }}.min.js?{{ asset_version }}"></script>
+        {% endif %}
+    {% endif %}
 
-        {% block footer %}
-        <footer class="page-footer">StaticPHP 2019</footer>
-        {% endblock%}
+    {% block scripts %}{% endblock%}
 
-        {% if config.debug %}
+    {% block footer %}
+        <footer class="page-footer">StaticPHP 2022</footer>
+    {% endblock%}
+
+    {% if config.debug %}
         <pre class="footer-debug" style="margin: 0;"><strong>DEBUG</strong><br />{{ debugOutput()|raw }}</pre>
-        {% endif %}
-    </body>
+    {% endif %}
+</body>
+
 </html>

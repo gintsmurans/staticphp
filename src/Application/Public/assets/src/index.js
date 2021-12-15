@@ -1,13 +1,11 @@
-import $ from 'jquery';
+import 'core-js/es/object/assign';
+import 'customPolyfill';
 import { Utils } from 'utils';
 
-
 // Assign stuff to global context
-window.$ = $;
-window.jQuery = $;
+window.Utils = Utils;
 
 // Require few other libraries
-require('popper.js');
 require('bootstrap');
 
 // -- BASE --
@@ -16,6 +14,5 @@ require('bootstrap');
 
 // Export all
 export {
-    $,
     Utils,
 };

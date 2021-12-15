@@ -9,14 +9,13 @@ docker/*/data/
 /build/
 /dist/
 /tmp/
-vendor/
-src/Application/Cache/
-src/Application/Public/assets/dist/
-src/Application/Public/assets/fonts/
-src/Application/Public/assets/vendor/
-src/Application/Public/uploads/
-src/Application/Public/xhprof/
-src/Application/Public/docs/
+/vendor/
+/src/Application/Cache/
+/src/Application/Public/assets/dist/
+/src/Application/Public/assets/fonts/
+/src/Application/Public/uploads/
+/src/Application/Public/xhprof/
+/src/Application/Public/docs/
 
 .phpunit.result.cache
 

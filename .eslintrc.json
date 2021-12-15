@@ -8,7 +8,7 @@
         "import/resolver": {
             "node": {
                 "paths": [
-                    "./Application/Public/assets/base/js/"
+                    "./src/Application/Public/assets/src/base/js/"
                 ]
             }
         }

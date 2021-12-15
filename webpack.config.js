@@ -1,13 +1,15 @@
 const path = require('path');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 
 const config = {
+    target: 'browserslist',
     mode: 'production',
-    context: path.resolve(__dirname, './src/Application/Public'),
+    context: path.resolve(__dirname, 'src/Application/Public'),
     entry: {
-        defaults: './assets/index.js',
+        defaults: './assets/src/index.js',
     },
     output: {
         filename: '[name].bundle.js',
@@ -17,48 +19,20 @@ const config = {
     },
     resolve: {
         alias: {
-            utils: path.resolve(__dirname, 'src/Application/Public/assets/base/js/utils.js'),
+            utils: path.resolve(__dirname, 'src/Application/Public/assets/src/base/js/utils.js'),
+            customPolyfill: path.resolve(__dirname, 'src/Application/Public/assets/src/base/js/customPolyfill.js'),
         },
     },
     module: {
         rules: [
             {
-                enforce: 'pre',
-                test: /\.js$/,
-                exclude: /node_modules/,
-                loader: 'eslint-loader',
-            },
-            {
-                test: /\.m?js$/,
-                use: [
-                    {
-                        loader: 'babel-loader',
-                        options: {
-                            presets: [
-                                [
-                                    '@babel/preset-env',
-                                    {
-                                        targets: 'last 2 versions, ie >= 10',
-                                        modules: false,
-                                        useBuiltIns: 'entry',
-                                        corejs: 3,
-                                    },
-                                ],
-                            ],
-                        },
-                    },
-                ],
-            },
-            {
                 test: /\.js*$/,
-                use: [
-                    {
-                        loader: 'strip-trailing-space-loader',
-                        options: {
-                            line_endings: 'unix',
-                        },
+                use: {
+                    loader: 'strip-trailing-space-loader',
+                    options: {
+                        line_endings: 'unix',
                     },
-                ],
+                },
             },
         ],
     },
@@ -77,9 +51,9 @@ const config = {
         minimize: false,
         minimizer: [
             new TerserPlugin({
-                sourceMap: true,
                 terserOptions: {
                     output: {
+                        ecma: 6,
                         comments: false,
                     },
                 },
@@ -90,13 +64,9 @@ const config = {
         colors: true,
     },
     plugins: [
-        new webpack.SourceMapDevToolPlugin({
-            filename: '[file].map',
-            fallbackModuleFilenameTemplate: '[absolute-resource-path]',
-            moduleFilenameTemplate: '[absolute-resource-path]',
-        }),
+        new ESLintPlugin(),
     ],
-    devtool: false,
+    devtool: 'source-map',
 };
 
 module.exports = (env, argv) => {
