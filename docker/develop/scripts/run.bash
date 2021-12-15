@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./docker/develop/scripts/console.bash
+source ./docker/common/scripts/console.bash
 
 echo_info "Update browserslist database"
 npx browserslist@latest --update-db

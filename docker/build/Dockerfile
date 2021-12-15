@@ -5,12 +5,8 @@ FROM static_php_common
 MAINTAINER gm@gm.lv
 
 # ---------------------------------------------------------------------------
-# Run dev
+# RUN the build
 # ---------------------------------------------------------------------------
 WORKDIR /srv/sites/web
 
-RUN envsubst < ./docker/develop/conf/supervisord.services.conf > /etc/supervisor/conf.d/services.conf
-
-CMD ["./docker/develop/scripts/run.bash"]
-
-EXPOSE 5000
+CMD ["./docker/build/scripts/build.bash"]

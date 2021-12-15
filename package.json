@@ -6,6 +6,14 @@
   "license": "MIT",
   "private": true,
   "main": "",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:gintsmurans/staticphp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gintsmurans/staticphp/issues"
+  },
+  "homepage": "https://github.com/gintsmurans/staticphp",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "install": "npm run composer:init && npm run js:init && npm run css:init && npm run copy-fonts",
@@ -16,7 +24,7 @@
     "js:build:dev": "webpack --mode development",
     "js:watch": "webpack --watch --mode development",
     "css:init": "[ -f src/Application/Public/assets/index.scss ] || cp src/Application/Public/assets/index.sample.scss src/Application/Public/assets/index.scss",
-    "css:build": "node-sass --output-style compressed --sourceMap true src/Application/Public/assets/index.scss src/Application/Public/assets/index.css",
+    "css:build": "sass --style=compressed --load-path=node_modules --source-map-urls=relative Application/Public/assets/index.scss Application/Public/assets/dist/css/index.css",
     "css:watch": "nodemon -e scss -x \"npm run css:build\"",
     "copy-fonts": "mkdir -p src/Application/Public/assets/fonts/font-awesome; mkdir -p src/Application/Public/assets/fonts/source-sans-pro; cp -r node_modules/\\@fortawesome/fontawesome-free/webfonts/* src/Application/Public/assets/fonts/font-awesome/; cp -r node_modules/npm-font-source-sans-pro/fonts/* src/Application/Public/assets/fonts/source-sans-pro/",
     "docs": "./vendor/bin/apigen generate --destination src/Application/Public/docs src/Application/ src/System/",

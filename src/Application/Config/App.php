@@ -1,6 +1,7 @@
 <?php
 
-// Load js and css versions. These can be loaded from database or some cache.
+$config['version'] = 'v1.1.0';
+$config['git_commit_hash'] = '9ecb125bfd28b70720ab1d106da4588ba8b2b6ac';
+$config['git_commit_date'] = '22.02.2019 13:15';
 
-$config['view_data']['css_version'] = 1;
-$config['view_data']['js_version'] = 1;
+$config['asset_version'] = $config['environment'] === 'dev' ? time() : substr($config['git_commit_hash'], 0, 7);

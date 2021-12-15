@@ -155,6 +155,14 @@ To generate api documentation, install composer dev dependecies (`composer insta
 
 ## History
 
+####v1.2.0
+* √ Moved docker to main repository. Development is now meant to be used remotely in docker.
+* √ Moved Application and System folders into src.
+* √ Updated everything - PHP 8.1, bootstrap, npm libraries.
+* √ Removed redundant npm libraries.
+* √ Added bump2version.
+* √ Added build docker service which creates staticPHP archive.
+
 ####v1.1.0
 * √ Updated Twig
 
