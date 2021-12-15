@@ -15,7 +15,7 @@ RUN apt-get update -yq \
     && apt-get install -yq apt-utils
 
 RUN apt-get install -yq apt-transport-https lsb-release ca-certificates \
-        wget curl unzip supervisor
+        wget curl unzip git rsync supervisor build-essential
 
 
 # ---------------------------------------------------------------------------
@@ -65,7 +65,7 @@ WORKDIR /srv/sites/web
 COPY . ./
 
 # PHP
-# RUN composer install
+RUN composer install
 
 # NPM
 RUN npm install --no-optional \
