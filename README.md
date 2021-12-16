@@ -11,31 +11,29 @@ Simple, modular php framework.
 
 ### Installation
 
-There are two ways to install StaticPHP framework:
+There are two ways to start using StaticPHP framework:
 
-1. Easy one - using composer.
-2. Manually.
+1. Docker <- Suggested one
+2. Composer
 
-**1. Using composer**
+**1. Using Docker**
+
+1. `python3 -m pip install -r requirements.txt`
+2. `fab docker.install`
+3. Open in vscode using [Remote containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+**2. Using composer**
 
 Run `composer create-project 4apps/staticphp ./` for stable version and `composer create-project 4apps/staticphp ./ master-dev` for latest development version from github. Composer will install all the dependecies for you.
 
 _[How to install composer?](https://getcomposer.org/doc/00-intro.md)_
 
-**2. Manually**
-
-Download latest release from [Releases](https://github.com/gintsmurans/staticphp/releases) or [development version](https://github.com/gintsmurans/staticphp/archive/master.zip) from github. Extract archive contents to some directory (lets call it "somedir").
-
-Download [Twig](https://github.com/twigphp/Twig/archive/v1.16.2.tar.gz). Extract archive, rename the directory to twig and put it in _./somedir/Vendor/twig_ so that _Autoloader.php_ file is under _./somedir/Vendor/twig/twig/lib/Twig/_. For installing Twig C php extension, please refer to this [guide](http://twig.sensiolabs.org/doc/installation.html#installing-the-c-extension).
-
-**3. (Optional) Npm for SCSS and Javascript**
+**Npm for SCSS and Javascript**
 
 Install node and npm
 run `npm install`
 
 _[How to install node?](https://nodejs.org/en/download/package-manager/)_
-
-### Getting started
 
 _\* Remember to set correct permissions for Cache directory. For example: `chown www-data:www-data ./src/Application/Cache/` or `chmod 777 ./src/Application/Cache/`_
 
@@ -146,6 +144,9 @@ To generate api documentation, install composer dev dependecies (`composer insta
 ####v1.2.0
 
 -   Tests most probably doesn't work anymore
+-   Update todo example app
+-   Generate menus and submenus/sidebar using classes
+-   Table presentation class
 
 ####v1.2.0
 
