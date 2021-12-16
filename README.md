@@ -147,6 +147,7 @@ To generate api documentation, install composer dev dependecies (`composer insta
 -   Update todo example app
 -   Generate menus and submenus/sidebar using classes
 -   Table presentation class
+-   Update server to PHP 8.1
 
 ####v1.2.0
 
