@@ -1,5 +1,8 @@
 <?php
 
+use \Core\Models\Presentation\Menu;
+use \Defaults\Data\MainMenu;
+
 // This is the right place to set headers, start a session, etc.
 
 // Send content type and charset header
@@ -22,3 +25,9 @@ session_set_cookie_params(0);
 session_name('MY_SESSION_NAME');
 session_start();
 */
+
+// register twig functions
+Menu::registerTwig();
+
+// Default menu
+Menu::registerMenu(new MainMenu());

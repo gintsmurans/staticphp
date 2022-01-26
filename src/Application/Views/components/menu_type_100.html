@@ -1,0 +1,44 @@
+<!-- MAIN MENU -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ base_url }}">StaticPHP</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {{ pre_menu_content|raw }}
+
+                {% for item in menu_items %}
+                <li class="nav-item{{ item.active == true ? ' menu-open' : '' }} {{ item.nav_class }}">
+                    {% if item.url %}
+                    <a href="{{ item.url }}"
+                        class="nav-link{{ item.url == '#' ? ' prevent-default' }}{{ item.active == true ? ' active' }}">
+                        {% if item.before_icon %}
+                        <i class="nav-icon {{ item.before_icon }}"></i>
+                        {% endif %}
+
+                        <span>{{ item.title }}</span>
+
+                        {% if item.after_icon %}
+                        <i class="nav-icon {{ item.after_icon }}"></i>
+                        {% endif %}
+
+                        {% if item.end_icon %}
+                        <i class="end {{ item.end_icon }}"></i>
+                        {% endif %}
+                    </a>
+                    {% endif %}
+
+                    {% if item.contents %}
+                    {{ item.contents|raw }}
+                    {% endif %}
+                </li>
+                {% endfor %}
+
+                {{ post_menu_content|raw }}
+            </ul>
+        </div>
+    </div>
+</nav>

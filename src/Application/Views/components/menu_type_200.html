@@ -1,0 +1,43 @@
+<!-- SUB_MENU -->
+<aside class="main-sidebar sidebar-bg-dark sidebar-color-primary shadow">
+    <div class="brand-container">
+        <a href="{{ base_url }}" class="brand-link">
+            <span class="fas fa-users-cog me-2"></span>PM
+        </a>
+    </div>
+    <div class="sidebar">
+        <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-lte-toggle="treeview" role="menu"
+            data-accordion="false">
+            {{ pre_menu_content|raw }}
+
+            {% for item in menu_items %}
+            <li class="nav-item{{ item.active == true ? ' menu-open' : '' }} {{ item.nav_class }}">
+                {% if item.url %}
+                <a href="{{ item.url }}"
+                    class="nav-link{{ item.url == '#' ? ' prevent-default' }}{{ item.active == true ? ' active' }}">
+                    {% if item.before_icon %}
+                    <i class="nav-icon {{ item.before_icon }}"></i>
+                    {% endif %}
+
+                    <p>{{ item.title }}</p>
+
+                    {% if item.after_icon %}
+                    <i class="nav-icon {{ item.after_icon }}"></i>
+                    {% endif %}
+
+                    {% if item.end_icon %}
+                    <i class="end {{ item.end_icon }}"></i>
+                    {% endif %}
+                </a>
+                {% endif %}
+
+                {% if item.contents %}
+                {{ item.contents|raw }}
+                {% endif %}
+            </li>
+            {% endfor %}
+
+            {{ post_menu_content|raw }}
+        </ul>
+    </div>
+</aside>

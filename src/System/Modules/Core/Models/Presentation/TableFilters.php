@@ -1,7 +1,6 @@
 <?php
 
-namespace Core\Models;
-
+namespace Core\Models\Presentation;
 
 /**
  * Html table filter model.
@@ -201,8 +200,7 @@ class TableFilters
                     } elseif (is_array($filter_column['filter_data'])) {
                         $this->filter_data[$key] = $filter_column['filter_data'];
                     }
-                }
-                else if (isset($data['data'])) {
+                } elseif (isset($data['data'])) {
                     $this->filter_data[$key] = $data['data'];
                 }
             }
@@ -421,7 +419,7 @@ class TableFilters
             $attributes .= (' '.$column['input_attr']);
         }
         $html = '';
-        switch($column['type']) {
+        switch ($column['type']) {
             case 'date':
             case 'datetime':
             case 'dateinterval':
@@ -440,6 +438,7 @@ class TableFilters
                 // Reset to text
                 $column['type'] = 'text';
 
+                // no break
             case 'text':
                 $html = '<input type="'.$column['type'].'" class="'.$classes.'"'.$attributes;
                 if (!empty($column['filter_title'])) {
@@ -461,8 +460,7 @@ class TableFilters
                 $html = '<select class="'.$classes.'"'.$attributes.'>';
                 if (count($column['options']) == 0 && isset($this->filter_data[$name])) {
                     $html .= '<option value="'.$this->filter_data[$name]['value'].'">'.$this->filter_data[$name]['title'].'</option>';
-                }
-                elseif (empty($column['skip_empty_default'])) {
+                } elseif (empty($column['skip_empty_default'])) {
                     $html .= '<option value=""'.(!empty($column['default_disabled']) ? ' disabled="disabled"' : '').'>'.(!empty($column['filter_title']) ? $column['filter_title'] : '').'</option>';
                 }
                 if (!empty($column['options_groupped']) && is_array($column['options_groupped'])) {
@@ -656,7 +654,7 @@ class TableFilters
                         'title' => $value,
                         'value' => $value,
                     ];
-                } else if (preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $start)) {
+                } elseif (preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $start)) {
                     $return['query'] = "{$field} >= ? AND {$field} <= ? ";
                     $return['param'] = [strtotime("{$start} 00:00:00"), strtotime("{$start} 23:59:59")];
                     $return['data']  = [

@@ -392,7 +392,7 @@ class Router
      * @example Call function: <code>Router::jsonResponse($json_data);</code> add some data:
      *          <code>$json_data['xx'] = 1;</code> and on the end of script execution the $json_data
      *          array will be sent to client along with
-     *          content-type:text/javascript header.
+     *          content-type:application/json header.
      * @access  public
 
      * @return void
@@ -416,7 +416,7 @@ class Router
 
         // Register shutdown function once
         if (empty($json_request)) {
-            header('Content-Type:text/javascript; charset=utf-8');
+            header('Content-Type:application/json; charset=utf-8');
             register_shutdown_function(
                 function () {
                     $data = $GLOBALS['json_response_data'];
@@ -1018,7 +1018,7 @@ class Router
             // Echo response if there was any
             if ($response !== null) {
                 if (is_array($response)) {
-                    header('Content-Type:text/javascript; charset=utf-8');
+                    header('Content-Type:application/json; charset=utf-8');
                     echo json_encode($response);
                 } elseif (is_string($response) || is_numeric($response)) {
                     echo $response;

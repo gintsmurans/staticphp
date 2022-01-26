@@ -61,8 +61,8 @@ RUN wget -O - https://deb.nodesource.com/setup_16.x | bash \
 
 WORKDIR /srv/sites/web
 
-# Copy all files
-COPY . ./
+# Cache dependecies files first
+COPY composer.json composer.lock package.json package-lock.json requirements.txt ./
 
 # PHP
 RUN composer install
@@ -74,6 +74,8 @@ RUN npm install --no-optional \
 # Python
 RUN python3 -m pip install -r requirements.txt
 
+# Copy all files
+COPY . ./
 
 # ---------------------------------------------------------------------------
 # Run dev

@@ -59,6 +59,48 @@ class Config
     }
 
     /**
+     * Get view data value.
+     *
+     * Optionally set default value if there are no config value by $key found.
+     *
+     * @param string     $name    Name of the key
+     * @param mixed|null $default (default: null)
+     *
+     * @access public
+     * @static
+     * @return mixed Returns mixed data
+     */
+    public static function &getViewData(String $name, $default = false)
+    {
+        if (isset(self::$items['view_data'][$name])) {
+            return self::$items['view_data'][$name];
+        } else {
+            return $default;
+        }
+    }
+
+    /**
+     * Set view data configuration value.
+     *
+     * @param string|array $name  Key name
+     * @param mixed        $value Value to set (default: null)
+     *
+     * @access public
+     * @static
+     * @return void
+     */
+    public static function setViewData($name, $value = null)
+    {
+        if (is_array($name)) {
+            foreach ($name as $key => $value) {
+                self::$items['view_data'][$key] = $value;
+            }
+        } else {
+            self::$items['view_data'][$name] = $value;
+        }
+    }
+
+    /**
      * Merge configuration values.
      *
      * Merge configuration value by $name with $value. If $overwrite is set to true,

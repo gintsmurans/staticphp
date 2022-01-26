@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Models;
+namespace Core\Models\Presentation;
 
 /**
  * Html pages model, for quick record paging.

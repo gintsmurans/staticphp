@@ -145,9 +145,10 @@ To generate api documentation, install composer dev dependecies (`composer insta
 
 -   Tests most probably doesn't work anymore
 -   Update todo example app
--   Generate menus and submenus/sidebar using classes
+-   √ Generate menus and submenus/sidebar using classes
 -   Table presentation class
--   Update server to PHP 8.1
+-   √ Update server to PHP 8.1
+-   √ Update page layout to bootstrap 5
 
 ####v1.2.0
 

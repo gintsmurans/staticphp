@@ -1,7 +1,6 @@
 <?php
 
-namespace Core\Models;
-
+namespace Core\Models\Presentation;
 
 /**
  * Html table sort model.
