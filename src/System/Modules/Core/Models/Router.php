@@ -1058,7 +1058,12 @@ class Router
 
             // Call desctructor method
             if ($ref->hasMethod('destruct') === true) {
-                $response = $ref->getMethod('destruct')->invokeArgs(null, []);
+                try {
+                    $response = $ref->getMethod('destruct')->invokeArgs(null, []);
+                } catch (ErrorMessage $e) {
+                    echo $e->outputMessage();
+                    exit;
+                }
             }
         } else {
             $msg = 'Controller file for path: "'.self::$requested_url.'" was not found';

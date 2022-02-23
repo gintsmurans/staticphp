@@ -60,7 +60,7 @@ class Timers
      */
     public static function stopTimer($name)
     {
-        self::$finished_timers[$name] = round(microtime(true) - array_shift(self::$started_timers), 5);
+        self::$finished_timers[$name] = round(microtime(true) - array_pop(self::$started_timers), 5);
 
         return self::$finished_timers[$name];
     }
