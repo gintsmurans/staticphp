@@ -149,8 +149,11 @@ To generate api documentation, install composer dev dependecies (`composer insta
 
 -   Tests most probably doesn't work anymore
 -   Update todo example app
+-   √ Bring Exceptions to its own folder
+-   √ Use full namespaces also for Core\Models. For example `use \Core\Models\Router;` now is `use \System\Modules\Core\Router;`
+-   √ Update url structure to work without ending slash. Now in templates you do this: `{{ controller_url }}/test-page` instead of - `{{ controller_url }}test-page`.
 -   √ Generate menus and submenus/sidebar using classes
--   Table presentation class
+-   √ Table presentation class
 -   √ Update server to PHP 8.1
 -   √ Update page layout to bootstrap 5
 

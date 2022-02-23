@@ -2,6 +2,8 @@
 
 namespace Defaults\Controllers;
 
+use \System\Modules\Core\Exceptions\ErrorMessage;
+
 use \System\Modules\Core\Controllers\Controller;
 use \System\Modules\Core\Models\Load;
 use \System\Modules\Core\Models\Timers;
@@ -49,6 +51,17 @@ class Welcome extends Controller
     {
         // Do something heavy and add timer mark
         Timers::markTime('Before views');
+
+        if ($param1 == 'error') {
+            throw new ErrorMessage(
+                'Example error',
+                1001,
+                'Small description',
+                $param2 == 'json' ? ErrorMessage::OUTPUT_TYPE_JSON : ErrorMessage::OUTPUT_TYPE_HTML,
+                500,
+                true
+            );
+        }
 
         // Load view
         // Pass [key => value] as second parameter, to get variables available in your view

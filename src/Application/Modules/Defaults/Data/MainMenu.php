@@ -44,6 +44,26 @@ class MainMenu extends Menu
                     return Router::$method == 'testMe';
                 }
             ],
+            'error_example' => [
+                'title' => 'Error Example',
+                'url' => '%base_url/defaults/welcome/index/error',
+                'show' => function () {
+                    return Config::$items['debug'] == true;
+                },
+                'active' => function () {
+                    return Router::$method == 'example';
+                }
+            ],
+            'error_example_json' => [
+                'title' => 'Error JSON Example',
+                'url' => '%base_url/defaults/welcome/index/error/json',
+                'show' => function () {
+                    return Config::$items['debug'] == true;
+                },
+                'active' => function () {
+                    return Router::$method == 'example';
+                }
+            ],
         ];
     }
 }

@@ -2,6 +2,9 @@
 
 namespace System\Modules\Core\Models;
 
+use \System\Modules\Core\Exceptions\RouterException;
+use \System\Modules\Core\Exceptions\ErrorMessage;
+
 use \System\Modules\Core\Models\Load;
 use \System\Modules\Core\Models\Config;
 
@@ -978,14 +981,24 @@ class Router
             // Call our contructor, if there is any
             $response = null;
             if ($ref->hasMethod('construct') === true) {
-                $response = $ref->getMethod('construct')->invokeArgs(null, [&$class, &$method]);
+                try {
+                    $response = $ref->getMethod('construct')->invokeArgs(null, [&$class, &$method]);
+                } catch (ErrorMessage $e) {
+                    echo $e->outputMessage();
+                    exit;
+                }
             }
 
             // Call requested method
             $method_response = null;
             if ($ref->hasMethod($method) === true) {
                 $class_method = $ref->getMethod($method);
-                $method_response = $class_method->invokeArgs(null, self::$segments);
+                try {
+                    $method_response = $class_method->invokeArgs(null, self::$segments);
+                } catch (ErrorMessage $e) {
+                    echo $e->outputMessage();
+                    exit;
+                }
             } elseif ($ref->hasMethod('__callStatic') === true) {
                 // Call __callStatic
                 $arguments = self::$segments;
@@ -1005,7 +1018,12 @@ class Router
                 }
 
                 // Invoke __callStatic
-                $method_response = $ref->getMethod('__callStatic')->invoke(null, $method, $arguments);
+                try {
+                    $method_response = $ref->getMethod('__callStatic')->invoke(null, $method, $arguments);
+                } catch (ErrorMessage $e) {
+                    echo $e->outputMessage();
+                    exit;
+                }
             } else {
                 // Error - method not found
                 throw new RouterException('Method "'.$method.'" of class "'.$class.'" could not be found');
