@@ -7,11 +7,10 @@
 
         <title>400 {{ title ? title : 'Bad Request' }}</title>
 
-        <link href="/assets/index.css" rel="stylesheet" type="text/css" />
+        {% include 'Errors/styles.html' %}
     </head>
     <body class="error-page">
         <div class="container">
-            <br /><br /><br />
             <h1 class="text-center">400 {{ title ? title|raw : 'Bad Request' }}</h1>
             <p id="description" class="text-center">{{ description|raw }}</p>
         </div>

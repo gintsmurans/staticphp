@@ -98,6 +98,7 @@ class Router
 
     /**
      * Original request segments, before processing Config/Routing.php.
+     * ! Segments are anything thats beyond namespace/class/method - parameters.
      *
      * (default value: [])
      *
@@ -260,7 +261,7 @@ class Router
      */
     public static function baseUrl($url = '')
     {
-        return self::$base_url.$url;
+        return self::$base_url.self::ensureStartsWithSlash($url);
     }
 
     /**
@@ -280,10 +281,10 @@ class Router
      */
     public static function siteUrl($url = '', $prefix = null, $current_prefix = true)
     {
-        $url002  = !empty($prefix) ? trim($prefix, '/').'/' : '';
-        $url002 .= !empty($current_prefix) && !empty(self::$prefixes_url) ? self::$prefixes_url.'/' : '';
+        $url002 = !empty($prefix) ? self::ensureStartsWithSlash($prefix) : '';
+        $url002 .= !empty($current_prefix) && !empty(self::$prefixes_url) ? self::ensureStartsWithSlash(self::$prefixes_url) : '';
 
-        return self::$base_url.$url002.$url;
+        return self::$base_url.$url002.self::ensureStartsWithSlash($url);
     }
 
     /**
@@ -380,7 +381,7 @@ class Router
             $filename = "E{$error_code}";
         }
         $data = ['code' => $error_code, 'title' => $error_string, 'description' => $description];
-        Load::view("Errors/{$filename}.html", $data);
+        Load::view(["Errors/{$filename}.html"], $data);
         exit(10);
     }
 
@@ -540,6 +541,21 @@ class Router
     }
 
     /**
+     * Ensure $string starts with a slash
+     *
+     * @param string $string String
+     *
+     * @access public
+     * @static
+     *
+     * @return string
+     */
+    public static function ensureStartsWithSlash(string $string): string
+    {
+        return (!empty($string) && $string[0] != '/' ? "/{$string}" : $string);
+    }
+
+    /**
      * Parse url to find file, class and method to be loaded as controller.
      *
      * @param string $url Url
@@ -566,12 +582,12 @@ class Router
         }
 
         // Get class, method and file from $url
-        $data['module']     = array_shift($tmp);
-        $data['method']     = array_pop($tmp);
-        $data['class']      = end($tmp);
+        $data['module'] = array_shift($tmp);
+        $data['method'] = array_pop($tmp);
+        $data['class'] = end($tmp);
         $data['controller'] = implode('/', $tmp);
-        $data['file']       = $data['module'] . '/Controllers/' . $data['controller'];
-        $data['namespace']  = $data['module'] . '\\Controllers\\';
+        $data['file'] = $data['module'] . '/Controllers/' . $data['controller'];
+        $data['namespace'] = $data['module'] . '\\Controllers';
 
         return $data;
     }
@@ -653,10 +669,10 @@ class Router
         }
 
         // Get some config variables
-        $uri                 = Config::$items['request_uri'];
-        $script_name         = Config::$items['script_name'];
-        $script_path         = trim(dirname($script_name), '/.');
-        self::$base_url      = Config::$items['base_url'];
+        $uri = Config::$items['request_uri'];
+        $script_name = Config::$items['script_name'];
+        $script_path = trim(dirname($script_name), '/.');
+        self::$base_url = Config::$items['base_url'];
         self::$requested_url = $uri;
 
         // Set some variables
@@ -670,8 +686,8 @@ class Router
                     self::$domain_url .= ':'.$_SERVER['SERVER_PORT'];
                 }
             }
-            self::$domain_url .= '/';
-            self::$base_url = self::$domain_url.(!empty($script_path) ? $script_path.'/' : '');
+
+            self::$base_url = self::$domain_url.(!empty($script_path) ? self::ensureStartsWithSlash($script_path) : '');
         }
 
         // Replace script_path in uri and remove query string
@@ -760,7 +776,7 @@ class Router
         $count = count($segments);
 
         // Namespace always starts with a module
-        self::$namespace = '\\'.$module.'\\Controllers\\';
+        self::$namespace = '\\'.$module.'\\Controllers';
 
         // Look for controller, class and method in segments
         foreach ($segments as $one) {
@@ -768,14 +784,14 @@ class Router
                 $count -= 1;
                 continue;
             }
-            $slice        = array_slice($segments, 0, $count);
-            $filename     = implode(DS, $slice);
+            $slice = array_slice($segments, 0, $count);
+            $filename = implode(DS, $slice);
             $path_to_file = APP_MODULES_PATH.$module.'/Controllers'.DS.$filename.'.php';
 
             if (is_file($path_to_file)) {
                 $namespace = array_slice($segments, 0, $count - 1);
                 if (!empty($namespace)) {
-                    self::$namespace .= implode('\\', $namespace) . '\\';
+                    self::$namespace .= '\\'.implode('\\', $namespace);
                 }
 
                 self::$module = $module;
@@ -837,11 +853,11 @@ class Router
 
         // Set default class and method
         self::$default_route = $tmp;
-        self::$namespace     = $tmp['namespace'];
-        self::$module        = $tmp['module'];
-        self::$controller    = $tmp['controller'];
-        self::$class         = $tmp['class'];
-        self::$method        = $tmp['method'];
+        self::$namespace = $tmp['namespace'];
+        self::$module = $tmp['module'];
+        self::$controller = $tmp['controller'];
+        self::$class = $tmp['class'];
+        self::$method = $tmp['method'];
 
         if (count(self::$segments) === 0) {
             // Defaults
@@ -867,10 +883,12 @@ class Router
         }
 
         // Set url to the method
-        self::$method_url = self::$module.'/';
-        self::$method_url .= str_replace(self::$module.'/Controllers/', '', self::$file);
-        self::$method_url .= '/'.self::$method;
-        self::$method_url = self::namespaceToUrl(self::$method_url);
+        if (self::$file !== null) {
+            self::$method_url = self::$module.'/';
+            self::$method_url .= str_replace(self::$module.'/Controllers/', '', self::$file);
+            self::$method_url .= '/'.self::$method;
+            self::$method_url = self::namespaceToUrl(self::$method_url);
+        }
     }
 
     /**
@@ -899,11 +917,6 @@ class Router
         // Load current file if $file parameter is empty
         if (empty($file)) {
             $file = APP_MODULES_PATH.self::$file.'.php';
-        }
-
-        // Load current module if $module parameter is empty
-        if (empty($namespace)) {
-            $namespace = self::$namespace;
         }
 
         // Load current namespace if $namespace parameter is empty
@@ -953,7 +966,7 @@ class Router
         // Check for $file
         if (is_file($file)) {
             // Namespaces support
-            $class = $namespace.$class;
+            $class = $namespace.'\\'.$class;
 
             // Create new reflection object from the controller class
             try {

@@ -2,6 +2,8 @@
 
 namespace System\Modules\Presentation\Models\Menu;
 
+use \Twig\TwigFunction;
+
 use \System\Modules\Core\Models\Load;
 use \System\Modules\Core\Models\Config;
 use \System\Modules\Core\Models\Router;
@@ -47,10 +49,10 @@ class Menu
                 '%method',
             ],
             [
-                rtrim(Router::$base_url, '/'),
-                rtrim(Controller::moduleUrl(), '/'),
-                rtrim(Controller::controllerUrl(), '/'),
-                rtrim(Controller::methodUrl(), '/'),
+                Router::$base_url,
+                Controller::moduleUrl(),
+                Controller::controllerUrl(),
+                Controller::methodUrl(),
                 Router::$module,
                 Router::$controller,
                 Router::$class,
@@ -111,7 +113,7 @@ class Menu
     // MARK: Twig
     public static function registerTwig()
     {
-        $function = new \Twig\TwigFunction(
+        $function = new TwigFunction(
             'DisplayMenu',
             function (Menu $instance) {
                 return $instance->html();

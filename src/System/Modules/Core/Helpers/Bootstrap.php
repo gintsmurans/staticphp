@@ -131,7 +131,7 @@ if (Config::get('disable_twig') !== true) {
     // Site url filter
     $filter = new \Twig\TwigFilter(
         'siteUrl',
-        function ($url = null, $prefix = null, $current_prefix = true) {
+        function ($url = '', $prefix = null, $current_prefix = true) {
             return Router::siteUrl($url, $prefix, $current_prefix);
         }
     );
@@ -140,7 +140,7 @@ if (Config::get('disable_twig') !== true) {
     // Site url function
     $function = new \Twig\TwigFunction(
         'siteUrl',
-        function ($url = null, $prefix = null, $current_prefix = true) {
+        function ($url = '', $prefix = null, $current_prefix = true) {
             return Router::siteUrl($url, $prefix, $current_prefix);
         }
     );

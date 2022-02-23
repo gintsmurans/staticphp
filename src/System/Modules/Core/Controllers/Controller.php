@@ -52,7 +52,7 @@ class Controller
      */
     public static function moduleUrl()
     {
-        return Router::siteUrl(strtolower(preg_replace('/(.)([A-Z])/', '$1-$2', Router::$module))) . '/';
+        return Router::siteUrl(strtolower(preg_replace('/(.)([A-Z])/', '$1-$2', Router::$module)));
     }
 
     /**
@@ -60,7 +60,7 @@ class Controller
      */
     public static function methodUrl()
     {
-        return Router::siteUrl(Router::$method_url) . '/';
+        return Router::siteUrl(Router::$method_url);
     }
 
     /**
@@ -69,11 +69,8 @@ class Controller
     public static function controllerUrl()
     {
         // Handle empty method calls
-        $method = self::methodUrl();
-        if (substr($method, -1, 1) == '/') {
-            $method = substr($method, 0, -1);
-        }
-        return dirname("{$method}safe") . '/';
+        $methodUrl = self::methodUrl();
+        return dirname($methodUrl);
     }
 
     /**

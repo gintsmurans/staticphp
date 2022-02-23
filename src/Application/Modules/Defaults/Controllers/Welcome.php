@@ -74,6 +74,9 @@ class Welcome extends Controller
             $viewData['included_files'][] = $file;
         }
 
+        // Router debug output
+        // \System\Modules\Core\Models\Router::debug();
+
         Load::view(['Defaults/Views/example.html'], $viewData);
     }
 }
