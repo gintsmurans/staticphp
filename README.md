@@ -51,6 +51,10 @@ _\* Take a look at home controller in ./somedir/src/Application/Modules/Controll
 
 All assets are stored in _./somedir/src/Application/Public/assets/_ directory. StaticPHP uses npm to handle css (using SCSS) and js assets, but you can also do it manually.
 
+### Cron
+
+Running controller from command line can be done this way: `php -f /srv/sites/gm.lv/sla/src/Application/Public/index.php -- --query /defaults/console/refresh`
+
 ### Api
 
 [Api documentation](http://staticphp.gm.lv/docs/)\*
