@@ -1,6 +1,6 @@
 [![apidocs](http://img.shields.io/badge/api-master--dev-brightgreen.svg)](http://staticphp.gm.lv/docs/) [![packagist](http://img.shields.io/badge/packagist-master--dev-brightgreen.svg)](https://packagist.org/packages/4apps/staticphp)
 
-# [[logo.png|height=50px]] StaticPHP
+# ![logo|50](logo.png) StaticPHP
 
 Simple, modular php framework.
 
