@@ -1,22 +1,11 @@
 <?php
 
-namespace Core\Models\Presentation;
+namespace System\Modules\Presentation\Models\Menu;
 
-use \Core\Models\Load;
-use \Core\Models\Config;
-use \Core\Models\Router;
-use \Core\Controllers\Controller;
-
-/**
- * Menu Type
- */
-abstract class MenuType
-{
-    const MAIN_MENU = 100;
-    const SUB_MENU = 200;
-    const SUB_MENU_NEXT_LEVEL = 201;
-    const TABS = 300;
-}
+use \System\Modules\Core\Models\Load;
+use \System\Modules\Core\Models\Config;
+use \System\Modules\Core\Models\Router;
+use \System\Modules\Core\Controllers\Controller;
 
 /**
  * Generate Menus
@@ -116,7 +105,7 @@ class Menu
             'post_menu_content' => $postMenuContent,
             'menu_items' => $menuItems,
         ];
-        return Load::view("Views/components/menu_type_{$this->type}.html", $viewData, true);
+        return Load::view(["Views/components/menu_type_{$this->type}.html"], $viewData, true);
     }
 
     // MARK: Twig

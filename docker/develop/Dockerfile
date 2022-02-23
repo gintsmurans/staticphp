@@ -13,4 +13,4 @@ RUN envsubst < ./docker/develop/conf/supervisord.services.conf > /etc/supervisor
 
 CMD ["./docker/develop/scripts/run.bash"]
 
-EXPOSE 5000
+EXPOSE 5500

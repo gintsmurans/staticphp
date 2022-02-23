@@ -1,120 +1,15 @@
 <?php
 
-namespace Core\Models;
+namespace System\Modules\Core\Models;
 
-use \Core\Models\Config;
+use \System\Modules\Core\Models\Config;
+use \System\Modules\Core\Models\Router;
 
 /**
  * Core class for loading resources.
  */
 class Load
 {
-    /**
-     * Global configuration array of mixed data.
-     *
-     * (default value: [])
-     *
-     * @deprecated
-     * @var array
-     * @access public
-     * @static
-     */
-    public static $config = [];
-
-
-    /*
-    |-------------------------------------------------------------------------------------------------------------------
-    | Configuration Methods
-    |-------------------------------------------------------------------------------------------------------------------
-    */
-
-    /**
-     * Get value from config by $name.
-     *
-     * Optionally set default value if there are no config value by $name found.
-     *
-     * @deprecated
-     * @access public
-     * @static
-     * @param  string     $name
-     * @param  mixed|null $default (default: null)
-     * @return mixed      Returns mixed data
-     */
-    public static function &get($name, $default = null)
-    {
-        return (isset(self::$config[$name]) ? self::$config[$name] : $default);
-    }
-
-    /**
-     * Set configuration value.
-     *
-     * @deprecated
-     * @access public
-     * @static
-     * @param  string $name
-     * @param  mixed  $value
-     * @return mixed  Returns new value
-     */
-    public static function set($name, $value)
-    {
-        return (self::$config[$name] = $value);
-    }
-
-    /**
-     * Merge configuration values.
-     *
-     * Merge configuration value by $name with $value. If $overwrite is set to true,
-     *  same key values will be overwritten.
-     *
-     * @deprecated
-     * @access public
-     * @static
-     * @param  string $name
-     * @param  mixed  $value
-     * @param  bool   $owerwrite (default: true)
-     * @return mixed
-     */
-    public static function merge($name, $value, $owerwrite = true)
-    {
-        if (!isset(self::$config[$name])) {
-            return (self::$config[$name] = $value);
-        }
-
-        switch (true) {
-            case is_array(self::$config[$name]):
-                if (empty($owerwrite)) {
-                    return (self::$config[$name] += $value);
-                } else {
-                    return (self::$config[$name] = array_merge((array) self::$config[$name], (array) $value));
-                }
-                break;
-
-            case is_object(self::$config[$name]):
-                if (empty($owerwrite)) {
-                    return (self::$config[$name] = (object) ((array) self::$config[$name] + (array) $value));
-                } else {
-                    return (self::$config[$name] = (object) array_merge((array) self::$config[$name], (array) $value));
-                }
-                break;
-
-            case is_int(self::$config[$name]):
-            case is_float(self::$config[$name]):
-                return (self::$config[$name] += $value);
-                break;
-
-            case is_string(self::$config[$name]):
-            default:
-                return (self::$config[$name] .= $value);
-                break;
-        }
-    }
-
-    /*
-    |-------------------------------------------------------------------------------------------------------------------
-    | Filesystem Methods
-    |-------------------------------------------------------------------------------------------------------------------
-    */
-
     /**
      * Generate UUID v4.
      *
@@ -123,11 +18,13 @@ class Load
      * @static
      * @return string
      */
-    public static function uuid4()
+    public static function uuid4(): string
     {
-        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        return sprintf(
+            '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
             // 32 bits for "time_low"
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
 
             // 16 bits for "time_mid"
             mt_rand(0, 0xffff),
@@ -142,7 +39,9 @@ class Load
             mt_rand(0, 0x3fff) | 0x8000,
 
             // 48 bits for "node"
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff)
         );
     }
 
@@ -154,7 +53,7 @@ class Load
      * @static
      * @return string
      */
-    public static function randomHash()
+    public static function randomHash(): string
     {
         return sha1(self::uuid4());
     }
@@ -174,9 +73,9 @@ class Load
      * @static
      * @param  string   $filename
      * @param  bool     $randomize             (default: false)
-     * @param  bool     $create_directories    (default: false)
-     * @param  int      $levels_deep           (default: 2)
-     * @param  int      $directory_name_length (default: 2)
+     * @param  bool     $createDirectories    (default: false)
+     * @param  int      $levelsDeep           (default: 2)
+     * @param  int      $directoryNameLength (default: 2)
      * @return string[] An array of string objects:
      *                  <ul>
      *                  <li>'hash_dir' Contains only hashed directory (e.g. ge/ma);</li>
@@ -189,13 +88,12 @@ class Load
      *                  </ul>
      */
     public static function hashedPath(
-        $filename,
-        $randomize = false,
-        $create_directories = false,
-        $levels_deep = 2,
-        $directory_name_length = 2
-    )
-    {
+        string $filename,
+        bool $randomize = false,
+        bool $createDirectories = false,
+        int $levelsDeep = 2,
+        int $directoryNameLength = 2
+    ): array {
         // Explode path to get filename
         $parts = explode(DIRECTORY_SEPARATOR, $filename);
 
@@ -208,7 +106,7 @@ class Load
         $data['ext'] = (count($data['filename']) > 1 ? array_pop($data['filename']) : '');
         $data['filename'] = (empty($randomize) ? implode('.', $data['filename']) : self::randomHash());
 
-        if (strlen($data['filename']) < $levels_deep * $directory_name_length) {
+        if (strlen($data['filename']) < $levelsDeep * $directoryNameLength) {
             throw new \Exception(
                 '
                     Filename length too small to satisfy
@@ -222,8 +120,8 @@ class Load
         $dir = (empty($parts) ? '' : implode('/', $parts).'/');
 
         // Create hashed directory
-        for ($i = 1; $i <= $levels_deep; ++$i) {
-            $data['hash_dir'] .= substr($data['filename'], -1 * $directory_name_length * $i, $directory_name_length);
+        for ($i = 1; $i <= $levelsDeep; ++$i) {
+            $data['hash_dir'] .= substr($data['filename'], -1 * $directoryNameLength * $i, $directoryNameLength);
             $data['hash_dir'] .= '/';
         }
 
@@ -233,7 +131,7 @@ class Load
         $data['hash_file'] = $data['hash_dir'].$data['filename'].(empty($data['ext']) ? '' : '.'.$data['ext']);
 
         // Create directories
-        if (!empty($create_directories) && !is_dir($data['dir'])) {
+        if (!empty($createDirectories) && !is_dir($data['dir'])) {
             mkdir($data['dir'], 0777, true);
         }
 
@@ -249,7 +147,7 @@ class Load
      * @param  string $filename
      * @return void
      */
-    public static function deleteHashedFile($filename)
+    public static function deleteHashedFile(string $filename): void
     {
         $path = self::hashedPath($filename);
 
@@ -289,16 +187,16 @@ class Load
      *
      * @access public
      * @static
-     * @param  string|array $files
+     * @param  array $files
      * @param  string|null  $project (default: null)
      * @return void
      */
-    public static function config($files, $module = null, $project = null, &$config = null)
+    public static function config(array $files, ?string $module = null, ?string $project = null, ?array &$config = null): void
     {
         if ($config === null) {
-            $config = & self::$config;
+            $config = & Config::$items;
         } else {
-            self::$config = &$config;
+            Config::$items = &$config;
         }
 
         foreach ((array) $files as $key => $name) {
@@ -329,11 +227,11 @@ class Load
      *
      * @access public
      * @static
-     * @param  string|array $files
+     * @param  array $files
      * @param  string|null  $project (default: null)
      * @return void
      */
-    public static function controller($files, $module = null, $project = null)
+    public static function controller(array $files, ?string $module = null, ?string $project = null): void
     {
         foreach ((array) $files as $key => $name) {
             $project1 = $project;
@@ -363,11 +261,11 @@ class Load
      *
      * @access public
      * @static
-     * @param  string|array $files
+     * @param  array $files
      * @param  string|null  $project (default: null)
      * @return void
      */
-    public static function model($files, $module = null, $project = null)
+    public static function model(array $files, ?string $module = null, ?string $project = null): void
     {
         foreach ((array) $files as $key => $name) {
             $project1 = $project;
@@ -397,11 +295,11 @@ class Load
      *
      * @access public
      * @static
-     * @param  string|array $files
+     * @param  array $files
      * @param  string|null  $project (default: null)
      * @return void
      */
-    public static function helper($files, $module = null, $project = null)
+    public static function helper(array $files, ?string $module = null, ?string $project = null): void
     {
         foreach ((array) $files as $key => $name) {
             $project1 = $project;
@@ -431,18 +329,18 @@ class Load
      *
      * @access public
      * @static
-     * @param  string|array $files
+     * @param  array $files
      * @param  array        $data  (default: [])
      * @param  bool         $return (default: false)
      * @return string|bool
      */
-    public static function view($files, &$data = [], $return = false)
+    public static function view(array $files, array &$data = [], bool $return = false)
     {
-        static $globals_added = false;
+        static $globalsAdded = false;
 
         // Check for global views variables, can be set, for example, by controller's constructor
-        if (!empty(self::$config['view_data'])) {
-            $data = (array) $data + (array) self::$config['view_data'];
+        if (!empty(Config::$items['view_data'])) {
+            $data = (array) $data + (array) Config::$items['view_data'];
         }
 
         if (empty(Config::$items['view_engine'])) {
@@ -450,7 +348,7 @@ class Load
                 return false;
             }
 
-            $config = self::$config;
+            $config = Config::$items;
             foreach ((array) $files as $key => $file) {
                 require APP_MODULES_PATH.$file;
             }
@@ -459,9 +357,9 @@ class Load
         }
 
         // Add default view data
-        if (empty($globals_added)) {
+        if (empty($globalsAdded)) {
             Config::$items['view_engine']->addGlobal('env', $_ENV);
-            Config::$items['view_engine']->addGlobal('config', self::$config);
+            Config::$items['view_engine']->addGlobal('config', Config::$items);
             Config::$items['view_engine']->addGlobal('session', $_SESSION ?? []);
             Config::$items['view_engine']->addGlobal('cookie', $_COOKIE ?? []);
             Config::$items['view_engine']->addGlobal('base_url', Router::$base_url);
@@ -469,7 +367,7 @@ class Load
             Config::$items['view_engine']->addGlobal('class', Router::$class);
             Config::$items['view_engine']->addGlobal('method', Router::$method);
             Config::$items['view_engine']->addGlobal('segments', Router::$segments);
-            $globals_added = true;
+            $globalsAdded = true;
         }
 
         // Load view data

@@ -2,9 +2,9 @@
 
 namespace Defaults\Controllers;
 
-use \Core\Controllers\Controller;
-use \Core\Models\Load;
-use \Core\Models\Timers;
+use \System\Modules\Core\Controllers\Controller;
+use \System\Modules\Core\Models\Load;
+use \System\Modules\Core\Models\Timers;
 
 /**
  * Welcome page controller.
@@ -54,7 +54,7 @@ class Welcome extends Controller
         // Pass [key => value] as second parameter, to get variables available in your view
         self::render('index.html');
 
-        // Or call Load::view('Defaults/Views/index.html');
+        // Or call Load::view(['Defaults/Views/index.html']);
     }
 
     /**
@@ -66,14 +66,14 @@ class Welcome extends Controller
      */
     public static function example()
     {
-        $view_data = [
+        $viewData = [
             'included_files' => []
         ];
 
         foreach (get_included_files() as $file) {
-            $view_data['included_files'][] = $file;
+            $viewData['included_files'][] = $file;
         }
 
-        Load::view('Defaults/Views/example.html', $view_data);
+        Load::view(['Defaults/Views/example.html'], $viewData);
     }
 }

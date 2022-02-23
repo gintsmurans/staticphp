@@ -1,9 +1,8 @@
 <?php
 
-namespace Core\Models;
+namespace System\Modules\Core\Models;
 
-use \Core\Models\Timers;
-
+use \System\Modules\Core\Models\Timers;
 
 /**
  * Core logger class.

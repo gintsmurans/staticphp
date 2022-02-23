@@ -1,9 +1,9 @@
 <?php
 
-namespace Core\Models;
+namespace System\Modules\Core\Models;
 
-use Core\Models\Config;
-use Core\Models\Timers;
+use \System\Modules\Core\Models\Config;
+use \System\Modules\Core\Models\Timers;
 
 /**
  * Database wrapper for pdo.
@@ -138,7 +138,7 @@ class Db
             $log = $query;
             if (!empty($data)) {
                 $log_data = array_map(
-                    function($item) {
+                    function ($item) {
                         return (is_integer($item) == true ? $item : "'".$item."'");
                     },
                     (array)$data

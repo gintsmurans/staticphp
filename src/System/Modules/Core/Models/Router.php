@@ -1,9 +1,9 @@
 <?php
 
-namespace Core\Models;
+namespace System\Modules\Core\Models;
 
-use \Core\Models\Load;
-use \Core\Models\Config;
+use \System\Modules\Core\Models\Load;
+use \System\Modules\Core\Models\Config;
 
 /**
  * Router class.
@@ -750,7 +750,7 @@ class Router
     public static function findControllerInSegments()
     {
         // Fix segment names to translate "-" in url's to camelCase
-        $segments = array_map(['\\Core\\Models\\Router', 'urlToNamespace'], self::$segments);
+        $segments = array_map([self::class, 'urlToNamespace'], self::$segments);
 
         // First one in segments is always a module
         $module = array_shift($segments);

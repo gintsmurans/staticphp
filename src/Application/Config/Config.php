@@ -2,8 +2,7 @@
 
 use Symfony\Component\Dotenv\Dotenv;
 
-use \Core\Models\Logger;
-
+use \System\Modules\Core\Models\Logger;
 
 /**
  * We are gonna start with loading of the .env files

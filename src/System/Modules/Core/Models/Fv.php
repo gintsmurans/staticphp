@@ -30,9 +30,9 @@
     <div><input type="text" name="test[]"<?php echo Fv::setInputValue(['test', 0]); ?> /></div>
 */
 
-namespace Core\Models;
+namespace System\Modules\Core\Models;
 
-use Core\Models\Config;
+use \System\Modules\Core\Models\Config;
 
 /**
  * Form validation class.
@@ -287,7 +287,7 @@ class Fv
         $string = preg_replace('#(<)([a-z]+[^>]*(</[a-z]*>|</|$))#iu', '&lt;$2', $string);
 
         // Avoid php tags
-        $string = str_ireplace(["\t", '<?php', '<?', '?>'],  [' ', '&lt;?php', '&lt;?', '?&gt;'], $string);
+        $string = str_ireplace(["\t", '<?php', '<?', '?>'], [' ', '&lt;?php', '&lt;?', '?&gt;'], $string);
 
         // Clean empty tags
         $string = preg_replace('#<(?!input¦br¦img¦hr¦\/)[^>]*>\s*<\/[^>]*>#iu', '', $string);

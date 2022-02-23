@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Models\Presentation;
+namespace System\Modules\Presentation\Models\Tables;
 
 /**
  * Html table filter model.

@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Models;
+namespace System\Modules\Core\Models;
 
 /**
  * Core class for loading resources.
@@ -36,7 +36,7 @@ class Config
      * @param  mixed|null $default (default: null)
      * @return mixed      Returns mixed data
      */
-    public static function &get(String $name, $default = false)
+    public static function &get(string $name, $default = false)
     {
         if (isset(self::$items[$name])) {
             return self::$items[$name];
@@ -53,7 +53,7 @@ class Config
      * @param  string $name
      * @param  mixed  $value
      */
-    public static function set(String $name, $value)
+    public static function set(string $name, $value)
     {
         self::$items[$name] = $value;
     }
@@ -70,7 +70,7 @@ class Config
      * @static
      * @return mixed Returns mixed data
      */
-    public static function &getViewData(String $name, $default = false)
+    public static function &getViewData(string $name, $default = false)
     {
         if (isset(self::$items['view_data'][$name])) {
             return self::$items['view_data'][$name];
@@ -89,7 +89,7 @@ class Config
      * @static
      * @return void
      */
-    public static function setViewData($name, $value = null)
+    public static function setViewData($name, $value = null): void
     {
         if (is_array($name)) {
             foreach ($name as $key => $value) {
@@ -113,7 +113,7 @@ class Config
      * @param  bool   $owerwrite (default: true)
      * @return mixed
      */
-    public static function merge($name, $value, $owerwrite = true)
+    public static function merge(string $name, $value, bool $owerwrite = true)
     {
         if (!isset(self::$items[$name])) {
             return (self::$items[$name] = $value);
@@ -156,11 +156,11 @@ class Config
      *
      * @access public
      * @static
-     * @param  string|array $files
+     * @param  array $files
      * @param  string|null  $project (default: null)
      * @return void
      */
-    public static function load($files, $module = null, $project = null)
+    public static function load(array $files, ?string $module = null, ?string $project = null)
     {
         Load::config($files, $module, $project, self::$items);
     }

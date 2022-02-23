@@ -1,9 +1,8 @@
 <?php
 
-namespace Core\Models;
+namespace System\Modules\Core\Models;
 
-use \Core\Models\Config;
-
+use \System\Modules\Core\Models\Config;
 
 /**
  *  Cache library for various cache backends. Currenty only redis is supported.
@@ -208,7 +207,7 @@ class Cache
 
         if (is_array($value)) {
             $value = json_encode($value);
-        } else if (is_bool($value) || is_numeric($value) || is_string($value)) {
+        } elseif (is_bool($value) || is_numeric($value) || is_string($value)) {
             $value = json_encode(['cacher___encoded' => $value]);
         } else {
             throw new \Exception('Data type is not yet supported');

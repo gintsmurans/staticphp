@@ -1,11 +1,10 @@
 <?php
 
-namespace Core\Controllers;
+namespace System\Modules\Core\Controllers;
 
-use Core\Models\Load;
-use Core\Models\Config;
-use Core\Models\Router;
-
+use \System\Modules\Core\Models\Load;
+use \System\Modules\Core\Models\Config;
+use \System\Modules\Core\Models\Router;
 
 /**
  * StaticPHP's base controller, sets various class variables and offers additional methods.

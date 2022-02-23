@@ -1,11 +1,11 @@
 <?php
 
-namespace Core\Models;
+namespace System\Modules\Core\Models;
 
-use \Core\Models\Db;
-use \Core\Models\Cache;
-use \Core\Models\Config;
-use \Core\Models\Router;
+use \System\Modules\Core\Models\Db;
+use \System\Modules\Core\Models\Cache;
+use \System\Modules\Core\Models\Config;
+use \System\Modules\Core\Models\Router;
 
 /**
  *  Internationalization (i18n).
@@ -354,7 +354,7 @@ class i18n
      * @param  null $escape
      * @return string
      */
-    public static function item($ident, $replace = array(), $escape = NULL)
+    public static function item($ident, $replace = array(), $escape = null)
     {
         return empty($replace) ? constant($ident) : str_replace(array_keys($replace), $replace, constant($ident));
     }
@@ -377,7 +377,7 @@ class i18n
 
         if ($language_key === null) {
             $language_key = self::$language_key;
-        } else if (!isset(self::$cache[$language_key])) {
+        } elseif (!isset(self::$cache[$language_key])) {
             self::load($language_key);
         }
 
@@ -438,7 +438,7 @@ class i18n
 
         if ($language_key === null) {
             $language_key = self::$language_key;
-        } else if (!isset(self::$cache[$language_key])) {
+        } elseif (!isset(self::$cache[$language_key])) {
             self::load($language_key);
         }
 
@@ -515,7 +515,7 @@ class i18n
 
         // Create directories
         if (!is_dir($cache_dir)) {
-            mkdir($cache_dir, 0777, TRUE);
+            mkdir($cache_dir, 0777, true);
         }
 
         return $cache_file;

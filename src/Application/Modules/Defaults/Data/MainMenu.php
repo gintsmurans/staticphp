@@ -2,10 +2,11 @@
 
 namespace Defaults\Data;
 
-use \Core\Models\Router;
-use \Core\Models\Config;
-use \Core\Models\Presentation\Menu;
-use \Core\Models\Presentation\MenuType;
+use \System\Modules\Core\Models\Router;
+use \System\Modules\Core\Models\Config;
+
+use \System\Modules\Presentation\Models\Menu\Menu;
+use \System\Modules\Presentation\Models\Menu\MenuType;
 
 class MainMenu extends Menu
 {

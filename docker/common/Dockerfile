@@ -76,14 +76,3 @@ RUN python3 -m pip install -r requirements.txt
 
 # Copy all files
 COPY . ./
-
-# ---------------------------------------------------------------------------
-# Run dev
-# ---------------------------------------------------------------------------
-WORKDIR $RUNTIME_PATH
-
-RUN envsubst < ./docker/develop/conf/supervisord.services.conf > /etc/supervisor/conf.d/services.conf
-
-CMD ["/srv/sites/web/docker/develop/scripts/run.bash"]
-
-EXPOSE 5000

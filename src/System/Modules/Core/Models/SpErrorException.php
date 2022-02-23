@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Models;
+namespace System\Modules\Core\Models;
 
 /**
  * Router exception class.

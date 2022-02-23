@@ -1,6 +1,6 @@
 <?php
 
-use \Core\Models\Presentation\Menu;
+use \System\Modules\Presentation\Models\Menu\Menu;
 use \Defaults\Data\MainMenu;
 
 // This is the right place to set headers, start a session, etc.

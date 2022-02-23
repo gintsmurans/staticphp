@@ -1,7 +1,6 @@
 <?php
 
-namespace Core\Models;
-
+namespace System\Modules\Core\Models;
 
 /**
  * Ads some helper clases to the PHP's \DateTime class
@@ -14,8 +13,7 @@ class ExtendedDateTime extends \DateTime
         if (empty($datetime)) {
             parent::__construct();
             $this->setTimezone(new \DateTimeZone($locale));
-        }
-        elseif (strlen($datetime) > 0 && $datetime[0] === '@') {
+        } elseif (strlen($datetime) > 0 && $datetime[0] === '@') {
             parent::__construct($datetime);
             $this->setTimezone(new \DateTimeZone($locale));
         } else {
@@ -50,7 +48,8 @@ class ExtendedDateTime extends \DateTime
         $this->modify('first day of this month 00:00:00');
     }
 
-    public function endOfTheMonth() {
+    public function endOfTheMonth()
+    {
         $this->modify('last day of this month 23:59:59');
     }
 
@@ -59,7 +58,8 @@ class ExtendedDateTime extends \DateTime
         $this->modify('this week 00:00:00');
     }
 
-    public function endOfTheWeek() {
+    public function endOfTheWeek()
+    {
         $this->modify('sunday this week 23:59:59');
     }
 
@@ -68,18 +68,21 @@ class ExtendedDateTime extends \DateTime
         $this->modify('00:00:00');
     }
 
-    public function endOfTheDay() {
+    public function endOfTheDay()
+    {
         $this->modify('23:59:59');
     }
 
-    public static function _startOfTheMonth($unix_time) {
+    public static function _startOfTheMonth($unix_time)
+    {
         $tmp = new ExtendedDateTime("@{$unix_time}");
         $tmp->startOfTheMonth();
 
         return $tmp->getTimestamp();
     }
 
-    public static function _endOfTheMonth($unix_time) {
+    public static function _endOfTheMonth($unix_time)
+    {
         $tmp = new ExtendedDateTime("@{$unix_time}");
         $tmp->endOfTheMonth();
 

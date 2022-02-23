@@ -6,7 +6,7 @@
 |--------------------------------------------------------------------------
 */
 
-namespace Core\Models;
+namespace System\Modules\Core\Models;
 
 class SessionsMongoDb
 {

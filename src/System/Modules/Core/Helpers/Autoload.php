@@ -1,12 +1,14 @@
 <?php
 
-use \Core\Models\Config;
+use \System\Modules\Core\Models\Config;
 
 // Re-Define DS as DIRECTORY_SEPARATOR
 const DS = DIRECTORY_SEPARATOR;
 
 if (defined('PUBLIC_PATH') == false) {
-    define('PUBLIC_PATH', realpath(dirname(__FILE__).'../../../../')
+    define(
+        'PUBLIC_PATH',
+        realpath(dirname(__FILE__).'../../../../')
         .'Application/Public'.DS
     );
     define('APP_PATH', dirname(PUBLIC_PATH).DS);

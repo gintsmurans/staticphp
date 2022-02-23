@@ -17,7 +17,7 @@ services:
         env_file:
             - .env
         ports:
-            - "5000:5000"
+            - "5500:5000"
         volumes:
             - ./:/srv/sites/web_mounted:cached
         depends_on:

@@ -1,11 +1,11 @@
 <?php
 
-namespace Core\Models\Presentation;
+namespace System\Modules\Presentation\Models\Tables;
 
 /**
  * Html pages model, for quick record paging.
  */
-class Pages
+class Pagination
 {
     private static $obj = [];
     private static $base_uri = '';

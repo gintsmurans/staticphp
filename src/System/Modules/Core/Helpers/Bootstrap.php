@@ -1,10 +1,10 @@
 <?php
 
-use \Core\Models\Load;
-use \Core\Models\Logger;
-use \Core\Models\Config;
-use \Core\Models\Timers;
-use \Core\Models\Router;
+use \System\Modules\Core\Models\Load;
+use \System\Modules\Core\Models\Logger;
+use \System\Modules\Core\Models\Config;
+use \System\Modules\Core\Models\Timers;
+use \System\Modules\Core\Models\Router;
 
 /*
  * Handle cli sapi
@@ -27,7 +27,7 @@ if (php_sapi_name() === 'cli') {
         }
         $last_param = null;
 
-        switch ($param){
+        switch ($param) {
         case '--query':
         case '--post':
             $last_param = $param;
@@ -81,17 +81,17 @@ if ($autoload_configs !== false) {
         $tmp = explode('/', $item);
         $count = count($tmp);
         if ($count == 3) {
-            Config::load($tmp[2], $tmp[1], $tmp[0]);
+            Config::load([$tmp[2]], $tmp[1], $tmp[0]);
         } elseif ($count == 2) {
-            Config::load($tmp[1], $tmp[0]);
+            Config::load([$tmp[1]], $tmp[0]);
         } else {
-            Config::load($tmp[0]);
+            Config::load([$tmp[0]]);
         }
     }
 }
 
 // Register error handlers
-Load::helper('ErrorHandlers', 'Core', 'System');
+Load::helper(['ErrorHandlers'], 'Core', 'System');
 set_error_handler(
     'sp_error_handler',
     (!empty(Config::$items['debug']) ? E_ALL : E_ALL & ~E_DEPRECATED & ~E_STRICT)
@@ -190,11 +190,11 @@ if ($autoload_helpers !== false) {
         $tmp = explode('/', $item);
         $count = count($tmp);
         if ($count == 3) {
-            Load::helper($tmp[2], $tmp[1], $tmp[0]);
+            Load::helper([$tmp[2]], $tmp[1], $tmp[0]);
         } elseif ($count == 2) {
-            Load::helper($tmp[1], $tmp[0]);
+            Load::helper([$tmp[1]], $tmp[0]);
         } else {
-            Load::helper($tmp[0]);
+            Load::helper([$tmp[0]]);
         }
     }
 }

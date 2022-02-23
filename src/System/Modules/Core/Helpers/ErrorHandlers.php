@@ -1,10 +1,10 @@
 <?php
 
-use \Core\Models\Config;
-use \Core\Models\Logger;
-use \Core\Models\Router;
-use \Core\Models\RouterException;
-use \Core\Models\SpErrorException;
+use \System\Modules\Core\Models\Config;
+use \System\Modules\Core\Models\Logger;
+use \System\Modules\Core\Models\Router;
+use \System\Modules\Core\Models\RouterException;
+use \System\Modules\Core\Models\SpErrorException;
 
 /**
  * StaticPHP's error handler. Turns errors into exceptions and passes on to sp_exception_handler().

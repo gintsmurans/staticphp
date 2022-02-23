@@ -1,9 +1,8 @@
 <?php
 
-namespace Core\Models;
+namespace System\Modules\Core\Models;
 
-
-class RecordObject implements \Iterator,  \JsonSerializable, \ArrayAccess
+class RecordObject implements \Iterator, \JsonSerializable, \ArrayAccess
 {
     const DataRecord = 0;
     const DataFormattedRecord = 1;
@@ -53,11 +52,13 @@ class RecordObject implements \Iterator,  \JsonSerializable, \ArrayAccess
         }
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return json_encode($this);
     }
 
-    public function __debugInfo() {
+    public function __debugInfo()
+    {
         return [
             'record' => $this->record,
             'formatted_record' => $this->formatted_record,
@@ -162,7 +163,8 @@ class RecordObject implements \Iterator,  \JsonSerializable, \ArrayAccess
 
 
     /** =========================================== ArrayAccess Implementation ==================================================== */
-    public function offsetSet($offset, $value) {
+    public function offsetSet($offset, $value)
+    {
         if (is_null($offset)) {
             throw new \Exception("Adding empty array entries is not allowed");
         } else {
@@ -170,15 +172,18 @@ class RecordObject implements \Iterator,  \JsonSerializable, \ArrayAccess
         }
     }
 
-    public function offsetExists($offset) {
+    public function offsetExists($offset)
+    {
         return isset($this->record[$offset]) || isset($this->formatted_record[$offset]);
     }
 
-    public function offsetUnset($offset) {
+    public function offsetUnset($offset)
+    {
         unset($this->record[$offset], $this->formatted_record[$offset]);
     }
 
-    public function offsetGet($offset) {
+    public function offsetGet($offset)
+    {
         if (isset($this->record[$offset])) {
             return $this->record[$offset];
         }
