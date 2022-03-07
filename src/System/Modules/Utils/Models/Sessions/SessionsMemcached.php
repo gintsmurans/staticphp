@@ -1,6 +1,5 @@
 <?php
 
-// TODO: Needs testing
 /*
 |--------------------------------------------------------------------------
 | Memcached session class
@@ -18,9 +17,9 @@ class SessionsMemcached extends Sessions
     /**
      * @var $servers List of servers. Example: [[127.0.0.1, 112211], [192.168.1.10, 112211]]
      */
-    public function __construct(array $servers, ?string $persistent_id = null, $sessionName = 'SMC', ?Sessions $backupHandler = null)
+    public function __construct(array $servers, ?string $persistentId = null, $sessionName = 'SMC', ?Sessions $backupHandler = null)
     {
-        $this->memcached = new \Memcached($persistent_id);
+        $this->memcached = new \Memcached($persistentId);
         $this->memcached->setOption(\Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
         if (!count($this->memcached->getServerList())) {
             $this->memcached->addServers($servers);

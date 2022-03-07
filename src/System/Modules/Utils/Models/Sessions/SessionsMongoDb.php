@@ -60,7 +60,7 @@ class SessionsMongoDb extends Sessions
 
     public function gc(int $maxLifetime): int|false
     {
-        $this->mdbCollection->remove(['timestamp' => ['$lt' => (time() - $maxLifetime)]]);
+        $this->mdbCollection->deleteMany(['timestamp' => ['$lt' => (time() - $maxLifetime)]]);
 
         return parent::gc($maxLifetime);
     }
