@@ -4,7 +4,7 @@ namespace System\Modules\Core\Models;
 
 class Request
 {
-    public static function internal($url, $post = null, $query = null, $https = false)
+    public static function internal(string $url, array $post = null, array $query = null, bool $https = false): string
     {
         // Create command array
         $cmd_arr = ['php', PUBLIC_PATH.'index.php'];
@@ -36,8 +36,7 @@ class Request
         return implode("\n", $output);
     }
 
-
-    public static function httpErrorInData($data)
+    public static function httpErrorInData(string $data): string
     {
         $error = stripos($data, '403 Forbidden') !== false;
         $error = $error || stripos($data, '404 Not Found') !== false;

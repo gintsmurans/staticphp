@@ -1,6 +1,6 @@
 <?php
 
-namespace System\Modules\Core\Models;
+namespace System\Modules\Utils\Models;
 
 class RecordObject implements \Iterator, \JsonSerializable, \ArrayAccess
 {

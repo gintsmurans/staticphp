@@ -11,15 +11,15 @@ use \System\Modules\Core\Models\Router;
  */
 class Controller
 {
-    public static $module_url = null;
-    public static $controller_url = null;
-    public static $method_url = null;
+    public static ?string $module_url = null;
+    public static ?string $controller_url = null;
+    public static ?string $method_url = null;
 
 
     /**
      *  Constructor - Called on each request.
      */
-    public static function construct($class = null, $method = null)
+    public static function construct(?string $class = null, ?string $method = null)
     {
         // Get full urls to current controller and its method
         self::$module_url = self::moduleUrl();
@@ -50,7 +50,7 @@ class Controller
     /**
      * Generates module url
      */
-    public static function moduleUrl()
+    public static function moduleUrl(): string
     {
         return Router::siteUrl(strtolower(preg_replace('/(.)([A-Z])/', '$1-$2', Router::$module)));
     }
@@ -58,7 +58,7 @@ class Controller
     /**
      * Generates method url
      */
-    public static function methodUrl()
+    public static function methodUrl(): string
     {
         return Router::siteUrl(Router::$method_url);
     }
@@ -66,7 +66,7 @@ class Controller
     /**
      * Generates controller url
      */
-    public static function controllerUrl()
+    public static function controllerUrl(): string
     {
         // Handle empty method calls
         $methodUrl = self::methodUrl();
@@ -76,7 +76,7 @@ class Controller
     /**
      *  Render a view. This method instead of Load::view() prefixes paths with current module directory.
      */
-    public static function render($views, $view_data = [])
+    public static function render(array $views, $view_data = []): void
     {
         $views = (array)$views;
         foreach ($views as $key => $item) {
@@ -90,7 +90,7 @@ class Controller
     /**
      *  Write $contents to the output. Arrays are jsonified.
      */
-    public static function write($contents)
+    public static function write(string|array $contents): void
     {
         if (is_array($contents)) {
             echo json_encode($contents);

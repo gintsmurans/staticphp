@@ -31,7 +31,7 @@ class Router
      * @access public
      * @static
      */
-    public static $domain_url = null;
+    public static ?string $domain_url = null;
 
     /**
      * Variable that holds reference to base url.
@@ -42,7 +42,7 @@ class Router
      * @access public
      * @static
      */
-    public static $base_url = null;
+    public static ?string $base_url = null;
 
     /**
      * Original url that is being requested.
@@ -53,7 +53,7 @@ class Router
      * @access public
      * @static
      */
-    public static $requested_url = null;
+    public static ?string $requested_url = null;
 
     /**
      * String containing full url to the final request.
@@ -64,7 +64,7 @@ class Router
      * @access public
      * @static
      */
-    public static $parsed_url = null;
+    public static ?string $parsed_url = null;
 
     /**
      * Query string.
@@ -75,7 +75,7 @@ class Router
      * @access public
      * @static
      */
-    public static $query_string = null;
+    public static ?string $query_string = null;
 
     /**
      * Array of prefixes for current request.
@@ -86,7 +86,7 @@ class Router
      * @access public
      * @static
      */
-    public static $prefixes = [];
+    public static array $prefixes = [];
 
     /**
      * Url containing all prefixes for current request.
@@ -97,7 +97,7 @@ class Router
      * @access public
      * @static
      */
-    public static $prefixes_url = null;
+    public static ?string $prefixes_url = null;
 
     /**
      * Original request segments, before processing Config/Routing.php.
@@ -109,7 +109,7 @@ class Router
      * @access public
      * @static
      */
-    public static $initial_segments = [];
+    public static array $initial_segments = [];
 
     /**
      * Original request url, before processing Config/Routing.php.
@@ -120,7 +120,7 @@ class Router
      * @access public
      * @static
      */
-    public static $initial_segments_url = null;
+    public static ?string $initial_segments_url = null;
 
     /**
      * Array of final url segments, i.e. everything after slash after domain name, except prefixes.
@@ -131,7 +131,7 @@ class Router
      * @access public
      * @static
      */
-    public static $segments = [];
+    public static array $segments = [];
 
     /**
      * String of url segments.
@@ -142,7 +142,7 @@ class Router
      * @access public
      * @static
      */
-    public static $segments_url = null;
+    public static ?string $segments_url = null;
 
     /**
      * Hold default route
@@ -153,7 +153,7 @@ class Router
      * @access public
      * @static
      */
-    public static $default_route = null;
+    public static ?array $default_route = null;
 
     /**
      * Module responsible for current request handling.
@@ -164,7 +164,7 @@ class Router
      * @access public
      * @static
      */
-    public static $module = null;
+    public static ?string $module = null;
 
     /**
      * Path to controller file to be loaded.
@@ -175,7 +175,7 @@ class Router
      * @access public
      * @static
      */
-    public static $file = null;
+    public static ?string $file = null;
 
     /**
      * Path where $file resides.
@@ -186,7 +186,7 @@ class Router
      * @access public
      * @static
      */
-    public static $file_path = null;
+    public static ?string $file_path = null;
 
     /**
      * Namespace to load controller class from.
@@ -197,7 +197,7 @@ class Router
      * @access public
      * @static
      */
-    public static $namespace = null;
+    public static ?string $namespace = null;
 
     /**
      * Path to controller without module.
@@ -208,7 +208,7 @@ class Router
      * @access public
      * @static
      */
-    public static $controller = null;
+    public static ?string $controller = null;
 
     /**
      * Class name to call controller methods from.
@@ -219,7 +219,7 @@ class Router
      * @access public
      * @static
      */
-    public static $class = null;
+    public static ?string $class = null;
 
     /**
      * Controller class method to be called to handle this request.
@@ -230,7 +230,7 @@ class Router
      * @access public
      * @static
      */
-    public static $method = null;
+    public static ?string $method = null;
 
     /**
      * Url to a method.
@@ -241,7 +241,7 @@ class Router
      * @access public
      * @static
      */
-    public static $method_url = null;
+    public static ?string $method_url = null;
 
 
     /*
@@ -262,7 +262,7 @@ class Router
      *
      * @return string
      */
-    public static function baseUrl($url = '')
+    public static function baseUrl(string $url = ''): string
     {
         return self::$base_url.self::ensureStartsWithSlash($url);
     }
@@ -282,7 +282,7 @@ class Router
      *
      * @return string
      */
-    public static function siteUrl($url = '', $prefix = null, $current_prefix = true)
+    public static function siteUrl(string $url = '', ?string $prefix = null, bool $current_prefix = true): string
     {
         $url002 = !empty($prefix) ? self::ensureStartsWithSlash($prefix) : '';
         $url002 .= !empty($current_prefix) && !empty(self::$prefixes_url) ? self::ensureStartsWithSlash(self::$prefixes_url) : '';
@@ -310,7 +310,7 @@ class Router
      *
      * @return void
      */
-    public static function redirect($url = '', $site_uri = true, $e301 = false, $type = 'http')
+    public static function redirect(string $url = '', bool $site_uri = true, bool $e301 = false, string $type = 'http'): void
     {
         switch ($type) {
         case 'js':
@@ -341,7 +341,7 @@ class Router
      *
      * @return bool
      */
-    public static function hasPrefix($prefix)
+    public static function hasPrefix(string $prefix): bool
     {
         return (isset(self::$prefixes[$prefix]));
     }
@@ -360,7 +360,7 @@ class Router
 
      * @return string
      */
-    public static function segment($index)
+    public static function segment(int $index): ?string
     {
         return (empty(self::$segments[$index]) ? null : self::$segments[$index]);
     }
@@ -376,7 +376,7 @@ class Router
      * @static
      * @return void
      */
-    public static function error($error_code, $error_string = '', $description = '')
+    public static function error(int $error_code, string $error_string = '', string $description = ''): void
     {
         $filename = 'Error';
         if (!empty($error_code)) {
@@ -386,53 +386,6 @@ class Router
         $data = ['code' => $error_code, 'title' => $error_string, 'description' => $description];
         Load::view(["Errors/{$filename}.html"], $data);
         exit(10);
-    }
-
-    /**
-     * Ease sending JSON response back to browser.
-     *
-     * @param mixed $json_data Json data to send back
-     *
-     * @example Call function: <code>Router::jsonResponse($json_data);</code> add some data:
-     *          <code>$json_data['xx'] = 1;</code> and on the end of script execution the $json_data
-     *          array will be sent to client along with
-     *          content-type:application/json header.
-     * @access  public
-
-     * @return void
-     */
-    public static function jsonResponse(&$json_data)
-    {
-        static $json_request = false;
-
-        if (isset($GLOBALS['json_response_data']) && !empty($json_data) && is_array($json_data)) {
-            $json_data = array_merge($GLOBALS['json_response_data'], $json_data);
-            $GLOBALS['json_response_data'] = & $json_data;
-        } elseif (isset($GLOBALS['json_response_data'])) {
-            $json_data = $GLOBALS['json_response_data'];
-            $GLOBALS['json_response_data'] = & $json_data;
-        } elseif (empty($json_data) || is_array($json_data) == false) {
-            $json_data = [];
-            $GLOBALS['json_response_data'] = & $json_data;
-        } else {
-            $GLOBALS['json_response_data'] = & $json_data;
-        }
-
-        // Register shutdown function once
-        if (empty($json_request)) {
-            header('Content-Type:application/json; charset=utf-8');
-            register_shutdown_function(
-                function () {
-                    $data = $GLOBALS['json_response_data'];
-                    if (is_array($data) == false) {
-                        $data = [];
-                    }
-                    echo json_encode($data);
-                }
-            );
-
-            $json_request = true;
-        }
     }
 
 
@@ -449,7 +402,7 @@ class Router
      * @static
      * @return void
      */
-    public static function debug()
+    public static function debug(): void
     {
         echo "Router::\$domain_url: ";
         print_r(Router::$domain_url);
@@ -538,7 +491,7 @@ class Router
      *
      * @return string
      */
-    public static function makePathString($path)
+    public static function makePathString(string $path): string
     {
         return str_replace(['/', '\\'], DS, $path);
     }
@@ -575,7 +528,7 @@ class Router
      *                    <li>'file' - file where this class is from</li>
      *                    </ul>
      */
-    public static function urlToFile($url)
+    public static function urlToFile(string $url): mixed
     {
         // Explode $url
         $tmp = explode('/', $url);
@@ -606,7 +559,7 @@ class Router
      *
      * @return string
      */
-    public static function urlToNamespace($url)
+    public static function urlToNamespace(string $url): string
     {
         return implode('', array_map('ucfirst', explode('-', $url)));
     }
@@ -623,7 +576,7 @@ class Router
      *
      * @return string
      */
-    public static function namespaceToUrl($namespace)
+    public static function namespaceToUrl(string $namespace): string
     {
         $url = preg_replace('/(?<!\/|^)([A-Z])/', '-$1', $namespace);
         $url = strtolower($url);
@@ -648,7 +601,7 @@ class Router
      * @static
      * @return void
      */
-    public static function init()
+    public static function init(): void
     {
         self::splitSegments();
         self::findController();
@@ -665,7 +618,7 @@ class Router
      *
      * @return void
      */
-    public static function splitSegments($force = false)
+    public static function splitSegments(bool $force = false): void
     {
         if (empty($force) && !empty(self::$domain_url)) {
             return;
@@ -766,7 +719,7 @@ class Router
      * @static
      * @return void
      */
-    public static function findControllerInSegments()
+    public static function findControllerInSegments(): void
     {
         // Fix segment names to translate "-" in url's to camelCase
         $segments = array_map([self::class, 'urlToNamespace'], self::$segments);
@@ -839,7 +792,7 @@ class Router
      * @static
      * @return void
      */
-    public static function findController()
+    public static function findController(): void
     {
         // Get default controller, class and method
         if (!isset(Config::$items['routing'][''])) {
@@ -911,12 +864,12 @@ class Router
      * @return void
      */
     public static function loadController(
-        $file = null,
-        $module = null,
-        $namespace = null,
-        $class = null,
-        &$method = null
-    ) {
+        ?string $file = null,
+        ?string $module = null,
+        ?string $namespace = null,
+        ?string $class = null,
+        ?string &$method = null
+    ): void {
         // Load current file if $file parameter is empty
         if (empty($file)) {
             $file = APP_MODULES_PATH.self::$file.'.php';

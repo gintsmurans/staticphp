@@ -16,7 +16,7 @@ class Config
      * @access public
      * @static
      */
-    public static $items = [];
+    public static array $items = [];
 
 
     /*
@@ -36,7 +36,7 @@ class Config
      * @param  mixed|null $default (default: null)
      * @return mixed      Returns mixed data
      */
-    public static function &get(string $name, $default = false)
+    public static function &get(string $name, mixed $default = null): mixed
     {
         if (isset(self::$items[$name])) {
             return self::$items[$name];
@@ -53,7 +53,7 @@ class Config
      * @param  string $name
      * @param  mixed  $value
      */
-    public static function set(string $name, $value)
+    public static function set(string $name, mixed $value): void
     {
         self::$items[$name] = $value;
     }
@@ -70,7 +70,7 @@ class Config
      * @static
      * @return mixed Returns mixed data
      */
-    public static function &getViewData(string $name, $default = false)
+    public static function &getViewData(string $name, mixed $default = null): mixed
     {
         if (isset(self::$items['view_data'][$name])) {
             return self::$items['view_data'][$name];
@@ -89,7 +89,7 @@ class Config
      * @static
      * @return void
      */
-    public static function setViewData($name, $value = null): void
+    public static function setViewData(string $name, mixed $value = null): void
     {
         if (is_array($name)) {
             foreach ($name as $key => $value) {
@@ -113,7 +113,7 @@ class Config
      * @param  bool   $owerwrite (default: true)
      * @return mixed
      */
-    public static function merge(string $name, $value, bool $owerwrite = true)
+    public static function merge(string $name, mixed $value, bool $owerwrite = true): mixed
     {
         if (!isset(self::$items[$name])) {
             return (self::$items[$name] = $value);
@@ -160,7 +160,7 @@ class Config
      * @param  string|null  $project (default: null)
      * @return void
      */
-    public static function load(array $files, ?string $module = null, ?string $project = null)
+    public static function load(array $files, ?string $module = null, ?string $project = null): void
     {
         Load::config($files, $module, $project, self::$items);
     }

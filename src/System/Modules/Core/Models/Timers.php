@@ -5,7 +5,7 @@ namespace System\Modules\Core\Models;
 use \System\Modules\Core\Models\Logger;
 
 /**
- * Core timer's class.
+ * Timer's class.
  */
 class Timers
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace System\Modules\Core\Models;
+namespace System\Modules\Utils\Models;
 
 use \System\Modules\Core\Models\Config;
 
@@ -66,7 +66,7 @@ class Cache
         }
 
         // Create a reference to self for easier access to it
-        self::$ref = new \ReflectionClass('\\Core\\Models\\Cache');
+        self::$ref = new \ReflectionClass('\\System\\Modules\\Utils\\Models\\Cache');
 
         // Init cache backend
         $cache = &self::getBackend($name);

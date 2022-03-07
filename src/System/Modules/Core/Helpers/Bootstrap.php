@@ -3,8 +3,8 @@
 use \System\Modules\Core\Models\Load;
 use \System\Modules\Core\Models\Logger;
 use \System\Modules\Core\Models\Config;
-use \System\Modules\Core\Models\Timers;
 use \System\Modules\Core\Models\Router;
+use \System\Modules\Core\Models\Timers;
 
 /*
  * Handle cli sapi

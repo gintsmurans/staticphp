@@ -334,7 +334,7 @@ class Load
      * @param  bool         $return (default: false)
      * @return string|bool
      */
-    public static function view(array $files, array &$data = [], bool $return = false)
+    public static function view(array $files, array &$data = [], bool $return = false): string|bool
     {
         static $globalsAdded = false;
 

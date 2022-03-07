@@ -1,6 +1,6 @@
 <?php
 
-namespace System\Modules\Core\Models;
+namespace System\Modules\Utils\Models;
 
 use \System\Modules\Core\Models\Config;
 use \System\Modules\Core\Models\Timers;

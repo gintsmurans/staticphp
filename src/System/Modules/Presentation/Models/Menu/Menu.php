@@ -9,12 +9,14 @@ use \System\Modules\Core\Models\Config;
 use \System\Modules\Core\Models\Router;
 use \System\Modules\Core\Controllers\Controller;
 
+use \System\Modules\Presentation\Models\Menu\MenuType;
+
 /**
  * Generate Menus
  */
 class Menu
 {
-    public int $type;
+    public MenuType $type;
     public array $menuList = [];
     public $preMenuList = '';
     public $postMenuList = '';
@@ -107,7 +109,7 @@ class Menu
             'post_menu_content' => $postMenuContent,
             'menu_items' => $menuItems,
         ];
-        return Load::view(["Views/components/menu_type_{$this->type}.html"], $viewData, true);
+        return Load::view(["Views/components/menu_type_{$this->type->value}.html"], $viewData, true);
     }
 
     // MARK: Twig

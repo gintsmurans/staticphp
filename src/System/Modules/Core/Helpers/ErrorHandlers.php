@@ -14,17 +14,18 @@ use \System\Modules\Core\Models\Router;
  *
  * @see sp_exception_handler()
  * @access public
- * @param mixed $errno
- * @param mixed $errstr
- * @param mixed $errfile
- * @param mixed $errline
+ * @param int $errno
+ * @param string $errstr
+ * @param ?string $errfile
+ * @param ?int $errline
+ * @param ?array $errcontext
  * @return bool Returns whether the error was handled or not.
  */
-function sp_error_handler($errno, $errstr, $errfile, $errline)
+function sp_error_handler(int $errno, string $errstr, ?string $errfile, ?int $errline, ?array $errcontext = null): void
 {
     // @ used
     if (error_reporting() === 0) {
-        return false;
+        return;
     }
 
     // Throw all the errors as exceptions, so they can be handled as they should
@@ -40,7 +41,7 @@ function sp_error_handler($errno, $errstr, $errfile, $errline)
  * @param Exception|ErrorException|mixed $exception
  * @return void
  */
-function sp_exception_handler($exception)
+function sp_exception_handler(\Throwable $exception): void
 {
     // RouterException is a special case
     if ($exception instanceof RouterException) {
@@ -77,10 +78,10 @@ function sp_exception_handler($exception)
  *
  * @see sp_format_exception()
  * @access public
- * @param Exception|ErrorException|mixed $e
+ * @param Throwable $e
  * @return void
  */
-function sp_send_error_email($e)
+function sp_send_error_email(\Throwable $e): void
 {
     static $last_error = ['time' => 0];
 
@@ -106,11 +107,11 @@ function sp_send_error_email($e)
  * If $full is set to false, only string containing formatted message is returned.
  *
  * @access public
- * @param Exception|ErrorException|mixed $e
+ * @param Throwable $e
  * @param bool $full (default: false)
  * @return string Returns formatted string of the $e exception
  */
-function sp_format_exception($e, $full = false, $markup = true)
+function sp_format_exception(\Throwable $e, bool $full = false, bool $markup = true): string
 {
     // Current time
     $datetime = date('d.m.Y H:i:s');

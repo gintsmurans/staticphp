@@ -8,9 +8,9 @@
 |--------------------------------------------------------------------------
 */
 
-namespace System\Modules\Core\Models;
+namespace System\Modules\Utils\Models\Sessions;
 
-class Sessions
+class SessionsPgsql
 {
     public $prefix = null;
     public $expire = null;
@@ -97,7 +97,7 @@ class Sessions
 
     public function gc($max)
     {
-        Db::query('DELETE FROM "sessions" WHERE "expires" <= ?', (time() - $max));
+        Db::query('DELETE FROM "sessions" WHERE "timestamp" <= ?', (time() - $max));
 
         return true;
     }

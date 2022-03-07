@@ -1,6 +1,6 @@
 <?php
 
-namespace System\Modules\Core\Models;
+namespace System\Modules\Utils\Models;
 
 /**
  * Ads some helper clases to the PHP's \DateTime class

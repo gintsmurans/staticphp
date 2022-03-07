@@ -2,29 +2,27 @@
 
 /*
 |--------------------------------------------------------------------------
-| Memcached session class
+| Apc session class
 |
 | Extends sessions class as an optional backup
 |--------------------------------------------------------------------------
 */
 
-namespace System\Modules\Core\Models;
+namespace System\Modules\Utils\Models\Sessions;
 
-class SessionsMemcached extends Sessions
+class SessionsApc extends Sessions
 {
-    private $memcached = null;
     private $db_link = false;
 
-    public function __construct(&$memcached, &$db_link = null)
+    public function __construct(&$db_link = null)
     {
-        $this->memcached = $memcached;
         $this->db_link = &$db_link;
         parent::__construct($this->db_link);
     }
 
     public function read($id)
     {
-        $data = $this->memcached->get($this->prefix.$id);
+        $data = apc_fetch($this->prefix.$id);
         if (!empty($data)) {
             return $data;
         }
@@ -34,7 +32,7 @@ class SessionsMemcached extends Sessions
 
     public function write($id, $data)
     {
-        $this->memcached->set($this->prefix.$id, $data, $this->expire);
+        apc_store($this->prefix.$id, $data, $this->expire);
         if (!empty($this->db_link)) {
             parent::write($id, $data);
         }
@@ -44,7 +42,7 @@ class SessionsMemcached extends Sessions
 
     public function destroy($id)
     {
-        $this->memcached->delete($this->prefix.$id);
+        apc_delete($this->prefix.$id);
         if (!empty($this->db_link)) {
             parent::destroy($id);
         }

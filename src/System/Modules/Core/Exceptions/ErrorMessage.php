@@ -35,7 +35,7 @@ class ErrorMessage extends \Exception
         parent::__construct($message, $code);
     }
 
-    public function formatMessage()
+    public function formatMessage(): string
     {
         if ($this->outputType === ErrorMessage::OUTPUT_TYPE_HTML) {
             return "{$this->code} {$this->message}<br /><br />{$this->description}";
@@ -65,7 +65,7 @@ XML;
         return "{$this->code} {$this->message}\n\n{$this->description}";
     }
 
-    public function outputMessage()
+    public function outputMessage(): void
     {
         $message = $this->formatMessage();
         if (headers_sent() == false && $this->httpStatusCode != 200) {

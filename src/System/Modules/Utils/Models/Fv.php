@@ -30,7 +30,7 @@
     <div><input type="text" name="test[]"<?php echo Fv::setInputValue(['test', 0]); ?> /></div>
 */
 
-namespace System\Modules\Core\Models;
+namespace System\Modules\Utils\Models;
 
 use \System\Modules\Core\Models\Config;
 
@@ -550,17 +550,17 @@ class Fv
     {
         // Register filters
         $filter = new \Twig\TwigFilter('fvPlain', function ($value, $valid = '') {
-            return \Core\Models\Fv::setPlain($value);
+            return \System\Modules\Utils\Models\Fv::setPlain($value);
         });
         Config::$items['view_engine']->addFilter($filter);
 
         $filter = new \Twig\TwigFilter('fvFriendly', function ($value) {
-            return \Core\Models\Fv::setFriendly($value);
+            return \System\Modules\Utils\Models\Fv::setFriendly($value);
         });
         Config::$items['view_engine']->addFilter($filter);
 
         $filter = new \Twig\TwigFilter('fvXSS', function ($value, $valid = '') {
-            return \Core\Models\Fv::xss($value);
+            return \System\Modules\Utils\Models\Fv::xss($value);
         });
         Config::$items['view_engine']->addFilter($filter);
     }

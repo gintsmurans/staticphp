@@ -1,11 +1,12 @@
 <?php
 
-namespace System\Modules\Core\Models;
+namespace System\Modules\Utils\Models;
 
-use \System\Modules\Core\Models\Db;
-use \System\Modules\Core\Models\Cache;
 use \System\Modules\Core\Models\Config;
 use \System\Modules\Core\Models\Router;
+
+use \System\Modules\Utils\Models\Db;
+use \System\Modules\Utils\Models\Cache;
 
 /**
  *  Internationalization (i18n).
@@ -484,14 +485,14 @@ class i18n
 
         // Register filters
         $filter = new \Twig\TwigFilter('translate', function ($text, $replace = [], $escape = null, $language_key = null) {
-            return \Core\Models\i18n::translate($text, $replace, $escape, $language_key);
+            return \System\Modules\Utils\Models\i18n::translate($text, $replace, $escape, $language_key);
         }, ['is_safe' => ['html']]);
         Config::$items['view_engine']->addFilter($filter);
 
 
         // Register functions
         $filter = new \Twig\TwigFunction('_', function ($text, $replace = [], $escape = null, $language_key = null) {
-            return \Core\Models\i18n::translate($text, $replace, $escape, $language_key);
+            return \System\Modules\Utils\Models\i18n::translate($text, $replace, $escape, $language_key);
         }, ['is_safe' => ['html']]);
         Config::$items['view_engine']->addFunction($filter);
     }

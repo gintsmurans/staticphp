@@ -40,7 +40,7 @@ class Logger
      * @access protected
      * @static
      */
-    protected static $logs = [];
+    protected static array $logs = [];
 
     /*
     |-------------------------------------------------------------------------------------------------------------------
@@ -83,7 +83,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function emergency($message, array $context = array())
+    public static function emergency(string $message, array $context = array()): void
     {
         self::log(Logger::EMERGENCY, $message, $context);
     }
@@ -98,7 +98,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function alert($message, array $context = array())
+    public static function alert(string $message, array $context = array()): void
     {
         self::log(Logger::ALERT, $message, $context);
     }
@@ -112,7 +112,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function critical($message, array $context = array())
+    public static function critical(string $message, array $context = array()): void
     {
         self::log(Logger::CRITICAL, $message, $context);
     }
@@ -125,7 +125,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function error($message, array $context = array())
+    public static function error(string $message, array $context = array()): void
     {
         self::log(Logger::ERROR, $message, $context);
     }
@@ -140,7 +140,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function warning($message, array $context = array())
+    public static function warning(string $message, array $context = array()): void
     {
         self::log(Logger::WARNING, $message, $context);
     }
@@ -152,7 +152,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function notice($message, array $context = array())
+    public static function notice(string $message, array $context = array()): void
     {
         self::log(Logger::NOTICE, $message, $context);
     }
@@ -166,7 +166,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function info($message, array $context = array())
+    public static function info(string $message, array $context = array()): void
     {
         self::log(Logger::INFO, $message, $context);
     }
@@ -178,7 +178,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function debug($message, array $context = array())
+    public static function debug(string $message, array $context = array()): void
     {
         self::log(Logger::DEBUG, $message, $context);
     }
@@ -191,7 +191,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function log($level, $message, array $context = array())
+    public static function log(string $level, $message, array $context = array()): void
     {
         self::$logs[] = ['level' => $level, 'message' => $message, 'context' => $context];
     }
@@ -217,7 +217,7 @@ class Logger
      * @return string Returns formatted html string of debug information, including timers,
      *          but also custom messages logged using logger interface.
      */
-    public static function debugOutput()
+    public static function debugOutput(): string
     {
         // Log execution time
         Timers::logTimers();
