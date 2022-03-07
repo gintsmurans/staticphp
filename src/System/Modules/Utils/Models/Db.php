@@ -2,6 +2,9 @@
 
 namespace System\Modules\Utils\Models;
 
+use \PDO;
+use \PDOStatement;
+
 use \System\Modules\Core\Models\Config;
 use \System\Modules\Core\Models\Timers;
 
@@ -13,20 +16,29 @@ class Db
     /**
      * Holds references to database links.
      *
-     * @var mixed[][]
+     * @var PDO[]
      * @access private
      * @static
      */
-    private static $db_links;
+    private static $dbLinks;
+
+    /**
+     * Holds references to db configuration arrays.
+     *
+     * @var mixed[]
+     * @access private
+     * @static
+     */
+    private static $dbConfigs;
 
     /**
      * Cache for last statment.
      *
-     * @var \PDOStatement
+     * @var ?PDOStatement
      * @access private
      * @static
      */
-    private static $last_statement;
+    private static ?PDOStatement $lastStatement = null;
 
     /**
      * Init connection to the database.
@@ -34,9 +46,9 @@ class Db
      * Connection can be made by passing configuration array to $config parameter or
      * by passing a name of the connection that has been set up in Application/Config/Db.php (see example in System/Config/Db.php).
      *
-     * @example models\Db::init();
-     * @example models\Db::init('second');
-     * @example models\Db::init(
+     * @example Db::init();
+     * @example Db::init('second');
+     * @example Db::init(
      *              'pgsql1',
      *              [
      *                  'string' => 'pgsql:host=localhost;dbname=',
@@ -51,49 +63,49 @@ class Db
      *          );
      * @access public
      * @static
-     * @param  string   $name   (default: 'default')
-     * @param  mixed    $config (default: null)
-     * @return resource|bool Returns pdo instance.
+     * @param  string $name   (default: 'default')
+     * @param  array  $config (default: null)
+     * @return PDO Returns pdo instance.
      */
-    public static function init($name = 'default', $config = null)
+    public static function init(string $name = 'default', ?array $config = null): PDO
     {
         // Check if there is such configuration
         if (empty($config)) {
             if (empty(Config::$items['db']['pdo'][$name])) {
-                return false;
+                throw new \Exception('Db configuration not found');
             }
 
             $config = Config::$items['db']['pdo'][$name];
         }
 
         // Don't make a new connection if there is one connected with the name
-        if (!empty(self::$db_links[$name]['link'])) {
-            return self::$db_links[$name]['link'];
+        if (!empty(self::$dbLinks[$name])) {
+            return self::$dbLinks[$name];
         }
 
         // Set config
-        self::$db_links[$name]['config'] = $config;
+        self::$dbConfigs[$name] = $config;
 
         // Options
         $options = [
-            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-            \PDO::ATTR_CASE => \PDO::CASE_NATURAL,
-            \PDO::ATTR_DEFAULT_FETCH_MODE => (!empty($config['fetch_mode_objects']) ? \PDO::FETCH_OBJ : \PDO::FETCH_ASSOC),
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_CASE => PDO::CASE_NATURAL,
+            PDO::ATTR_DEFAULT_FETCH_MODE => (!empty($config['fetch_mode_objects']) ? PDO::FETCH_OBJ : PDO::FETCH_ASSOC),
 
         ];
         if (isset($config['persistent'])) {
-            $options[\PDO::ATTR_PERSISTENT] = $config['persistent'];
+            $options[PDO::ATTR_PERSISTENT] = $config['persistent'];
         }
 
         // Open new connection to DB
-        self::$db_links[$name]['link'] = new \PDO($config['string'], $config['username'], $config['password'], $options);
+        self::$dbLinks[$name] = new PDO($config['string'], $config['username'], $config['password'], $options);
 
         // Set encoding - mysql only
-        if (!empty($config['charset']) && self::$db_links[$name]['link']->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'mysql') {
-            self::$db_links[$name]['link']->exec('SET NAMES '.$config['charset'].';');
+        if (!empty($config['charset']) && self::$dbLinks[$name]->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
+            self::$dbLinks[$name]->exec('SET NAMES '.$config['charset'].';');
         }
 
-        return self::$db_links[$name]['link'];
+        return self::$dbLinks[$name];
     }
 
     /**
@@ -101,8 +113,8 @@ class Db
      *
      * Should be used for insert and update queries, but also can be used as iterator for select queries.
      *
-     * @example models\Db::query('INSERT INTO posts (title) VALUES (?)', ['New post title'], 'pgsql1');
-     * @example $query = models\Db::query('SELECT * FROM posts', null, 'pgsql1');<br />
+     * @example Db::query('INSERT INTO posts (title) VALUES (?)', ['New post title'], 'pgsql1');
+     * @example $query = Db::query('SELECT * FROM posts', null, 'pgsql1');<br />
      *          foreach ($query as $item)<br />
      *          {<br />
      *              // Do something with the $item<br />
@@ -110,31 +122,30 @@ class Db
      * @access public
      * @static
      * @param  string       $query
-     * @param  mixed[]      $data  (default: null)
+     * @param  array      $data  (default: [])
      * @param  string       $name  (default: 'default')
-     * @return \PDOStatement|bool Returns statement created by query.
+     * @return PDOStatement Returns statement created by query.
      */
-    public static function query($query, $data = null, $name = 'default')
+    public static function query(string $query, array $data = [], string $name = 'default'): PDOStatement
     {
-        $db_link = &self::$db_links[$name]['link'];
-
         if (empty($query)) {
-            return false;
+            throw new \Exception('Empty query passed');
         }
 
+        $db_link = &self::$dbLinks[$name];
         if (empty($db_link)) {
             throw new \Exception('No connection to database');
         }
 
         // Do request
-        if (!empty(self::$db_links[$name]['config']['debug'])) {
+        if (!empty(self::$dbConfigs[$name]['debug'])) {
             Timers::startTimer();
         }
 
-        self::$last_statement = $db_link->prepare($query);
-        self::$last_statement->execute((array) $data);
+        self::$lastStatement = $db_link->prepare($query);
+        self::$lastStatement->execute((array) $data);
 
-        if (!empty(self::$db_links[$name]['config']['debug'])) {
+        if (!empty(self::$dbConfigs[$name]['debug'])) {
             $log = $query;
             if (!empty($data)) {
                 $log_data = array_map(
@@ -158,21 +169,21 @@ class Db
         }
 
         // Return last statement
-        return self::$last_statement;
+        return self::$lastStatement;
     }
 
     /**
      * Fetch one row of query. Useful if you need only one record returned.
      *
-     * @example models\Db::fetch('SELECT * FROM posts WHERE id = ?', [$post_id], 'pgsql1');
+     * @example Db::fetch('SELECT * FROM posts WHERE id = ?', [$post_id], 'pgsql1');
      * @access public
      * @static
-     * @param  string       $query
-     * @param  mixed[]      $data  (default: [])
-     * @param  string       $name  (default: 'default')
-     * @return array|object Returns array or object of the one record from database.
+     * @param  string $query Query
+     * @param  array  $data  (default: [])
+     * @param  string $name  (default: 'default')
+     * @return mixed  Returns array or object of the one record from database.
      */
-    public static function fetch($query, $data = [], $name = 'default')
+    public static function fetch(string $query, array $data = [], string $name = 'default'): mixed
     {
         return self::query($query, $data, $name)->fetch();
     }
@@ -182,12 +193,12 @@ class Db
      *
      * @access public
      * @static
-     * @param  string           $query
-     * @param  mixed[]          $data  (default: [])
-     * @param  string           $name  (default: 'default')
-     * @return array[]|object[] Returns array of arrays or objects containing all rows returned by database.
+     * @param  string $query Query
+     * @param  array  $data  (default: [])
+     * @param  string $name  (default: 'default')
+     * @return array  Returns array of arrays or objects containing all rows returned by database.
      */
-    public static function fetchAll($query, $data = [], $name = 'default')
+    public static function fetchAll(string $query, array $data = [], string $name = 'default'): array
     {
         return self::query($query, $data, $name)->fetchAll();
     }
@@ -195,26 +206,26 @@ class Db
     /**
      * Make insert sql string and exeute it from associative array of data..
      *
-     * @example models\Db::insert('posts', ['title' => 'Different title', '!active' => 1]);
+     * @example Db::insert('posts', ['title' => 'Different title', '!active' => 1]);
      *          will make and execute query: INSERT INTO posts (title, active) VALUES ('Different title', 1).
      * @access public
      * @static
-     * @param  string       $table
-     * @param  mixed        $data
-     * @param  string       $name  (default: 'default')
-     * @return \PDOStatement Returns statement created by query.
+     * @param  string        $table Table
+     * @param  array         $data  Data
+     * @param  string        $name  (default: 'default')
+     * @return PDOStatement Returns statement created by query.
      */
-    public static function insert($table, $data, $name = 'default', $returning = null)
+    public static function insert(string $table, array $data, string $name = 'default', string $returning = null): PDOStatement
     {
         $keys = [];
         $values = [];
         $params = [];
         foreach ((array) $data as $key => $value) {
             if ($key[0] == '!') {
-                $keys[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column'];
+                $keys[] = self::$dbConfigs[$name]['wrap_column'].substr($key, 1).self::$dbConfigs[$name]['wrap_column'];
                 $values[] = $value;
             } else {
-                $keys[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column'];
+                $keys[] = self::$dbConfigs[$name]['wrap_column'].$key.self::$dbConfigs[$name]['wrap_column'];
                 $values[] = '?';
                 $params[] = $value;
             }
@@ -225,7 +236,7 @@ class Db
         $values = implode(', ', $values);
 
         // Run Query
-        $query = self::query("INSERT INTO {$table} ({$keys}) VALUES ({$values}){$returning}", $params, $name);
+        $query = self::query("INSERT INTO {$table} ({$keys}) VALUES ({$values}) {$returning}", $params, $name);
 
         return (empty($returning) ? $query : $query->fetch());
     }
@@ -233,26 +244,26 @@ class Db
     /**
      * Make update sql string and exeute it from associative array of data.
      *
-     * @example models\Db::update('posts', ['title' => 'Different title', '!active' => 1], ['id' => $post_id]);
+     * @example Db::update('posts', ['title' => 'Different title', '!active' => 1], ['id' => $post_id]);
      *          will make and execute query: UPDATE posts SET title = 'Different title', active = 1 WHERE id = 2.
      * @access public
      * @static
-     * @param  string       $table
-     * @param  mixed        $data
-     * @param  mixed        $where
-     * @param  string       $name  (default: 'default')
-     * @return \PDOStatement Returns statement created by query.
+     * @param  string $table Table
+     * @param  array  $data  Data
+     * @param  array  $where Conditions
+     * @param  string $name  (default: 'default')
+     * @return PDOStatement Returns statement created by query.
      */
-    public static function update($table, $data, $where, $name = 'default')
+    public static function update(string $table, array $data, array $where, string $name = 'default'): PDOStatement
     {
         // Make SET
         $set = [];
         $params = [];
         foreach ((array) $data as $key => $value) {
             if ($key[0] == '!') {
-                $set[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column']." = {$value}";
+                $set[] = self::$dbConfigs[$name]['wrap_column'].substr($key, 1).self::$dbConfigs[$name]['wrap_column']." = {$value}";
             } else {
-                $set[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column'].' = ?';
+                $set[] = self::$dbConfigs[$name]['wrap_column'].$key.self::$dbConfigs[$name]['wrap_column'].' = ?';
                 $params[] = $value;
             }
         }
@@ -274,18 +285,18 @@ class Db
                     if (is_array($value)) {
                         $c = 'NOT IN';
                         $value = '('.implode(',', $value).')';
-                        $cond[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column']." {$c} {$value}";
+                        $cond[] = self::$dbConfigs[$name]['wrap_column'].substr($key, 1).self::$dbConfigs[$name]['wrap_column']." {$c} {$value}";
                     } else {
-                        $cond[] = self::$db_links[$name]['config']['wrap_column'].substr($key, 1).self::$db_links[$name]['config']['wrap_column']." {$c} ?";
+                        $cond[] = self::$dbConfigs[$name]['wrap_column'].substr($key, 1).self::$dbConfigs[$name]['wrap_column']." {$c} ?";
                         $params[] = $value;
                     }
                 } else {
                     if (is_array($value)) {
                         $c = 'IN';
                         $value = '('.implode(',', $value).')';
-                        $cond[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column']." {$c} {$value}";
+                        $cond[] = self::$dbConfigs[$name]['wrap_column'].$key.self::$dbConfigs[$name]['wrap_column']." {$c} {$value}";
                     } else {
-                        $cond[] = self::$db_links[$name]['config']['wrap_column'].$key.self::$db_links[$name]['config']['wrap_column']." {$c} ?";
+                        $cond[] = self::$dbConfigs[$name]['wrap_column'].$key.self::$dbConfigs[$name]['wrap_column']." {$c} ?";
                         $params[] = $value;
                     }
                 }
@@ -320,9 +331,9 @@ class Db
      * @param string $name (default: 'default')
      * @return bool Returns true on success or false on failure.
      */
-    public static function beginTransaction($name = 'default')
+    public static function beginTransaction(string $name = 'default'): bool
     {
-        $db_link = &self::$db_links[$name]['link'];
+        $db_link = &self::$dbLinks[$name];
         return $db_link->beginTransaction();
     }
 
@@ -334,9 +345,9 @@ class Db
      * @param string $name (default: 'default')
      * @return bool Returns true on success or false on failure.
      */
-    public static function inTransaction($name = 'default')
+    public static function inTransaction(string $name = 'default'): bool
     {
-        $db_link = &self::$db_links[$name]['link'];
+        $db_link = &self::$dbLinks[$name];
         return $db_link->inTransaction();
     }
 
@@ -349,9 +360,9 @@ class Db
      * @param string $name (default: 'default')
      * @return bool Returns true on success or false on failure.
      */
-    public static function commit($name = 'default')
+    public static function commit(string $name = 'default'): bool
     {
-        $db_link = &self::$db_links[$name]['link'];
+        $db_link = &self::$dbLinks[$name];
         return $db_link->commit();
     }
 
@@ -363,9 +374,9 @@ class Db
      * @param string $name (default: 'default')
      * @return bool Returns true on success or false on failure.
      */
-    public static function rollBack($name = 'default')
+    public static function rollBack(string $name = 'default'): bool
     {
-        $db_link = &self::$db_links[$name]['link'];
+        $db_link = &self::$dbLinks[$name];
         return $db_link->rollBack();
     }
 
@@ -375,37 +386,35 @@ class Db
      * @access public
      * @static
      * @param  string $name (default: 'default')
-     * @return \PDO    Returns php's PDO object.
+     * @return PDO    Returns php's PDO object.
      */
-    public static function &dbLink($name = 'default')
+    public static function &dbLink(string $name = 'default'): PDO
     {
-        return self::$db_links[$name]['link'];
+        return self::$dbLinks[$name];
     }
 
     /**
-     * Get last statement that was run on database through this (models\db) class.
+     * Get last statement that was run on database through this (Db) class.
      *
      * @access public
      * @static
-     * @return \PDOStatement Returns statement created by query.
+     * @return ?PDOStatement Returns statement created by query.
      */
-    public static function &lastStatement()
+    public static function &lastStatement(): ?PDOStatement
     {
-        if (!empty(self::$last_statement)) {
-            return self::$last_statement;
-        }
+        return self::$lastStatement;
     }
 
     /**
-     * Get last query that was run on database through this (models\db) class.
+     * Get last query that was run on database through this (Db) class.
      *
      * @access public
      * @static
-     * @return string Returns string of the query.
+     * @return ?string Returns string of the query.
      */
-    public static function lastQuery()
+    public static function lastQuery(): ?string
     {
-        return empty(self::$last_statement) ? null : self::$last_statement->queryString;
+        return empty(self::$lastStatement) ? null : self::$lastStatement->queryString;
     }
 
     /**
@@ -416,20 +425,20 @@ class Db
      *
      * @access public
      * @static
-     * @param  string   $sequence_name (default: '')
-     * @param  bool     $sql           (default: false)
-     * @param  string   $name          (default: 'default')
-     * @return int|null Returns last insert id on success or null on failure.
+     * @param  string $sequence_name (default: '')
+     * @param  bool   $sql           (default: false)
+     * @param  string $name          (default: 'default')
+     * @return ?int   Returns last insert id on success or null on failure.
      */
-    public static function lastInsertId($sequence_name = '', $sql = false, $name = 'default')
+    public static function lastInsertId(string $sequence_name = '', bool $sql = false, string $name = 'default'): ?int
     {
         if (empty($sql)) {
-            return self::$db_links[$name]['link']->lastInsertId($sequence_name);
+            return self::$dbLinks[$name]->lastInsertId($sequence_name);
         } else {
             if (empty($sequence_name)) {
                 $res = self::query('SELECT LAST_INSERT_ID() as id');
             } else {
-                $res = self::query('SELECT currval(?) as id', $sequence_name);
+                $res = self::query('SELECT currval(?) as id', [$sequence_name]);
             }
 
             return (empty($res->id) ? null : $res->id);
@@ -445,9 +454,9 @@ class Db
      * @param  string   $name          (default: 'default')
      * @return null
      */
-    public static function close($name = 'default')
+    public static function close(string $name = 'default'): void
     {
-        self::$db_links[$name]['link'] = null;
-        unset(self::$db_links[$name]);
+        self::$dbLinks[$name] = null;
+        unset(self::$dbLinks[$name]);
     }
 }
