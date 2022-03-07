@@ -1,5 +1,7 @@
 <?php
 
+// TODO: Needs revision
+
 namespace System\Modules\Utils\Models;
 
 class RecordObject implements \Iterator, \JsonSerializable, \ArrayAccess

@@ -17,7 +17,7 @@ class ExtendedDateTime extends \DateTime
             parent::__construct($datetime);
             $this->setTimezone(new \DateTimeZone($locale));
         } else {
-            parent::__construct(null, new \DateTimeZone($locale));
+            parent::__construct('', new \DateTimeZone($locale));
 
             $date_format = 'Y-m-d';
             if (strpos($datetime, ':') !== false) {
@@ -73,7 +73,7 @@ class ExtendedDateTime extends \DateTime
         $this->modify('23:59:59');
     }
 
-    public static function _startOfTheMonth($unix_time)
+    public static function _startOfTheMonth(int $unix_time)
     {
         $tmp = new ExtendedDateTime("@{$unix_time}");
         $tmp->startOfTheMonth();
@@ -81,7 +81,7 @@ class ExtendedDateTime extends \DateTime
         return $tmp->getTimestamp();
     }
 
-    public static function _endOfTheMonth($unix_time)
+    public static function _endOfTheMonth(int $unix_time)
     {
         $tmp = new ExtendedDateTime("@{$unix_time}");
         $tmp->endOfTheMonth();

@@ -1,5 +1,7 @@
 <?php
 
+// TODO: Needs revision, specificly Cache part
+
 namespace System\Modules\Utils\Models;
 
 use \System\Modules\Core\Models\Config;
@@ -203,7 +205,7 @@ class i18n
     {
         // If i18n config is not already loaded, do it now
         if (empty(Config::$items['i18n'])) {
-            Config::load('i18n', null, 'System');
+            Config::load(['i18n'], null, 'System');
         }
 
         self::$debug = Config::$items['debug'];
@@ -258,7 +260,6 @@ class i18n
                 self::$url_prefix = self::urlPrefix(self::$current_country, self::$language_code);
             }
         }
-
 
         // Key
         self::$language_key = self::$country_code.'_'.self::$language_code;
@@ -384,9 +385,9 @@ class i18n
 
         if (empty(self::$cache[$language_key][$text])) { // A note: using isset returns false when value NULL is returned from postgresql
             $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'].'.' : '');
-            $record = Db::fetch("SELECT id FROM {$db_scheme}i18n_keys WHERE key = ?", $text, self::$config['db_config']);
+            $record = Db::fetch("SELECT id FROM {$db_scheme}i18n_keys WHERE key = ?", [$text], self::$config['db_config']);
             if (empty($record)) {
-                $record = Db::fetch("INSERT INTO {$db_scheme}i18n_keys (key) VALUES (?) RETURNING id", $text, self::$config['db_config']);
+                $record = Db::fetch("INSERT INTO {$db_scheme}i18n_keys (key) VALUES (?) RETURNING id", [$text], self::$config['db_config']);
             }
 
             self::$cache[$language_key][$text] = $text.'*';
@@ -448,7 +449,7 @@ class i18n
         }
 
         $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'].'.' : '');
-        $record = Db::fetch("SELECT id FROM {$db_scheme}i18n_keys WHERE key = ?", $key, self::$config['db_config']);
+        $record = Db::fetch("SELECT id FROM {$db_scheme}i18n_keys WHERE key = ?", [$key], self::$config['db_config']);
         if (empty($record)) {
             throw new \Exception("Key \"{$key}\" doesn't exist #2");
         }

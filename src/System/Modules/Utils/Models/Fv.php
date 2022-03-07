@@ -172,6 +172,7 @@ class Fv
 
     public function setError($type, $name, $value = '')
     {
+        $tmp = [];
         $this->errors_all[] = &$tmp;
         $this->errors[$name][] = &$tmp;
 
