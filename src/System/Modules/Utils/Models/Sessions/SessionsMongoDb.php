@@ -15,62 +15,53 @@ class SessionsMongoDb extends Sessions
     protected $mdbDatabase = null;
     protected $mdbCollection = null;
 
-    public function __construct($connectionString, $sessionName = 'SMDB')
+    public function __construct($connectionString, string $databaseName = 'sessions', $sessionName = 'SMDB', ?Sessions $backupHandler = null)
     {
         $this->mdbConnectionString = $connectionString;
         $this->mdbConnection = new \MongoDB\Client($this->mdbConnectionString);
-        $this->mdbDatabase = $this->mdbConnection->sessions;
+        $this->mdbDatabase = $this->mdbConnection->{$databaseName};
         $this->mdbCollection = $this->mdbDatabase->php_sessions;
 
-        parent::__construct();
-    }
-
-    public function open(string $path, string $name): bool
-    {
-        return true;
-    }
-
-    public function close(): bool
-    {
-        return true;
+        parent::__construct($sessionName, $backupHandler);
     }
 
     public function read(string $id): string|false
     {
-        $this->data = $this->mdbCollection
-            ->find(['id' => $id, 'check' => $this->salt])
-            ->fields(['data' => true])
-            ->getNext();
+        $data = $this->mdbCollection
+            ->findOne(['id' => $this->id($id), 'salt' => $this->salt]);
+        if (!empty($data['data'])) {
+            return $data['data'];
+        }
 
-        return (empty($this->data) ? null : $this->data['data']);
+        return parent::read($id);
     }
 
     public function write(string $id, string $data): bool
     {
-        $this->data['id'] = $id;
-        $this->data['data'] = $data;
-        $this->data['check'] = $this->salt;
-        $this->data['expires'] = time();
-        $this->mdbCollection->save($this->data);
+        $itemData['id'] = $this->id($id);
+        $itemData['data'] = $data;
+        $itemData['salt'] = $this->salt;
+        $itemData['timestamp'] = time();
+        $this->mdbCollection->updateOne(
+            ['id' => $this->id($id), 'salt' => $this->salt],
+            ['$set' => $itemData],
+            ['upsert' => true]
+        );
 
-        return true;
+        return parent::write($id, $data);
     }
 
     public function destroy(string $id): bool
     {
-        $this->mdbCollection->remove(['id' => $id]);
-        // Also delete the cookie
-        if (headers_sent() == false) {
-            setcookie($this->prefix, '', time() - 1, '/');
-        }
+        $this->mdbCollection->deleteOne(['id' => $this->id($id)]);
 
-        return true;
+        return parent::destroy($id);
     }
 
-    public function gc(int $max_lifetime): int|false
+    public function gc(int $maxLifetime): int|false
     {
-        $this->mdbCollection->remove(['expires' => ['$lt' => (time() - $max_lifetime)]]);
+        $this->mdbCollection->remove(['timestamp' => ['$lt' => (time() - $maxLifetime)]]);
 
-        return true;
+        return parent::gc($maxLifetime);
     }
 }

@@ -10,112 +10,75 @@
 
 namespace System\Modules\Utils\Models\Sessions;
 
-class SessionsPgsql
-{
-    public $prefix = null;
-    public $expire = null;
+use System\Modules\Utils\Models\Db;
 
+class SessionsPgsql extends Sessions
+{
+    public string $dbConfigName = 'sessions';
     private $db_link = null;
 
-    public function __construct(&$db_link)
+    public function __construct(array $dbConfig, $sessionName = 'SMC', ?Sessions $backupHandler = null)
     {
-        // Secure our sessions a little bit more
-        session_name('SSSSS');
-        ini_set('session.use_only_cookies', true);
+        Db::init($this->dbConfigName, $dbConfig);
 
-        ini_set('session.entropy_file', '/dev/urandom');
+        parent::__construct($sessionName, $backupHandler);
+    }
 
-        ini_set('session.gc_probability', 1);
-        ini_set('session.gc_divisor', 100);
-
-        ini_set('session.gc_maxlifetime', 432000*4);
-        ini_set('session.cookie_lifetime', 432000*4);
-
-        ini_set('session.hash_function', 'sha512');
-        ini_set('session.hash_bits_per_character', 5);
-
-        // Set some variables
-        $this->db_link = $db_link;
-        $this->prefix = session_name();
-        $this->expire = session_cache_expire() * 60;
-
-        // Register session handler
-        session_set_save_handler(
-            [$this, 'open'],
-            [$this, 'close'],
-            [$this, 'read'],
-            [$this, 'write'],
-            [$this, 'destroy'],
-            [$this, 'gc']
+    public function read(string $id): string|false
+    {
+        $res = Db::fetch(
+            'SELECT data FROM sessions WHERE id = ? AND salt = ?',
+            [$id, $this->salt],
+            $this->dbConfigName
         );
-        session_start();
-    }
-
-    public function __destruct()
-    {
-        session_write_close();
-    }
-
-    public function open()
-    {
-        return true;
-    }
-
-    public function close()
-    {
-        return true;
-    }
-
-    public function read($id)
-    {
-        $res = self::query('SELECT "data" FROM "sessions" WHERE "id" = ?', $id)->fetch();
         if (!empty($res->data)) {
             return $res->data;
         }
 
-        return null;
+        return parent::read($id);
     }
 
-    public function write($id, $data)
+    public function write(string $id, string $data): bool
     {
-        self::destroy($id);
-        self::query('INSERT INTO sessions VALUES (?, ?, ?)', [$id, $data, time()]);
+        $statement = Db::query(
+            '
+                UPDATE sessions
+                SET data = ?, timestamp = CURRENT_TIMESTAMP
+                WHERE id = ? AND salt = ?
+            ',
+            [$data, $id, $this->salt],
+            $this->dbConfigName
+        );
 
-        return true;
-    }
-
-    public function destroy($id)
-    {
-        self::query('DELETE FROM "sessions" WHERE "id" = ?', $id);
-        // Also delete the cookie
-        if (headers_sent() == false) {
-            setcookie($this->prefix, '', time() - 1, '/');
+        if ($statement->rowCount() == 0) {
+            Db::query(
+                'INSERT INTO sessions (id, salt, data) VALUES (?, ?, ?)',
+                [$id, $this->salt, $data],
+                $this->dbConfigName
+            );
         }
 
-        return true;
+        return parent::write($id, $data);
     }
 
-    public function gc($max)
+    public function destroy(string $id): bool
     {
-        Db::query('DELETE FROM "sessions" WHERE "timestamp" <= ?', (time() - $max));
+        Db::query(
+            'DELETE FROM "sessions" WHERE "id" = ?',
+            [$id],
+            $this->dbConfigName
+        );
 
-        return true;
+        return parent::destroy($id);
     }
 
-    private function query($query, $data = null, $name = 'default')
+    public function gc(int $maxLifetime): int|false
     {
-        if (empty($query)) {
-            return null;
-        }
+        Db::query(
+            "DELETE FROM sessions WHERE timestamp <= CURRENT_TIMESTAMP - INTERVAL '{$maxLifetime}' SECOND",
+            name: $this->dbConfigName
+        );
 
-        if (empty($this->db_link)) {
-            throw new \Exception('No connection to database');
-        }
-
-        // Do request
-        $prepare = $this->db_link->prepare($query);
-        $prepare->execute((array) $data);
-
-        return $prepare;
+        return parent::gc($maxLifetime);
     }
 }

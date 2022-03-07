@@ -1,13 +1,8 @@
-CREATE TABLE "sessions" (
-	"id" varchar(120) NOT NULL DEFAULT ''::character varying,
-	"data" text NOT NULL,
-	"timestamp" int8 NOT NULL
-)
-WITH (OIDS=FALSE);
-
-ALTER TABLE "sessions" ADD CONSTRAINT "sessions_pkey" PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
-CREATE INDEX "sessions_id" ON "public"."sessions" USING btree("id");
-COMMENT ON INDEX "public"."sessions_id" IS NULL;
-CREATE INDEX "sessions_expire" ON "public"."sessions" USING btree("timestamp");
-COMMENT ON INDEX "public"."sessions_expire" IS NULL;
+CREATE TABLE public.sessions (
+    id varchar(120) NOT NULL,
+    salt varchar(40) NOT NULL DEFAULT '',
+    "timestamp" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "data" text NOT NULL DEFAULT '',
+    CONSTRAINT sessions_pk PRIMARY KEY (id)
+);
+CREATE INDEX sessions_timestamp_idx ON public.sessions ("timestamp");
