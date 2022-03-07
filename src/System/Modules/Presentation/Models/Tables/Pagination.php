@@ -2,78 +2,115 @@
 
 namespace System\Modules\Presentation\Models\Tables;
 
+use System\Modules\Presentation\Models\Tables\Interfaces\PaginationInterface;
+use System\Modules\Presentation\Models\Tables\Interfaces\TableInterface;
+
 /**
  * Html pages model, for quick record paging.
  */
-class Pagination
+class Pagination implements PaginationInterface
 {
-    private static $obj = [];
-    private static $base_uri = '';
+    /**
+     * Table instance
+     *
+     * (default value: '')
+     *
+     * @var Table
+     * @access protected
+     */
+    protected Table $tableInstance;
 
-    public static function init($record_count, $active_page, $page_limit, $pages_display = 10, $base_uri = null)
+
+    /**
+     * Filter url prefix
+     *
+     * (default value: '')
+     *
+     * @var string
+     * @access protected
+     */
+    protected string $urlPrefix = '';
+
+    /**
+     * Start limit from this number - use this in SQL query
+     *
+     * (default value: '')
+     *
+     * @var string
+     * @access protected
+     */
+    public int $limitFrom = 0;
+
+    /**
+     * Per page limit - this is how many records to show on a page
+     *
+     * (default value: '')
+     *
+     * @var string
+     * @access protected
+     */
+    public int $limitPerPage = 50;
+
+    protected int $pagesToShow = 10;
+    protected int $recordCount = 10;
+    protected int $currentPage = 0;
+    protected int $pageCount = 0;
+    protected int $nextPage = 0;
+    protected int $prevPage = 0;
+    protected int $pagesFrom = 0;
+    protected int $pagesTo = 0;
+
+
+    /**
+     * Construct tableFilters
+     *
+     * @access public
+     * @param  Table  $tableInstance
+     * @param  string $url_prefix (default: [empty string])
+     * @return void
+     */
+    public function __construct(TableInterface &$tableInstance, string $urlPrefix = '', int $currentPage = 1, int $limitPerPage = 50, int $pagesToShow = 10)
     {
-        self::$base_uri = $base_uri;
+        $this->tableInstance = &$tableInstance;
+        $this->urlPrefix = $urlPrefix;
+        $this->currentPage = $currentPage;
+        $this->limitPerPage = $limitPerPage;
+        $this->pagesToShow = $pagesToShow;
+    }
 
-        $pages_left = (int) floor($pages_display / 2);
-        $pages_right = $pages_display - $pages_left - 1;
 
-        self::$obj = [];
+    public function calculate(int $recordCount, int $currentPage): void
+    {
+        $pages_left = (int) floor($this->pagesToShow / 2);
+        $pages_right = $this->pagesToShow - $pages_left - 1;
 
-        self::$obj['record_count'] = $record_count;
-        self::$obj['active_page'] = $active_page;
-        self::$obj['page_limit'] = $page_limit;
+        $this->recordCount = $recordCount;
+        $this->currentPage = $currentPage;
 
-        self::$obj['page_count'] = (int) ceil(self::$obj['record_count'] / self::$obj['page_limit']);
-        if (empty(self::$obj['active_page']) || self::$obj['active_page'] > self::$obj['page_count']) {
-            self::$obj['active_page'] = 1;
+        $this->pageCount = (int) ceil($this->recordCount / $this->limitPerPage);
+        if (empty($this->currentPage) || $this->currentPage > $this->pageCount) {
+            $this->currentPage = 1;
         }
-        self::$obj['limit_from'] = (self::$obj['active_page'] < 1 ? 0 : (self::$obj['active_page'] - 1) * self::$obj['page_limit']);
+        $this->limitFrom = ($this->currentPage < 1 ? 0 : ($this->currentPage - 1) * $this->limitPerPage);
 
-        self::$obj['next_page'] = (self::$obj['active_page'] + 1 > self::$obj['page_count'] ? false : self::$obj['active_page'] + 1);
-        self::$obj['prev_page'] = (self::$obj['active_page'] - 1 < 1 ? false : self::$obj['active_page'] - 1);
+        $this->nextPage = ($this->currentPage + 1 > $this->pageCount ? false : $this->currentPage + 1);
+        $this->prevPage = ($this->currentPage - 1 < 1 ? false : $this->currentPage - 1);
 
         switch (true) {
-            case (self::$obj['active_page'] - $pages_left < 1):
-                self::$obj['pages_from'] = 1;
-                self::$obj['pages_to'] = (self::$obj['active_page'] + $pages_display >= self::$obj['page_count'] ? self::$obj['page_count'] : self::$obj['active_page'] + ($pages_display - self::$obj['active_page']));
+            case ($this->currentPage - $pages_left < 1):
+                $this->pagesFrom = 1;
+                $this->pagesTo = ($this->currentPage + $this->pagesToShow >= $this->pageCount ? $this->pageCount : $this->currentPage + ($this->pagesToShow - $this->currentPage));
                 break;
 
-            case (self::$obj['active_page'] + $pages_right >= self::$obj['page_count']):
-                self::$obj['pages_from'] = (int) (self::$obj['active_page'] - $pages_display <= 0 ? 1 : self::$obj['active_page'] - ($pages_display - (self::$obj['page_count'] - self::$obj['active_page']) - 1));
-                self::$obj['pages_to'] = self::$obj['page_count'];
+            case ($this->currentPage + $pages_right >= $this->pageCount):
+                $this->pagesFrom = (int) ($this->currentPage - $this->pagesToShow <= 0 ? 1 : $this->currentPage - ($this->pagesToShow - ($this->pageCount - $this->currentPage) - 1));
+                $this->pagesTo = $this->pageCount;
                 break;
 
             default:
-                self::$obj['pages_from'] = self::$obj['active_page'] - $pages_left;
-                self::$obj['pages_to'] = self::$obj['active_page'] + $pages_right;
+                $this->pagesFrom = $this->currentPage - $pages_left;
+                $this->pagesTo = $this->currentPage + $pages_right;
                 break;
         }
-
-        return self::$obj;
-    }
-
-    public static function display()
-    {
-        if (empty(self::$obj) || self::$obj['page_count'] <= 1) {
-            return '';
-        }
-
-        $pages = '<ul class="pagination">';
-        $pages .= '<li class="page-item'.(self::$obj['active_page'] == 1 ? ' disabled' : '').'"><a class="page-link" href="'.self::$base_uri.'1'.'"><span aria-hidden="true">1</span><span class="sr-only">Previous</span></a></li>';
-        $pages .= '<li class="page-item'.(self::$obj['active_page'] == 1 ? ' disabled' : '').'"><a class="page-link" href="'.self::$base_uri.self::$obj['prev_page'].'"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>';
-
-        for ($i = self::$obj['pages_from']; $i <= self::$obj['pages_to']; ++$i) {
-            if ($i === self::$obj['active_page']) {
-                $pages .= '<li class="page-item active"><a class="page-link" href="'.self::$base_uri.$i.'">'.$i.' <span class="sr-only">(current)</span></a></li>';
-            } else {
-                $pages .= '<li class="page-item"><a class="page-link" href="'.self::$base_uri.$i.'">'.$i.'</a></li>';
-            }
-        }
-
-        $pages .= '<li class="page-item'.(self::$obj['active_page'] == self::$obj['page_count'] ? ' disabled' : '').'"><a class="page-link" href="'.self::$base_uri.self::$obj['next_page'].'"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>';
-        $pages .= '<li class="page-item'.(self::$obj['active_page'] == self::$obj['page_count'] ? ' disabled' : '').'"><a class="page-link" href="'.self::$base_uri.self::$obj['page_count'].'"><span aria-hidden="true">'.self::$obj['page_count'].'</span><span class="sr-only">Last</span></a></li>';
-        $pages .= '</ul>';
-
-        return $pages;
     }
 }

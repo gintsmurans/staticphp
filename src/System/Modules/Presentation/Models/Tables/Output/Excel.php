@@ -1,49 +1,59 @@
 <?php
 
-namespace System\Modules\Presentation\Models\Tables\Export;
+namespace System\Modules\Presentation\Models\Tables\Output;
 
 use \PhpOffice\PhpSpreadsheet\Spreadsheet;
+use \PhpOffice\PhpSpreadsheet\Cell\DataType;
 use \PhpOffice\PhpSpreadsheet\IOFactory;
 
-use \System\Modules\Presentation\Models\Tables\Table;
+use System\Modules\Presentation\Models\Tables\Interfaces\OutputInterface;
 
-class Excel extends Table
+use System\Modules\Presentation\Models\Tables\Traits\TableInstance;
+
+class Excel implements OutputInterface
 {
-    public function generate(): Spreadsheet
+    use TableInstance;
+
+    public string $filename = '';
+    public string $author = '';
+    public ?\Closure $formatter = null;
+
+    public function makeOutput(): Spreadsheet
     {
-        $xls = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $xls = new Spreadsheet();
         $active_sheet =  $xls->setActiveSheetIndex(0);
 
         $colNr = 1;
         $rowNr = 1;
-        foreach ($this->columns as $column) {
-            if (empty($column['export_key'])) {
+        /** @var Column $column */
+        foreach ($this->tableInstance->columns as $column) {
+            if (empty($column->exportKey)) {
                 continue;
             }
 
-            $active_sheet->getCellByColumnAndRow($colNr, $rowNr)->setValue($column['title']);
+            $active_sheet->getCellByColumnAndRow($colNr, $rowNr)->setValue($column->title);
             $colNr += 1;
         }
 
         $rowNr = 2;
-        foreach ($this->rows as $rowData) {
+        foreach ($this->tableInstance->getRows() as $rowData) {
             $colNr = 1;
-            foreach ($this->columns as $column) {
-                if (empty($column['export_key'])) {
+            foreach ($this->tableInstance->columns as $column) {
+                if (empty($column->exportKey)) {
                     continue;
                 }
-                $exportKey = $column['export_key'];
+                $exportKey = $column->exportKey;
                 $cellValue = is_callable($exportKey) ? $exportKey($rowData) : $rowData[$exportKey];
                 $cell = $active_sheet->getCellByColumnAndRow($colNr, $rowNr);
 
-                switch ($column['type']) {
+                switch ($column->type) {
                     case 'int':
                     case 'float':
-                        $cell->setValueExplicit($cellValue, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+                        $cell->setValueExplicit($cellValue, DataType::TYPE_NUMERIC);
                     break;
 
                     default:
-                        $cell->setValueExplicit($cellValue, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $cell->setValueExplicit($cellValue, DataType::TYPE_STRING);
                     break;
                 }
                 $colNr += 1;
@@ -54,20 +64,22 @@ class Excel extends Table
         return $xls;
     }
 
-    public function output($filename, $author = '', $formatter = null)
+
+    public function showOutput(): void
     {
-        $xls = $this->generate();
+        $xls = $this->makeOutput();
         $xls->getProperties()
-            ->setCreator($author)
-            ->setLastModifiedBy($author);
+            ->setCreator($this->author)
+            ->setLastModifiedBy($this->author);
 
         // Format xls
-        if (is_callable($formatter)) {
+        if (is_callable($this->formatter)) {
+            $formatter = $this->formatter;
             $formatter($xls);
         }
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+        header('Content-Disposition: attachment;filename="'.$this->filename.'.xlsx"');
         header('Cache-Control: max-age=0');
         header('Cache-Control: max-age=1');
 

@@ -2,21 +2,147 @@
 
 namespace System\Modules\Presentation\Models\Tables;
 
-class Table
-{
-    protected ?array $columns = null;
-    protected ?array $rows = null;
+use System\Modules\Presentation\Models\Tables\Interfaces\TableInterface;
+use System\Modules\Presentation\Models\Tables\Interfaces\OutputInterface;
 
-    public function __construct($columns, $rows = null)
+use System\Modules\Presentation\Models\Tables\Enums\RowPosition;
+
+class Table implements TableInterface
+{
+    public ?Sort $sort = null;
+    public ?Filters $filter = null;
+    public ?Pagination $pagination = null;
+    public ?OutputInterface $outputGenerator = null;
+
+    public ?array $columns = null;
+    public ?array $rows = null;
+
+    public ?array $avgRow = null;
+    public RowPosition $avgRowPosition = RowPosition::BODY_TOP;
+
+    public ?array $sumRow = null;
+    public RowPosition $sumRowPosition = RowPosition::BODY_TOP;
+
+    public ?array $customRow = null;
+    public RowPosition $customRowPosition = RowPosition::BODY_TOP;
+
+    /**
+     * Unique table id
+     *
+     * (default value: '')
+     *
+     * @var string
+     * @access protected
+     */
+    protected string $tableId = '';
+
+    /**
+     * Url prefix
+     *
+     * (default value: '')
+     *
+     * @var string
+     * @access protected
+     */
+    protected string $urlPrefix = '';
+
+
+    public function __construct(
+        array $columns,
+        string $urlPrefix = ''
+    ) {
+        $this->tableId = md5(time().mt_rand(1, 100));
+        $this->urlPrefix = $urlPrefix;
+
+        $this->setColumns($columns);
+        $this->setRows($rows);
+    }
+
+
+    /**
+     * Returns table's unique id
+     *
+     * @access public
+     * @return string
+     */
+    public function tableId(): string
     {
-        $this->columns = $columns;
-        if (!empty($rows)) {
-            $this->parse($rows);
+        return $this->tableId;
+    }
+
+    /**
+     * Parse query string using $delimiter
+     *
+     * @param string $str Query string
+     * @param string $delimiter Delimiter
+     * @return array
+     */
+    public function parseQueryString(string $str, string $delimiter = '&')
+    {
+        $op = array();
+        $pairs = explode($delimiter, $str);
+        foreach ($pairs as $pair) {
+            $ex = explode("=", $pair);
+            if (count($ex) < 2) {
+                continue;
+            }
+            list($k, $v) = array_map("urldecode", $ex);
+            $op[$k] = $v;
+        }
+
+        return $op;
+    }
+
+
+    public function initData(
+        ?string $filterData = null,
+        ?string $sortData = null,
+        ?int $page = null
+    ): void {
+        $this->sort = new Sort($this, $this->urlPrefix.$filterData.'/%sort', $sortData);
+        $this->filter = new Filters($this, $this->urlPrefix.'%filter/'.$sortData, $filterData);
+        $this->pagination = new Pagination($this, $this->urlPrefix.$filterData.'/'.$sortData.'/%pagination', $page);
+    }
+
+
+    public function getColumns(): array
+    {
+        return $this->columns;
+    }
+
+    public function setColumns(array $columns): void
+    {
+        foreach ($columns as $column) {
+            if ($column instanceof Column == false) {
+                throw new \Exception("Not all columns are instances of Column");
+            }
+
+            $this->columns[$column->id] = $column;
         }
     }
 
-    public function parse($rows)
+
+    public function getRows(): array
     {
-        $this->rows = $rows;
+        return $this->rows;
+    }
+
+    public function setRows(?array &$rows): void
+    {
+        $this->rows = &$rows;
+    }
+
+    public function makeOutput()
+    {
+        if (!empty($this->outputGenerator)) {
+            return $this->outputGenerator->makeOutput();
+        }
+    }
+
+    public function showOutput(): void
+    {
+        if (!empty($this->outputGenerator)) {
+            $this->outputGenerator->showOutput();
+        }
     }
 }
