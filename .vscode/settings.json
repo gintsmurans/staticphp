@@ -32,6 +32,7 @@
     "[php]": {
         "editor.defaultFormatter": "junstyle.php-cs-fixer"
     },
+    // "php-cs-fixer.executablePath": "/srv/sites/web/tools/php-cs-fixer/vendor/bin/php-cs-fixer",
     "php-cs-fixer.onsave": true,
     "php-cs-fixer.rules": "@PSR2",
     "php-cs-fixer.autoFixByBracket": true,
