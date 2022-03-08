@@ -37,7 +37,7 @@ class Pagination implements PaginationInterface
      * (default value: '')
      *
      * @var string
-     * @access protected
+     * @access public
      */
     public int $limitFrom = 0;
 
@@ -47,18 +47,18 @@ class Pagination implements PaginationInterface
      * (default value: '')
      *
      * @var string
-     * @access protected
+     * @access public
      */
     public int $limitPerPage = 50;
 
-    protected int $pagesToShow = 10;
-    protected int $recordCount = 10;
-    protected int $currentPage = 0;
-    protected int $pageCount = 0;
-    protected int $nextPage = 0;
-    protected int $prevPage = 0;
-    protected int $pagesFrom = 0;
-    protected int $pagesTo = 0;
+    public int $pagesToShow = 10;
+    public int $recordCount = 10;
+    public int $currentPage = 0;
+    public int $pageCount = 0;
+    public int $nextPage = 0;
+    public int $prevPage = 0;
+    public int $pagesFrom = 0;
+    public int $pagesTo = 0;
 
 
     /**
@@ -78,6 +78,18 @@ class Pagination implements PaginationInterface
         $this->pagesToShow = $pagesToShow;
     }
 
+    public function url(): string
+    {
+        if ($this->urlPrefix === null) {
+            return '';
+        }
+
+        return (
+            strpos($this->urlPrefix, '%pagination') === false ?
+                $this->urlPrefix.'%pagination' :
+                $this->urlPrefix
+        );
+    }
 
     public function calculate(int $recordCount, int $currentPage): void
     {

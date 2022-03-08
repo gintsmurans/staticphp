@@ -55,7 +55,6 @@ class Table implements TableInterface
         $this->urlPrefix = $urlPrefix;
 
         $this->setColumns($columns);
-        $this->setRows($rows);
     }
 
 
@@ -99,9 +98,9 @@ class Table implements TableInterface
         ?string $sortData = null,
         ?int $page = null
     ): void {
-        $this->sort = new Sort($this, $this->urlPrefix.$filterData.'/%sort', $sortData);
-        $this->filter = new Filters($this, $this->urlPrefix.'%filter/'.$sortData, $filterData);
-        $this->pagination = new Pagination($this, $this->urlPrefix.$filterData.'/'.$sortData.'/%pagination', $page);
+        $this->sort = new Sort($this, "{$this->urlPrefix}/{$filterData}/%sort", $sortData);
+        $this->filter = new Filters($this, "{$this->urlPrefix}/%filter/{$sortData}", $filterData);
+        $this->pagination = new Pagination($this, "{$this->urlPrefix}/{$filterData}/{$sortData}/%pagination", $page);
     }
 
 
@@ -127,7 +126,7 @@ class Table implements TableInterface
         return $this->rows;
     }
 
-    public function setRows(?array &$rows): void
+    public function setRows(array &$rows): void
     {
         $this->rows = &$rows;
     }

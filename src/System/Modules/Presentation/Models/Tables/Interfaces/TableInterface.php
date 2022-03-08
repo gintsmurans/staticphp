@@ -18,7 +18,7 @@ interface TableInterface
     public function setColumns(array $columns): void;
 
     public function getRows(): array;
-    public function setRows(?array &$rows): void;
+    public function setRows(array &$rows): void;
 
     public function makeOutput();
     public function showOutput(): void;

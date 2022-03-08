@@ -2,8 +2,8 @@
 
 namespace System\Modules\Presentation\Models\Tables\Enums;
 
-class SortDirection
+enum SortDirection: string
 {
-    const ASC = 'ASC';
-    const DESC = 'DESC';
+    case ASC = 'ASC';
+    case DESC = 'DESC';
 }

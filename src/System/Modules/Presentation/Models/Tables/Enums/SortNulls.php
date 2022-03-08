@@ -2,8 +2,8 @@
 
 namespace System\Modules\Presentation\Models\Tables\Enums;
 
-class SortNulls
+enum SortNulls: string
 {
-    const FIRST = 'FIRST';
-    const LAST = 'LAST';
+    case FIRST = 'FIRST';
+    case LAST = 'LAST';
 }

@@ -2,8 +2,8 @@
 
 namespace System\Modules\Presentation\Models\Tables\Enums;
 
-class TableType
+enum TableType: string
 {
-    const FULL_HTML = 'full_html';
-    const TABLE_ONLY = 'table_only';
+    case FULL_HTML = 'full_html';
+    case TABLE_ONLY = 'table_only';
 }

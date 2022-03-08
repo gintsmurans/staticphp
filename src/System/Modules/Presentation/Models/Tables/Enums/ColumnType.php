@@ -2,12 +2,13 @@
 
 namespace System\Modules\Presentation\Models\Tables\Enums;
 
-class ColumnType
+enum ColumnType: string
 {
-    const TEXT = 'text';
-    const DATE = 'date';
-    const DATETIME = 'datetime';
-    const DATEINTERVAL = 'dateinterval';
-    const SELECT = 'select';
-    const SELECT_ALL_CHECKBOX = 'select_all_checkboxes'; // Special case
+    case TEXT = 'text';
+    case DATE = 'date';
+    case DATETIME = 'datetime';
+    case DATEINTERVAL = 'dateinterval';
+    case SELECT = 'select';
+    case SELECT_MULTIPLE = 'select-multiple';
+    case SELECT_ALL_CHECKBOX = 'select_all_checkboxes'; // Special case
 }

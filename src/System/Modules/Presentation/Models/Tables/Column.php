@@ -58,7 +58,7 @@ class Column implements ColumnInterface
     public null|string|\Closure $exportKey;
 
 
-    public function __construct($id, $settings)
+    public function __construct($id, ...$settings)
     {
         $this->id = $id;
         foreach ($settings as $key => $value) {

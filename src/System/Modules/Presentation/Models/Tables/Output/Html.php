@@ -11,12 +11,13 @@ use System\Modules\Presentation\Models\Tables\Enums\SortDirection;
 use System\Modules\Presentation\Models\Tables\Traits\TableInstance;
 
 use System\Modules\Presentation\Models\Tables\Column;
+use System\Modules\Presentation\Models\Tables\Enums\ColumnType;
 
 class Html implements OutputInterface
 {
     use TableInstance;
 
-    public string $type = TableType::FULL_HTML;
+    public TableType $type = TableType::FULL_HTML;
     public string $classNames = 'table';
 
 
@@ -42,7 +43,7 @@ class Html implements OutputInterface
         if (strpos($this->tableInstance->sort->url(), '%sort') !== false) {
             $url = str_replace('%sort', $url, $this->tableInstance->sort->url());
         } else {
-            $url = $this->tableInstance->sort->url().$url;
+            $url = $this->tableInstance->sort->url()."/{$url}";
         }
 
         return $url;
@@ -175,9 +176,9 @@ class Html implements OutputInterface
         }
         $html = '';
         switch ($forColumn->type) {
-            case 'date':
-            case 'datetime':
-            case 'dateinterval':
+            case ColumnType::DATE:
+            case ColumnType::DATETIME:
+            case ColumnType::DATEINTERVAL:
                 if ($forColumn->type == 'date') {
                     $classes .= ' datepicker';
                 } elseif ($forColumn->type == 'datetime') {
@@ -192,7 +193,7 @@ class Html implements OutputInterface
 
                 // no break
 
-            case 'text':
+            case ColumnType::TEXT:
                 $html = '<input type="text" class="'.$classes.'"'.$attributes;
                 if (!empty($forColumn->filterTitle)) {
                     $html .= ' placeholder="'.$forColumn->filterTitle.'" ';
@@ -200,8 +201,8 @@ class Html implements OutputInterface
                 $html .= ' '.$this->inputValue($forColumn->id).'>';
             break;
 
-            case 'select':
-            case 'select-multiple':
+            case ColumnType::SELECT:
+            case ColumnType::SELECT_MULTIPLE:
                 if (isset($forColumn->filterSelectOptions) == false || is_array($forColumn->filterSelectOptions) === false) {
                     throw new \Exception("Value for {$forColumn->id} should be [key => value] array");
                 }
@@ -242,7 +243,7 @@ class Html implements OutputInterface
                 $html .= '</select>';
             break;
 
-            case 'select_all_checkbox':
+            case ColumnType::SELECT_ALL_CHECKBOX:
                 $id = 'parent_checkbox_'.$this->tableInstance->tableId();
                 $html = '<input type="checkbox" class="faCheckbox parent_checkbox" id="'.$id.'"><label for="'.$id.'"></label>';
             break;
@@ -324,7 +325,7 @@ class Html implements OutputInterface
         return $html;
     }
 
-    public function rowWithPosition(string $position, string $title = ''): string
+    public function rowWithPosition(RowPosition $position, string $title = ''): string
     {
         $html = '';
         if (!empty($this->tableInstance->avgRow) && $this->tableInstance->avgRowPosition === $position) {
@@ -338,6 +339,38 @@ class Html implements OutputInterface
         }
 
         return $html;
+    }
+
+    public function paginationUrl(string $url, int $page): string
+    {
+        return str_replace('%pagination', $page, $url);
+    }
+
+    public function paginationLinks(): string
+    {
+        $pagination = &$this->tableInstance->pagination;
+        if ($pagination->pageCount <= 1) {
+            return '';
+        }
+
+        $url = $pagination->url();
+        $pages = '<ul class="pagination">';
+        $pages .= '<li class="page-item'.($pagination->currentPage == 1 ? ' disabled' : '').'"><a class="page-link" href="'.$this->paginationUrl($url, 1).'"><span aria-hidden="true">1</span><span class="sr-only">Previous</span></a></li>';
+        $pages .= '<li class="page-item'.($pagination->currentPage == 1 ? ' disabled' : '').'"><a class="page-link" href="'.$this->paginationUrl($url, $pagination->prevPage).'"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>';
+
+        for ($i = $pagination->pagesFrom; $i <= $pagination->pagesTo; ++$i) {
+            if ($i === $pagination->currentPage) {
+                $pages .= '<li class="page-item active"><a class="page-link" href="'.$this->paginationUrl($url, $i).'">'.$i.' <span class="sr-only">(current)</span></a></li>';
+            } else {
+                $pages .= '<li class="page-item"><a class="page-link" href="'.$this->paginationUrl($url, $i).'">'.$i.'</a></li>';
+            }
+        }
+
+        $pages .= '<li class="page-item'.($pagination->currentPage == $pagination->pageCount ? ' disabled' : '').'"><a class="page-link" href="'.$this->paginationUrl($url, $pagination->nextPage).'"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>';
+        $pages .= '<li class="page-item'.($pagination->currentPage == $pagination->pageCount ? ' disabled' : '').'"><a class="page-link" href="'.$this->paginationUrl($url, $pagination->pageCount).'"><span aria-hidden="true">'.$pagination->pageCount.'</span><span class="sr-only">Last</span></a></li>';
+        $pages .= '</ul>';
+
+        return $pages;
     }
 
     // ! OUTPUT
@@ -376,7 +409,7 @@ EOL;
             $html .= <<<EOL
     </div>
     <div class="card-footer">
-        {$this->tableInstance->pagination->makeOutput()}
+        {$this->paginationLinks()}
     </div>
 </div>
 EOL;

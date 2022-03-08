@@ -2,14 +2,14 @@
 
 namespace System\Modules\Presentation\Models\Tables\Enums;
 
-class RowPosition
+enum RowPosition: string
 {
-    const HEAD_TOP = 'head_top';
-    const HEAD_BOTTOM = 'head_bottom';
+    case HEAD_TOP = 'head_top';
+    case HEAD_BOTTOM = 'head_bottom';
 
-    const BODY_TOP = 'body_top';
-    const BODY_BOTTOM = 'body_bottom';
+    case BODY_TOP = 'body_top';
+    case BODY_BOTTOM = 'body_bottom';
 
-    const FOOT_TOP = 'foot_top';
-    const FOOT_BOTTOM = 'foot_bottom';
+    case FOOT_TOP = 'foot_top';
+    case FOOT_BOTTOM = 'foot_bottom';
 }

@@ -2,12 +2,12 @@
 
 namespace System\Modules\Presentation\Models\Tables\Enums;
 
-class FilterType
+enum FilterType: string
 {
-    const TEXT = 'text';
-    const INT8 = 'int';
-    const DECIMAL = 'decimal';
-    const DATE = 'date';
-    const DATETIME = 'datetime';
-    const DATEINTERVAL = 'dateinterval';
+    case TEXT = 'text';
+    case INT8 = 'int';
+    case DECIMAL = 'decimal';
+    case DATE = 'date';
+    case DATETIME = 'datetime';
+    case DATEINTERVAL = 'dateinterval';
 }
