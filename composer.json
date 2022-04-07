@@ -14,7 +14,9 @@
     "require": {
         "php": ">=8.1",
         "twig/twig": "^3.0",
-        "symfony/dotenv": "^6.0"
+        "symfony/dotenv": "^6.0",
+        "mongodb/mongodb": "^1.11",
+        "phpoffice/phpspreadsheet": "^1.22"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0",

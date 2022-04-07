@@ -117,7 +117,7 @@ $config['url_prefixes'] = [];
 | Possible formats: Application/Module/Filename, Module/Filename, Filename (only to load global config)
 |--------------------------------------------------------------------------
 */
-$config['autoload_configs'] = ['App'];
+$config['autoload_configs'] = ['App', 'Db'];
 $config['autoload_helpers'] = ['Bootstrap'];
 
 /*

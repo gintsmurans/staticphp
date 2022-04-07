@@ -1,9 +1,10 @@
 <?php
 
+use System\Modules\Core\Models\Config;
+use System\Modules\Utils\Models\Sessions\SessionsMongoDb;
+use System\Modules\Utils\Models\Sessions\SessionsRedis;
 use System\Modules\Presentation\Models\Menu\Menu;
 use Defaults\Data\MainMenu;
-
-// This is the right place to set headers, start a session, etc.
 
 // Send content type and charset header
 header('Content-type: text/html; charset=utf-8');
@@ -14,17 +15,19 @@ header('Content-type: text/html; charset=utf-8');
 // setlocale(LC_CTYPE, 'lv_LV.utf8', 'lv_LV.UTF-8');
 // date_default_timezone_set('Europe/Riga');
 
-
-// Init db - Before uncommenting add at the use secion: "use \Core\Models\Db;"
-// Db::init();
-
+// Start mongoDB connection
+$client = new \MongoDB\Client(Config::$items['db']['mongo']['default']['string']);
+Config::$items['mdb_conn'] = $client;
+Config::$items['mdb_db'] = $client->{Config::$items['db']['mongo']['default']['dbname']};
 
 // Start session
-/*
-session_set_cookie_params(0);
-session_name('MY_SESSION_NAME');
-session_start();
-*/
+$mdbSession = new SessionsMongoDb(
+    Config::$items['db']['mongo']['sessions']['string'],
+    Config::$items['db']['mongo']['sessions']['dbname'],
+    'SESSION'
+);
+$mdbSession->register();
+$mdbSession->start();
 
 // register twig functions
 Menu::registerTwig();

@@ -6,6 +6,7 @@ MAINTAINER gm@gm.lv
 
 # Gather args
 ARG PHP_VERSION=8.1
+ARG PHP_MONGO_EXT=1.12.1
 
 # Avoid interactive cli blockers
 ENV DEBIAN_FRONTEND noninteractive
@@ -35,6 +36,17 @@ RUN wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
         php${PHP_VERSION}-pgsql php${PHP_VERSION}-mysql php${PHP_VERSION}-ldap
 
 RUN ln -s /bin/sed /usr/bin/sed
+
+RUN wget https://pecl.php.net/get/mongodb-${PHP_MONGO_EXT}.tgz \
+    && tar xf mongodb-${PHP_MONGO_EXT}.tgz \
+    && cd mongodb-${PHP_MONGO_EXT} \
+    && phpize${PHP_VERSION} \
+    && ./configure \
+    && make install \
+    && echo "extension=mongodb.so" > /etc/php/${PHP_VERSION}/mods-available/mongodb.ini \
+    && ln -s /etc/php/${PHP_VERSION}/mods-available/mongodb.ini /etc/php/${PHP_VERSION}/cli/conf.d/40-mongodb.ini \
+    && cd .. \
+    && rm -rf mongodb-${PHP_MONGO_EXT}*
 
 # PHP composer
 # Source: https://stackoverflow.com/a/42147748

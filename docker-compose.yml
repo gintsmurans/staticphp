@@ -1,4 +1,8 @@
 services:
+    # Mongo Database
+    mongodb:
+        image: mongo
+
     # Common image for development and build
     common:
         image: static_php_common
@@ -20,6 +24,7 @@ services:
         volumes:
             - ./:/srv/sites/web:cached
         depends_on:
+            - mongodb
             - common
 
     # Build service
