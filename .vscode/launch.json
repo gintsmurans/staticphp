@@ -5,14 +5,13 @@
     // TODO: Not tested
     "version": "0.2.0",
     "configurations": [
-
         {
             "name": "Listen for XDebug",
             "type": "php",
             "request": "launch",
             "port": 9100,
             "pathMappings": {
-                "/srv/sites/dobelemill.org/pm/": "${workspaceRoot}",
+                "/srv/sites/web/": "${workspaceRoot}",
             }
         },
         {
@@ -28,7 +27,7 @@
             "type": "chrome",
             "request": "attach",
             "port": 9222,
-            "url": "http://pm.dobelemill.local.test/*",
+            "url": "http://local.test/*",
             "webRoot": "${workspaceFolder}/Application/Public"
         }
     ]

@@ -16,18 +16,33 @@
     // connected. This is typically a file mount in .devcontainer/docker-compose.yml
     "workspaceFolder": "/srv/sites/web",
     // Set *default* container specific settings.json values on container create.
-    "settings": {},
+    "settings": {
+        "php.suggest.basic": false,
+        "php.validate.enable": false,
+        "phpcs.enable": true,
+        "phpcs.executablePath": "./vendor/bin/phpcs",
+        "phpcs.ignorePatterns": [
+            "*/vendor/*"
+        ],
+        "[php]": {
+            "editor.formatOnSave": true
+        },
+        "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
+        "python.languageServer": "Pylance",
+        "python.formatting.provider": "black"
+    },
     // Add the IDs of extensions you want installed when the container is created.
     "extensions": [
         "ikappas.composer",
-        "dbaeumer.vscode-eslint",
+        "dbaeumer.vscode-eslint", // JS linter
         "bmewburn.vscode-intelephense-client", // PHP intellisense
         "ikappas.phpcs", // PHP Linter
         "junstyle.php-cs-fixer", // PHP Formatter
         "mblode.twig-language-2", // Twig
         "esbenp.prettier-vscode", // JS/CSS language formatter
-        "ms-python.python",
-        "ms-python.vscode-pylance",
+        "shakram02.bash-beautify", // Bash beautifier
+        "ms-python.python", // Python
+        "ms-python.vscode-pylance" // Python
     ]
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [],

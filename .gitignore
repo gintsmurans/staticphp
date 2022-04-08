@@ -2,15 +2,17 @@
 # Password sensitive files
 ###################################################################################################
 .env
-docker/*/data/
+.env.prod
+.env.dev
+/docker/*/data/
 
-# Tmp, Cache and Bootstrap
+# Build, Tmp, Cache and Bootstrap
 ###################################################################################################
 /build/
 /dist/
 /tmp/
-/vendor/
-/src/Application/Cache/
+/vendor
+/src/Application/Cache/*/
 /src/Application/Public/assets/dist/
 /src/Application/Public/assets/fonts/
 /src/Application/Public/uploads/
@@ -18,6 +20,7 @@ docker/*/data/
 /src/Application/Public/docs/
 
 .phpunit.result.cache
+.php-cs-fixer.cache
 
 # Python
 ###################################################################################################
@@ -32,6 +35,7 @@ __pycache__/
 pip-log.txt
 pip-delete-this-directory.txt
 
+
 # OS generated files
 ###################################################################################################
 .DS_Store
@@ -44,16 +48,19 @@ ehthumbs.db
 Thumbs.db
 Desktop.ini
 
+# Office hidden temp files
+###################################################################################################
+~$*
+
 # Node
 ###################################################################################################
-# Logs
 logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-node_modules/
+/node_modules
 .npm
 
 # Docker

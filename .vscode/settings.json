@@ -1,40 +1,18 @@
 {
     "files.eol": "\n",
     "files.encoding": "utf8",
-    "editor.formatOnSave": true,
-    "editor.formatOnPaste": true,
-    "editor.insertSpaces": true,
     "files.insertFinalNewline": true,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.insertSpaces": true,
     "editor.tabSize": 4,
     "editor.quickSuggestions": {
         "comments": true
     },
-    // "files.associations": {
-    //     "*.html": "twig"
-    // },
-    // "emmet.includeLanguages": {
-    //     "twig": "html"
-    // },
-    "twig-language-2.indentStyle": "space",
-    "twig-language-2.forceIndent": false,
-    "twig-language-2.formatting": false,
     "[twig]": {
         "editor.formatOnSave": false,
-        "editor.defaultFormatter": "mblode.twig-language-2"
     },
     "[html]": {
         "editor.formatOnSave": false,
-    },
-    "python.defaultInterpreterPath": "/usr/bin/python3",
-    "python.languageServer": "Pylance",
-    "python.formatting.provider": "black",
-    "php.suggest.basic": false,
-    "[php]": {
-        "editor.defaultFormatter": "junstyle.php-cs-fixer"
-    },
-    // "php-cs-fixer.executablePath": "/srv/sites/web/tools/php-cs-fixer/vendor/bin/php-cs-fixer",
-    "php-cs-fixer.onsave": true,
-    "php-cs-fixer.rules": "@PSR2",
-    "php-cs-fixer.autoFixByBracket": true,
-    "php-cs-fixer.autoFixBySemicolon": true
+    }
 }
