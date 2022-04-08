@@ -95,6 +95,7 @@ class Sort implements SortInterface
             if ($column->sortDefaultColumn === true) {
                 $this->defaultColumn = &$column;
                 $this->currentColumn = &$column;
+                $this->currentDirection = $this->currentColumn->sortDefaultDirection;
                 break;
             }
         }

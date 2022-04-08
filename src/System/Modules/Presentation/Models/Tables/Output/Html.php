@@ -2,16 +2,19 @@
 
 namespace System\Modules\Presentation\Models\Tables\Output;
 
+use Core\Models\Router;
+use Exception;
 use System\Modules\Presentation\Models\Tables\Interfaces\OutputInterface;
 
 use System\Modules\Presentation\Models\Tables\Enums\TableType;
+use System\Modules\Presentation\Models\Tables\Enums\ColumnType;
 use System\Modules\Presentation\Models\Tables\Enums\RowPosition;
 use System\Modules\Presentation\Models\Tables\Enums\SortDirection;
 
 use System\Modules\Presentation\Models\Tables\Traits\TableInstance;
 
 use System\Modules\Presentation\Models\Tables\Column;
-use System\Modules\Presentation\Models\Tables\Enums\ColumnType;
+use System\Modules\Presentation\Models\Tables\Utils;
 
 class Html implements OutputInterface
 {
@@ -19,6 +22,35 @@ class Html implements OutputInterface
 
     public TableType $type = TableType::FULL_HTML;
     public string $classNames = 'table';
+
+    /**
+     * Elements can be string or Closure. If its a Closure, row index and row data are passed as arguments.
+     */
+    public array $dataRowAttributes = [];
+    public array $dataRowClasses = [];
+
+
+    /**
+     * Returns html input attribute - "value" with its value
+     *
+     * @access public
+     * @param  string       $field
+     * @param  string|null  $compare (default: null)
+     * @return string
+     */
+    public function inputValue(string $value, ?string $compare = null, bool $checkbox = false): string
+    {
+        if ($compare !== null) {
+            if ($value === $compare) {
+                return $checkbox === true ? ' checked="checked"' : ' selected="selected"';
+            }
+
+            return '';
+        }
+
+        $value = str_replace('"', '&quot;', $value);
+        return " value=\"{$value}\"";
+    }
 
 
     // ! Sort
@@ -31,20 +63,16 @@ class Html implements OutputInterface
      * @param  bool $urlOnly (default: false)
      * @return string Returns link for a column
      */
-    public function sortLink(Column $forColumn): string
+    public function sortUrl(Column $forColumn): string
     {
         $newDirection = (
             $forColumn->id === $this->tableInstance->sort->currentColumn()->id
             && $this->tableInstance->sort->currentDirection() === SortDirection::ASC
             ? 'desc' : 'asc'
         );
-        $url = "{$forColumn->id}={$newDirection}";
-
-        if (strpos($this->tableInstance->sort->url(), '%sort') !== false) {
-            $url = str_replace('%sort', $url, $this->tableInstance->sort->url());
-        } else {
-            $url = $this->tableInstance->sort->url()."/{$url}";
-        }
+        $sortData = "{$forColumn->id}={$newDirection}";
+        $url = $this->tableInstance->sort->url();
+        $url = str_replace('%sort', $sortData, $url);
 
         return $url;
     }
@@ -62,18 +90,18 @@ class Html implements OutputInterface
             return $forColumn->title;
         }
 
-        $url = $this->sortLink($forColumn);
+        $url = $this->sortUrl($forColumn);
 
         $html = '';
         if ($forColumn->id === $this->tableInstance->sort->currentColumn()->id) {
-            $html = '&nbsp;&nbsp;<span class="fa fa-chevron-';
+            $html = '&nbsp;&nbsp;<span class="fa fas fa-sort-alpha-';
             $html .= ($this->tableInstance->sort->currentDirection() === SortDirection::ASC ? 'down' : 'up');
-            $html .= ' font-size-11"></span>';
+            $html .= ' sort-icon"></span>';
         }
 
         $link_addon = (empty($forColumn->sortLinkAttribute) ? '' : $forColumn->sortLinkAttribute);
         if (!empty($forColumn->description)) {
-            $link_addon = ' title="'.$forColumn->description.'" class="tooltip-line" data-toggle="tooltip" data-placement="top"';
+            $link_addon .= ' title="'.$forColumn->description.'" class="tooltip-line" data-toggle="tooltip" data-placement="top"';
         }
         $link = '<div class="hidden-print d-print-none"><a href="'.$url.'" '.$link_addon.'>'.$forColumn->title.'</a></div>';
         $link .= '<div class="visible-print d-none d-print-inline">'.$forColumn->title.'</div>'.$html;
@@ -90,6 +118,10 @@ class Html implements OutputInterface
      */
     public function titleRow(): string
     {
+        if ($this->tableInstance->sort === null) {
+            throw new Exception("Sort is not initialized");
+        }
+
         $html = '<tr>';
 
         /** @var Column $column */
@@ -97,14 +129,26 @@ class Html implements OutputInterface
         foreach ($this->tableInstance->columns as $column) {
             $showColumn = true;
             if (is_callable($column->showColumn)) {
-                $showColumn = $column->showColumn();
+                $showColumn = $column->showColumn;
+                $showColumn = $showColumn();
             } else {
                 $showColumn = $column->showColumn;
             }
 
             $linkHtml = $this->sortLinkHtml($column);
             if ($showColumn !== false) {
-                $attributes = (!empty($column->columnAttributes) ? ' '.$column->columnAttributes : '');
+                // Attributes
+                $tmp = $column->columnAttributes;
+                $tmp = Utils::runClosures($tmp, [$column]);
+                $attributes = implode(' ', $tmp);
+                $attributes = " {$attributes} ";
+
+                // Classes
+                $tmp = $column->columnClasses;
+                $tmp = Utils::runClosures($tmp, [$column]);
+                $tmp = implode(' ', $tmp);
+                $attributes .= " class=\"{$tmp}\" ";
+
                 $html .= '<th'.$attributes.'>'.$linkHtml.'</th>';
             }
         }
@@ -116,14 +160,14 @@ class Html implements OutputInterface
 
     // ! Filters
     /**
-     * Returns html input attribute - "value" with its value
+     * Returns html input attribute - extracted from specific filter
      *
      * @access public
      * @param  string       $field
      * @param  string|null  $compare (default: null)
      * @return string
      */
-    public function inputValue(string $field, ?string $compare = null): string
+    public function filterInputValue(string $field, ?string $compare = null): string
     {
         $parsedData = $this->tableInstance->filter->parsedData();
 
@@ -160,30 +204,40 @@ class Html implements OutputInterface
      * @param  mixed    $value (default: [empty string])
      * @return string|bool
      */
-    public function inputField(Column $forColumn, string $value = ''): string
+    public function filterInputField(Column $forColumn, string $value = ''): string
     {
         if ($forColumn->filterHidden === true) {
             return '';
         }
 
-        $classes = 'form-control form-control-sm input-xs filter';
+        // Attributes
         $attributes = ' id="filter_'.$forColumn->id.'" ';
-        if (!empty($forColumn->filterInputAttributes)) {
-            $attributes .= (' '.$forColumn->filterInputAttributes);
-        }
+
+        $tmp = $forColumn->filterInputAttributes;
+        $tmp = Utils::runClosures($tmp, [$forColumn, $value]);
+        $tmp = implode(' ', $tmp);
+        $attributes .= " {$tmp} ";
+
         if ($forColumn->filterEnabled === false) {
             $attributes .= ' disabled="disabled"';
         }
+
+        // Classes
+        $tmp = $forColumn->filterInputClasses;
+        $tmp = Utils::runClosures($tmp, [$forColumn, $value]);
+        $tmp = implode(' ', $tmp);
+        $classes = "form-control form-control-sm input-xs filter {$tmp} ";
+
         $html = '';
         switch ($forColumn->type) {
             case ColumnType::DATE:
             case ColumnType::DATETIME:
             case ColumnType::DATEINTERVAL:
-                if ($forColumn->type == 'date') {
+                if ($forColumn->type == ColumnType::DATE) {
                     $classes .= ' datepicker';
-                } elseif ($forColumn->type == 'datetime') {
+                } elseif ($forColumn->type == ColumnType::DATETIME) {
                     $classes .= ' datetimepicker';
-                } elseif ($forColumn->type == 'dateinterval') {
+                } elseif ($forColumn->type == ColumnType::DATEINTERVAL) {
                     $classes .= ' dateintervalpicker';
                 }
 
@@ -193,20 +247,21 @@ class Html implements OutputInterface
 
                 // no break
 
+            case ColumnType::MULTILINE_TEXT:
             case ColumnType::TEXT:
                 $html = '<input type="text" class="'.$classes.'"'.$attributes;
                 if (!empty($forColumn->filterTitle)) {
                     $html .= ' placeholder="'.$forColumn->filterTitle.'" ';
                 }
-                $html .= ' '.$this->inputValue($forColumn->id).'>';
-            break;
+                $html .= ' '.$this->filterInputValue($forColumn->id).'>';
+                break;
 
             case ColumnType::SELECT:
             case ColumnType::SELECT_MULTIPLE:
                 if (isset($forColumn->filterSelectOptions) == false || is_array($forColumn->filterSelectOptions) === false) {
                     throw new \Exception("Value for {$forColumn->id} should be [key => value] array");
                 }
-                if ($forColumn->type == 'select-multiple') {
+                if ($forColumn->type == ColumnType::SELECT_MULTIPLE) {
                     $attributes .= ' multiple="multiple" size="3" ';
                 }
 
@@ -225,9 +280,9 @@ class Html implements OutputInterface
 
                         if (isset($forColumn->filterSelectOptions[$gkey])) {
                             foreach ($forColumn->filterSelectOptions[$gkey] as $key => $item) {
-                                $final_id = (empty($forColumn->filterSelectOptionsIdKey) ? $key : $item[$forColumn->filterSelectOptionsIdKey]);
-                                $final_title = (empty($forColumn->filterSelectOptionsTitleKey) ? $item : $item[$forColumn->filterSelectOptionsTitleKey]);
-                                $html .= '<option value="'.$final_id.'"'. $this->inputValue($forColumn->id, $final_id) .'>'.$final_title.'</option>';
+                                $finalId = (empty($forColumn->filterSelectOptionsIdKey) ? $key : $item[$forColumn->filterSelectOptionsIdKey]);
+                                $finalTitle = (empty($forColumn->filterSelectOptionsTitleKey) ? $item : $item[$forColumn->filterSelectOptionsTitleKey]);
+                                $html .= '<option value="'.$finalId.'"'. $this->filterInputValue($forColumn->id, $finalId) .'>'.$finalTitle.'</option>';
                             }
                         }
 
@@ -235,18 +290,37 @@ class Html implements OutputInterface
                     }
                 } else {
                     foreach ($forColumn->filterSelectOptions as $key => $item) {
-                        $final_id = (empty($forColumn->filterSelectOptionsIdKey) ? $key : $item[$forColumn->filterSelectOptionsIdKey]);
-                        $final_title = (empty($forColumn->filterSelectOptionsTitleKey) ? $item : $item[$forColumn->filterSelectOptionsTitleKey]);
-                        $html .= '<option value="'.$final_id.'"'. $this->inputValue($forColumn->id, $final_id) .'>'.$final_title.'</option>';
+                        $finalId = (empty($forColumn->filterSelectOptionsIdKey) ? $key : $item[$forColumn->filterSelectOptionsIdKey]);
+                        $finalTitle = (empty($forColumn->filterSelectOptionsTitleKey) ? $item : $item[$forColumn->filterSelectOptionsTitleKey]);
+                        $html .= '<option value="'.$finalId.'"'. $this->filterInputValue($forColumn->id, $finalId) .'>'.$finalTitle.'</option>';
                     }
                 }
                 $html .= '</select>';
-            break;
+                break;
 
             case ColumnType::SELECT_ALL_CHECKBOX:
                 $id = 'parent_checkbox_'.$this->tableInstance->tableId();
                 $html = '<input type="checkbox" class="faCheckbox parent_checkbox" id="'.$id.'"><label for="'.$id.'"></label>';
-            break;
+                break;
+
+            case ColumnType::SWITCH:
+                $options = [0 => 'No', 1 => 'Yes'];
+
+                $parsedData = $this->tableInstance->filter->parsedData();
+                $classes .= ' form-select form-select-sm';
+                $html = '<select class="'.$classes.'"'.$attributes.'>';
+                if (count($options) == 0 && isset($parsedData[$forColumn->id])) {
+                    $html .= '<option value="'.$parsedData[$forColumn->id]['value'].'">'.$parsedData[$forColumn->id]['title'].'</option>';
+                } elseif (empty($forColumn->filterSelectSkipEmptyDefault)) {
+                    $html .= '<option value=""'.(!empty($forColumn->filterSelectDefaultDisabled) ? ' disabled="disabled"' : '').'>'.($forColumn->filterTitle ?? '').'</option>';
+                }
+
+                foreach ($options as $key => $item) {
+                    $html .= '<option value="'.$key.'"'. $this->filterInputValue($forColumn->id, $key) .'>'.$item.'</option>';
+                }
+
+                $html .= '</select>';
+                break;
         }
 
         return $html;
@@ -260,49 +334,236 @@ class Html implements OutputInterface
      */
     public function filtersRow(): string
     {
-        $html = '<tr id="table_filters_'.$this->tableInstance->tableId().'">';
+        if ($this->tableInstance->filter === null) {
+            throw new Exception("Filter is not initialized");
+        }
+
+        $html = '<tr id="table_filters_'.$this->tableInstance->tableId().'">'."\n";
 
         /** @var Column $column */
         $column = null;
         foreach ($this->tableInstance->columns as $column) {
             $showColumn = true;
             if (is_callable($column->showColumn)) {
-                $showColumn = $column->showColumn();
+                $showColumn = $column->showColumn;
+                $showColumn = $showColumn();
             } else {
                 $showColumn = $column->showColumn;
             }
 
-            $fieldHtml = $this->inputField($column);
+            $fieldHtml = $this->filterInputField($column);
             if ($showColumn !== false) {
-                $attributes = (!empty($column->columnAttributes) ? ' '.$column->columnAttributes : '');
-                $html .= '<td'.$attributes.'>'.$fieldHtml.'</td>';
+                // Attributes
+                $tmp = $column->columnAttributes;
+                $tmp = Utils::runClosures($tmp, [$column]);
+                $attributes = implode(' ', $tmp);
+                $attributes = " {$attributes} ";
+
+                // Classes
+                $tmp = $column->columnClasses;
+                $tmp = Utils::runClosures($tmp, [$column]);
+                $tmp = implode(' ', $tmp);
+                $attributes .= " class=\"{$tmp}\" ";
+
+                $html .= "<td{$attributes}>{$fieldHtml}</td>\n";
             }
         }
 
-        $html .= '</tr>';
+        $html .= "</tr>\n";
         return $html;
     }
 
 
     // ! BODY
-    public function htmlRow(int $index, array $rowItem, string $title = ''): string
+    public function htmlDataRow(int $rowIndex, array $rowItem, string $title = ''): string
     {
+        $columnCount = count($this->tableInstance->columns);
         $html = '';
         if (is_callable($rowItem)) {
-            $html .= $rowItem($index, $title);
+            $html .= $rowItem($rowIndex, $rowItem, $columnCount, $title);
         } else {
-            $html = '<tr title="'.$title.'">';
+            // Attributes
+            $attributes = '';
+            if (!empty($this->dataRowAttributes)) {
+                $tmp = $this->dataRowAttributes;
+                $tmp = Utils::runClosures($tmp, [$rowIndex, $rowItem, $columnCount]);
+                $tmp = implode(' ', $tmp);
+                $attributes .= " {$tmp} ";
+            }
+
+            // Classes
+            if (!empty($this->dataRowClasses)) {
+                $tmp = $this->dataRowClasses;
+                $tmp = Utils::runClosures($tmp, [$rowIndex, $rowItem, $columnCount]);
+                $tmp = implode(' ', $tmp);
+                $attributes .= " class=\"{$tmp}\" ";
+            }
+
+            $html = '<tr title="'.$title.'"'.$attributes.'>';
             foreach ($this->tableInstance->columns as $column) {
-                $html .= '<td>';
+                $dataValue = '';
                 if (is_callable($column->dataKey)) {
                     $dataKey = $column->dataKey;
-                    $html .= $dataKey($column, $index, $rowItem);
-                } elseif ($column->dataKey != null && isset($rowItem[$column->dataKey])) {
-                    $html .= $rowItem[$column->dataKey];
+                    $dataValue = $dataKey($column, $rowIndex, $rowItem, $columnCount);
+                } elseif (isset($rowItem[$column->dataKey])) {
+                    $dataValue = $rowItem[$column->dataKey];
                 }
-                $html .= '</td>';
+
+                $idValue = $rowIndex;
+                if (is_callable($column->idKey)) {
+                    $idKey = $column->idKey;
+                    $idValue = $idKey($column, $rowIndex, $rowItem, $columnCount);
+                } elseif (isset($rowItem[$column->idKey])) {
+                    $idValue = $rowItem[$column->idKey];
+                } elseif (is_callable($this->tableInstance->idKey)) {
+                    $idKey = $this->tableInstance->idKey;
+                    $idValue = $idKey($column, $rowIndex, $rowItem, $columnCount);
+                } elseif (isset($rowItem[$this->tableInstance->idKey])) {
+                    $idValue = $rowItem[$this->tableInstance->idKey];
+                }
+
+                // Is Editable
+                $isEditable = (
+                    Utils::expandClosure($column->isEditable)
+                    && Utils::expandClosure($this->tableInstance->isEditable)
+                );
+
+                // Override data value with edit key if its present
+                if ($isEditable === true && !empty($column->editKey)) {
+                    if (is_callable($column->editKey)) {
+                        $editKey = $column->editKey;
+                        $dataValue = $editKey($column, $rowIndex, $rowItem, $columnCount);
+                    } elseif (isset($rowItem[$column->editKey])) {
+                        $dataValue = $rowItem[$column->editKey];
+                    }
+                }
+
+                switch ($column->type) {
+                    case ColumnType::ROW_NUMBER:
+                        $column->dataColumnClasses[] = 'text-center col-md-c-1';
+                        if ($rowIndex == -1) {
+                            return '';
+                        }
+
+                        $number = $rowIndex + 1;
+                        $dataValue = "{$number}.";
+                        break;
+
+                    case ColumnType::SWITCH:
+                        // Checked
+                        $checked = $dataValue == 1 ? ' checked="checked"' : '';
+
+                        $classes = '';
+                        $disabled = ' disabled="disabled" ';
+                        if ($isEditable === true) {
+                            $classes = ' update_field ';
+                            $disabled = '';
+                        }
+
+                        $dataValue = <<<EOL
+                            <div class="form-check form-switch">
+                                <input
+                                    class="form-check-input{$classes}"
+                                    name="{$column->id}"
+                                    id="{$column->id}_{$idValue}"
+                                    type="checkbox"
+                                    {$checked}
+                                    {$disabled}
+                                >
+                                <label class="form-check-label" for="{$column->id}_{$idValue}"></label>
+                            </div>
+                        EOL;
+                        break;
+
+                    case ColumnType::SELECT_ALL_CHECKBOX:
+                        $column->dataColumnClasses[] = 'text-center col-md-c-1';
+                        $dataValue = <<<EOL
+                            <label class="form-colorinput form-colorinput-light">
+                                <input type="checkbox" class="form-colorinput-input child_checkbox"
+                                    id="parent_checkbox_{$idValue}" data-id="{$idValue}">
+                                <span class="form-colorinput-color bg-white" for="parent_checkbox_{$idValue}"></span>
+                            </label>
+                        EOL;
+                        break;
+
+                    case ColumnType::SELECT:
+                        if ($isEditable === false) {
+                            break;
+                        }
+
+                        $classes = 'form-control input-xs update_field';
+                        $selectField = "<select class=\"{$classes}\" name=\"{$column->id}\" id=\"{$column->id}_{$idValue}\">";
+                        foreach ($column->filterSelectOptions as $key => $item) {
+                            $finalId = (empty($column->filterSelectOptionsIdKey) ? $key : $item[$column->filterSelectOptionsIdKey]);
+                            $finalTitle = (empty($column->filterSelectOptionsTitleKey) ? $item : $item[$column->filterSelectOptionsTitleKey]);
+                            $selected = self::inputValue($dataValue, $key);
+                            $selectField .= "<option value=\"{$finalId}\" {$selected}>{$finalTitle}</option>";
+                        }
+                        $selectField .= '</select>';
+                        $dataValue = $selectField;
+                        break;
+
+                    case ColumnType::MULTILINE_TEXT:
+                        if ($isEditable === false) {
+                            break;
+                        }
+
+                        $dataValue = str_replace(['<', '>'], ['&lt;', '&gt;'], $dataValue);
+                        $dataValue = <<<EOL
+                            <textarea
+                                class="form-control input-xs update_field"
+                                name="{$column->id}"
+                                id=\"{$column->id}_{$idValue}\"
+                                rows="2"
+                            >{$dataValue}</textarea>
+                        EOL;
+                        break;
+
+                    default:
+                        if ($isEditable === false) {
+                            break;
+                        }
+
+                        $classes = '';
+                        if (in_array($column->type, [ColumnType::DATE, ColumnType::DATEINTERVAL, ColumnType::DATETIME])) {
+                            $classes = ' datepicker';
+                        }
+
+                        $dataValue = self::inputValue($dataValue);
+                        $dataValue = <<<EOL
+                            <input
+                                type="text"
+                                class="form-control input-xs update_field{$classes}"
+                                name="{$column->id}"
+                                id=\"{$column->id}_{$idValue}\"
+                                {$dataValue}>
+                        EOL;
+                        break;
+                }
+
+                // Attributes
+                $attributes = '';
+                if (!empty($column->dataColumnAttributes)) {
+                    $tmp = $column->dataColumnAttributes;
+                    $tmp = Utils::runClosures($tmp, [$column, $rowIndex, $rowItem, $columnCount]);
+                    $attributes .= implode(' ', $tmp);
+                    $attributes = " {$attributes} ";
+                }
+
+                // Classes
+                if (!empty($column->dataColumnClasses)) {
+                    $tmp = $column->dataColumnClasses;
+                    $tmp = Utils::runClosures($tmp, [$column, $rowIndex, $rowItem, $columnCount]);
+                    $tmp = implode(' ', $tmp);
+                    $attributes .= " class=\"{$tmp}\" ";
+                }
+
+                // Construct column
+                $prefix = Utils::expandClosure($column->dataColumnPrefix, [$column, $rowIndex, $rowItem, $columnCount]);
+                $addon = Utils::expandClosure($column->dataColumnAddon, [$column, $rowIndex, $rowItem, $columnCount]);
+                $html .= "<td{$attributes}>{$prefix}{$dataValue}{$addon}</td>\n";
             }
-            $html .= '</tr>';
+            $html .= "</tr>\n";
         }
 
         return $html;
@@ -310,16 +571,40 @@ class Html implements OutputInterface
 
     public function tableBody(): string
     {
+        $columnCount = count($this->tableInstance->columns);
         if (empty($this->tableInstance->rows)) {
-            $columnCount = count($this->tableInstance->columns);
             return <<<EOL
-            <tr><td colspan="{$columnCount}" class="table-empty table-secondary">No record was found</td></td>
+            <tr><td colspan="{$columnCount}" class="table-empty table-secondary">No record was found</td></tr>
             EOL;
         }
 
         $html = '';
-        foreach ($this->tableInstance->rows as $index => $rowItem) {
-            $html .= $this->htmlRow($index, $rowItem);
+        foreach ($this->tableInstance->rows as $rowIndex => $rowItem) {
+            if (!empty($this->tableInstance->beforeDataRow)) {
+                $tmp = Utils::runClosures(
+                    $this->tableInstance->beforeDataRow,
+                    [
+                        $rowIndex,
+                        $rowItem,
+                        $columnCount
+                    ]
+                );
+                $html .= implode('', $tmp);
+            }
+
+            $html .= $this->htmlDataRow($rowIndex, $rowItem);
+
+            if (!empty($this->tableInstance->afterDataRow)) {
+                $tmp = Utils::runClosures(
+                    $this->tableInstance->afterDataRow,
+                    [
+                        $rowIndex,
+                        $rowItem,
+                        $columnCount
+                    ]
+                );
+                $html .= implode('', $tmp);
+            }
         }
 
         return $html;
@@ -329,13 +614,13 @@ class Html implements OutputInterface
     {
         $html = '';
         if (!empty($this->tableInstance->avgRow) && $this->tableInstance->avgRowPosition === $position) {
-            $html .= $this->htmlRow(-1, $this->tableInstance->avgRow, 'AVG');
+            $html .= $this->htmlDataRow(-1, $this->tableInstance->avgRow, 'AVG');
         }
         if (!empty($this->tableInstance->sumRow) && $this->tableInstance->sumRowPosition === $position) {
-            $html .= $this->htmlRow(-2, $this->tableInstance->sumRow, 'SUM');
+            $html .= $this->htmlDataRow(-2, $this->tableInstance->sumRow, 'SUM');
         }
         if (!empty($this->tableInstance->customRow) && $this->tableInstance->customRowPosition === $position) {
-            $html .= $this->htmlRow(-3, $this->tableInstance->customRow);
+            $html .= $this->htmlDataRow(-3, $this->tableInstance->customRow);
         }
 
         return $html;
@@ -349,6 +634,11 @@ class Html implements OutputInterface
     public function paginationLinks(): string
     {
         $pagination = &$this->tableInstance->pagination;
+
+        if ($pagination === null) {
+            throw new Exception("Pagination is not initialized");
+        }
+
         if ($pagination->pageCount <= 1) {
             return '';
         }

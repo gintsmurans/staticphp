@@ -10,12 +10,21 @@ class SQLTable extends Table
     public ?SQLFilters $sqlFilter = null;
     public ?SQLPagination $sqlPagination = null;
 
+    /**
+     * If parameters are real null, skip class init
+     */
     public function initData(?string $filterData = null, ?string $sortData = null, ?int $page = null): void
     {
         parent::initData($filterData, $sortData, $page);
 
-        $this->sqlSort = new SQLSort($this);
-        $this->sqlFilter = new SQLFilters($this);
-        $this->sqlPagination = new SQLPagination($this);
+        if ($filterData !== null) {
+            $this->sqlSort = new SQLSort($this);
+        }
+        if ($sortData !== null) {
+            $this->sqlFilter = new SQLFilters($this);
+        }
+        if ($page !== null) {
+            $this->sqlPagination = new SQLPagination($this);
+        }
     }
 }

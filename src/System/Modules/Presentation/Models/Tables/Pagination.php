@@ -91,13 +91,15 @@ class Pagination implements PaginationInterface
         );
     }
 
-    public function calculate(int $recordCount, int $currentPage): void
+    public function calculate(int $recordCount, ?int $currentPage = null): void
     {
         $pages_left = (int) floor($this->pagesToShow / 2);
         $pages_right = $this->pagesToShow - $pages_left - 1;
 
         $this->recordCount = $recordCount;
-        $this->currentPage = $currentPage;
+        if ($currentPage !== null) {
+            $this->currentPage = $currentPage;
+        }
 
         $this->pageCount = (int) ceil($this->recordCount / $this->limitPerPage);
         if (empty($this->currentPage) || $this->currentPage > $this->pageCount) {

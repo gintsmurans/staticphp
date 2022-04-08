@@ -12,13 +12,28 @@ class Column implements ColumnInterface
 {
     // Default
     public string $id;
-    public ColumnType $type = ColumnType::TEXT;
     public string $title = '';
     public string $description = '';
+    public ColumnType $type = ColumnType::TEXT;
 
     // Column
     public bool|\Closure $showColumn = true;
-    public string $columnAttributes = '';
+
+    /**
+     * Column id is used for field name.
+     * Currently only work with Switch type.
+     */
+    public bool|\Closure $isEditable = false;
+
+    /**
+     * Elements can be string or Closure. If its a Closure, column is passed as the only argument.
+     */
+    public array $columnAttributes = [];
+
+    /**
+     * Elements can be string or Closure. If its a Closure, column is passed as the only argument.
+     */
+    public array $columnClasses = [];
 
     // Sort
     public bool $sortEnabled = true;
@@ -35,7 +50,11 @@ class Column implements ColumnInterface
     public ?string $filterDefaultValue = null;
     public ?string $filterDateValue = null;
 
-    public ?string $filterInputAttributes = null;
+    /**
+     * Elements can be string or Closure. If its a Closure, column and value are passed as arguments.
+     */
+    public array $filterInputAttributes = [];
+    public array $filterInputClasses = [];
 
     public ?array $filterSelectOptions = null;
     public ?string $filterSelectOptionsIdKey = null;
@@ -52,10 +71,16 @@ class Column implements ColumnInterface
     public bool $filterSqlDate = false;
 
     // Data
-    public null|string|\Closure $dataKey;
+    public null|string|\Closure $idKey = null;
+    public null|string|\Closure $dataKey = null;
+    public null|string|\Closure $editKey = null;
+    public array $dataColumnAttributes = [];
+    public array $dataColumnClasses = [];
+    public string|\Closure $dataColumnPrefix = '';
+    public string|\Closure $dataColumnAddon = '';
 
     // Export
-    public null|string|\Closure $exportKey;
+    public null|string|\Closure $exportKey = null;
 
 
     public function __construct($id, ...$settings)

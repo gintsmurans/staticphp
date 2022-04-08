@@ -26,6 +26,12 @@ class Table implements TableInterface
     public ?array $customRow = null;
     public RowPosition $customRowPosition = RowPosition::BODY_TOP;
 
+    public ?array $beforeDataRow = null;
+    public ?array $afterDataRow = null;
+
+    public bool|\Closure $isEditable = false;
+    public null|string|\Closure $idKey = null;
+
     /**
      * Unique table id
      *
@@ -93,14 +99,23 @@ class Table implements TableInterface
     }
 
 
+    /**
+     * If parameters are real null, skip class init
+     */
     public function initData(
         ?string $filterData = null,
         ?string $sortData = null,
         ?int $page = null
     ): void {
-        $this->sort = new Sort($this, "{$this->urlPrefix}/{$filterData}/%sort", $sortData);
-        $this->filter = new Filters($this, "{$this->urlPrefix}/%filter/{$sortData}", $filterData);
-        $this->pagination = new Pagination($this, "{$this->urlPrefix}/{$filterData}/{$sortData}/%pagination", $page);
+        if ($sortData !== null) {
+            $this->sort = new Sort($this, "{$this->urlPrefix}{$filterData}/%sort", $sortData);
+        }
+        if ($filterData !== null) {
+            $this->filter = new Filters($this, "{$this->urlPrefix}%filter/{$sortData}", $filterData);
+        }
+        if ($page !== null) {
+            $this->pagination = new Pagination($this, "{$this->urlPrefix}{$filterData}/{$sortData}/%pagination", $page);
+        }
     }
 
 

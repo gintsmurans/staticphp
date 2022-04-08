@@ -36,24 +36,25 @@ class Excel implements OutputInterface
         }
 
         $rowNr = 2;
-        foreach ($this->tableInstance->getRows() as $rowData) {
+        foreach ($this->tableInstance->getRows() as $rowIndex => $rowItem) {
             $colNr = 1;
             foreach ($this->tableInstance->columns as $column) {
                 if (empty($column->exportKey)) {
                     continue;
                 }
+
                 $exportKey = $column->exportKey;
-                $cellValue = is_callable($exportKey) ? $exportKey($rowData) : $rowData[$exportKey];
+                $cellValue = is_callable($exportKey) ? $exportKey($column, $rowIndex, $rowItem) : $rowItem[$exportKey];
                 $cell = $active_sheet->getCellByColumnAndRow($colNr, $rowNr);
 
                 switch ($column->type) {
                     case 'int':
                     case 'float':
-                        $cell->setValueExplicit($cellValue, DataType::TYPE_NUMERIC);
+                        $cell->setValueExplicit($cellValue ?? 0, DataType::TYPE_NUMERIC);
                     break;
 
                     default:
-                        $cell->setValueExplicit($cellValue, DataType::TYPE_STRING);
+                        $cell->setValueExplicit($cellValue ?? '', DataType::TYPE_STRING);
                     break;
                 }
                 $colNr += 1;

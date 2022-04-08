@@ -3,10 +3,12 @@
 namespace System\Modules\Presentation\Models\Tables\Sql;
 
 use System\Modules\Presentation\Models\Tables\Column;
+use System\Modules\Presentation\Models\Tables\Enums\ColumnType;
 use System\Modules\Presentation\Models\Tables\Enums\FilterType;
 
 use System\Modules\Presentation\Models\Tables\Interfaces\TableInstanceInterface;
 use System\Modules\Presentation\Models\Tables\Traits\TableInstance;
+use System\Modules\Presentation\Models\Tables\Utils;
 
 /**
  * SQL Filters implementation
@@ -101,16 +103,11 @@ class SQLFilters implements TableInstanceInterface
     }
 
     /**
-         * Return $value as it is or transform it to unix timestamp
-         */
+     * Return $value as it is or transform it to unix timestamp
+     */
     public static function strtotime(string $value, bool $sqlDate = false)
     {
         return ($sqlDate === true ? $value : strtotime($value));
-    }
-
-    public static function valueOrClosure($value, ?\Closure $closure = null)
-    {
-        return !empty($closure) ? $closure($value) : $value;
     }
 
     public static function valueToQuery(string $fieldName, $value, string $compare = '=', ?\Closure $valueFormatter = null): array
@@ -121,8 +118,8 @@ class SQLFilters implements TableInstanceInterface
         if ($match === 1) {
             $query = "{$fieldName} >= ? AND {$fieldName} <= ?";
             $params = [
-                self::valueOrClosure($matches[1], $valueFormatter),
-                self::valueOrClosure($matches[3], $valueFormatter)
+                Utils::valueOrClosure($matches[1], $valueFormatter),
+                Utils::valueOrClosure($matches[3], $valueFormatter)
             ];
 
             return [$query, $params];
@@ -141,14 +138,14 @@ class SQLFilters implements TableInstanceInterface
             $queryValue = array_map(
                 function ($value, $valueFormatter) {
                     $value = str_replace('\'', '\'\'', $value);
-                    return self::valueOrClosure($value, $valueFormatter);
+                    return Utils::valueOrClosure($value, $valueFormatter);
                 },
                 $queryValue,
                 [$valueFormatter]
             );
             $queryValue = "'".implode("','", $queryValue)."'";
         } else {
-            $queryValue = self::valueOrClosure($queryValue, $valueFormatter);
+            $queryValue = Utils::valueOrClosure($queryValue, $valueFormatter);
         }
 
         // Figure out query and params
@@ -218,7 +215,7 @@ class SQLFilters implements TableInstanceInterface
         }
 
         // INT8
-        if ($filterType === FilterType::INT8) {
+        if ($filterType === FilterType::INT8 || $filterColumn->type === ColumnType::SWITCH) {
             list($query, $params) = self::valueToQuery(
                 $filterBy,
                 $value,

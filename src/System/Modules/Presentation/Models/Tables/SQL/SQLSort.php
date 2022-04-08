@@ -16,7 +16,7 @@ class SQLSort implements TableInstanceInterface
     /**
      * Returns what to do with nulls in a SQL order by statement
      */
-    public function sortNulls(): string
+    public function sortNulls(): SortNulls
     {
         $column = $this->tableInstance->sort->currentColumn();
         return $column->sortNulls ?? SortNulls::FIRST;
@@ -28,7 +28,7 @@ class SQLSort implements TableInstanceInterface
     public function sortQuery(): string
     {
         $column = $this->tableInstance->sort->sortBy();
-        $direction = $this->tableInstance->sort->sortDirection();
+        $direction = $this->tableInstance->sort->sortDirection()->value;
         $nulls = $this->sortNulls();
         $nulls = $nulls == SortNulls::FIRST ? 'NULLS FIRST' : 'NULLS LAST';
         return " ORDER BY {$column} {$direction} {$nulls} ";
