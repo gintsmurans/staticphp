@@ -65,7 +65,7 @@ class Welcome extends Controller
 
         // Load view
         // Pass [key => value] as second parameter, to get variables available in your view
-        self::render('index.html');
+        self::render(['index.html']);
 
         // Or call Load::view(['Defaults/Views/index.html']);
     }
