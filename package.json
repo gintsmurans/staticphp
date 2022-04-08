@@ -23,15 +23,13 @@
     "copy-fonts": "mkdir -p src/Application/Public/assets/dist/fonts/font-awesome; cp -r node_modules/\\@fortawesome/fontawesome-free/webfonts/* src/Application/Public/assets/dist/fonts/font-awesome/;",
     "build": "npm run copy-fonts && npm run css:build && npm run js:build",
     "build:dev": "npm run copy-fonts && npm run css:build && npm run js:build:dev",
-    "js:build": "webpack --mode production",
+    "js:build": "webpack --mode production --bail",
     "js:build:dev": "webpack --mode development",
     "js:watch": "webpack --watch --mode development",
     "css:build": "sass --style=compressed --load-path=node_modules --source-map-urls=relative src/Application/Public/assets/src/index.scss src/Application/Public/assets/dist/css/index.css",
-    "css:watch": "nodemon -e scss -x \"npm run css:build\"",
+    "css:watch": "nodemon -e \"*.scss\" --ignore 'node_modules/' --ignore 'src/Application/Public/assets/vendor/' --ignore 'vendor/' -x \"npm run css:build\"",
     "docs": "./vendor/bin/apigen generate --destination src/Application/Public/docs src/Application/ src/System/",
-    "phpstan": "./vendor/bin/phpstan analyse --level 4 --autoload-file=./src/System/Modules/Core/Helpers/Autoload.php ./src/Application ./src/System",
-    "files:sync": "rsync -a --progress --delete --update --omit-dir-times --filter=':- .gitignore' --exclude '.git' /srv/sites/web/ /srv/sites/web_mounted/",
-    "files:watch": "nodemon -e \"*\" --ignore 'node_modules/' --ignore 'vendor/' -x \"npm run files:sync\""
+    "phpstan": "./vendor/bin/phpstan analyse --level 4 --autoload-file=./src/System/Modules/Core/Helpers/Autoload.php ./src/Application ./src/System"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.0.0",

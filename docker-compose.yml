@@ -3,12 +3,11 @@ services:
     common:
         image: static_php_common
         build:
-            context: ./
-            dockerfile: ./docker/common/Dockerfile
+            context: ./docker/common
         env_file:
             - .env
         volumes:
-            - ./:/srv/sites/web_mounted:cached
+            - ./:/srv/sites/web:cached
 
     # Development service
     develop:
@@ -19,17 +18,18 @@ services:
         ports:
             - "5500:5000"
         volumes:
-            - ./:/srv/sites/web_mounted:cached
+            - ./:/srv/sites/web:cached
         depends_on:
             - common
 
     # Build service
     build:
         build:
-            context: ./docker/build
+            context: ./
+            dockerfile: ./docker/build/Dockerfile
         env_file:
             - .env
         volumes:
-            - ./dist:/srv/sites/web/dist:cached
+            - ./:/srv/sites/web_mounted:cached
         depends_on:
             - common

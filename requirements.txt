@@ -1,3 +1,4 @@
 fabric
 python-dotenv
 bump2version
+black

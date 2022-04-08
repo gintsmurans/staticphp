@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
-
+// const dotenv = require('dotenv');
 
 const config = {
     target: 'browserslist',
@@ -12,6 +12,7 @@ const config = {
         defaults: './assets/src/index.js',
     },
     output: {
+        devtoolModuleFilenameTemplate: '[resource-path]?[loaders]',
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'src/Application/Public/assets/dist/js/'),
         libraryTarget: 'var',
@@ -67,9 +68,18 @@ const config = {
         new ESLintPlugin(),
     ],
     devtool: 'source-map',
+    watchOptions: {
+        ignored: /node_modules/,
+    },
 };
 
 module.exports = (env, argv) => {
+    // // Load .env file
+    // if (argv.mode === 'production') {
+    //     dotenv.config({ path: './src/Application/.env.prod' });
+    // } else {
+    //     dotenv.config({ path: './src/Application/.env' });
+    // }
     config.plugins.push(new webpack.DefinePlugin({
         APP_ENV: JSON.stringify(argv.mode),
     }));

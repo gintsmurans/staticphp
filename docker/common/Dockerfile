@@ -15,7 +15,7 @@ RUN apt-get update -yq \
     && apt-get install -yq apt-utils
 
 RUN apt-get install -yq apt-transport-https lsb-release ca-certificates \
-        wget curl unzip git rsync supervisor build-essential
+        nano wget curl unzip git rsync supervisor build-essential
 
 
 # ---------------------------------------------------------------------------
@@ -28,13 +28,13 @@ RUN apt-get install -y python3 python3-pip
 # Install php
 # ---------------------------------------------------------------------------
 RUN wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
-    # && wget -O /etc/apt/trusted.gpg.d/nginx.gpg http://nginx.org/keys/nginx_signing.key \
     && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \
-    # && sh -c 'echo "deb http://nginx.org/packages/debian/ $(lsb_release -sc) nginx" > /etc/apt/sources.list.d/nginx.list' \
     && apt-get update -yq \
     && apt-get install -yq php${PHP_VERSION}-cli php${PHP_VERSION}-dev php${PHP_VERSION}-curl php${PHP_VERSION}-bcmath \
         php${PHP_VERSION}-xml php${PHP_VERSION}-zip php${PHP_VERSION}-mbstring php${PHP_VERSION}-gd \
         php${PHP_VERSION}-pgsql php${PHP_VERSION}-mysql php${PHP_VERSION}-ldap
+
+RUN ln -s /bin/sed /usr/bin/sed
 
 # PHP composer
 # Source: https://stackoverflow.com/a/42147748
@@ -58,11 +58,11 @@ RUN wget -O - https://deb.nodesource.com/setup_16.x | bash \
 # ---------------------------------------------------------------------------
 # Copy files, Install dependecies
 # ---------------------------------------------------------------------------
+WORKDIR /srv/sites/cache
 
-WORKDIR /srv/sites/web
-
-# Cache dependecies files first
-COPY composer.json composer.lock package.json package-lock.json requirements.txt ./
+# Cache scripts and dependecies first
+COPY . /root/docker/common/
+RUN cp /root/docker/common/data/* ./
 
 # PHP
 RUN composer install
@@ -71,8 +71,7 @@ RUN composer install
 RUN npm install --no-optional \
     && npm cache clean --force
 
-# Python
-RUN python3 -m pip install -r requirements.txt
+# # Python
+# RUN python3 -m pip install -r requirements.txt
 
-# Copy all files
-COPY . ./
+WORKDIR /srv/sites/web

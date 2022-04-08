@@ -41,6 +41,11 @@ def setDefaultEnv(ctx):
 def requirements(ctx):
     setDefaultEnv(ctx)
 
+    # Copy dependecy files
+    ctx.run(
+        "cp {package.json,package-lock.json,composer.json,composer.lock} ./docker/common/data/"
+    )
+
     # Build common image
     ctx.run("docker compose build common")
 
@@ -50,7 +55,7 @@ def install(ctx):
     setDefaultEnv(ctx)
 
     # Build up
-    ctx.run("docker-compose build develop")
+    ctx.run("docker compose build develop")
     ctx.run("docker compose up --detach develop")
 
 
@@ -90,8 +95,8 @@ def build(ctx):
     setDefaultEnv(ctx)
 
     # Build up
-    ctx.run("docker-compose build build")
-    ctx.run("docker compose up build")
+    ctx.run("docker compose build build")
+    ctx.run("docker compose up build --exit-code-from build")
 
 
 @task
@@ -99,7 +104,7 @@ def cleanup(ctx):
     ctx.config.run.replace_env = False
 
     cl.info("Cleanup")
-    ctx.run("docker compose run build /srv/sites/web/docker/build/scripts/cleanup.bash")
+    ctx.run("docker compose run build /root/docker/build/scripts/cleanup.bash")
 
 
 # ! Deployment
