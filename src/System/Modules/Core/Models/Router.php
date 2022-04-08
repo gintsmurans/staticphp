@@ -966,8 +966,9 @@ class Router
                 }
 
                 $pad_args = (int)$ref->getStaticPropertyValue('pad_call_static_parameters', 0);
+                $pad_value = $ref->getStaticPropertyValue('pad_call_static_default_value', null);
                 if ($pad_args > 0 && count($arguments) < $pad_args) {
-                    $arguments = array_pad($arguments, $pad_args, null);
+                    $arguments = array_pad($arguments, $pad_args, $pad_value);
                 }
 
                 // Invoke __callStatic
