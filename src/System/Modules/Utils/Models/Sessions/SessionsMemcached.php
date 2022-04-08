@@ -10,6 +10,8 @@
 
 namespace System\Modules\Utils\Models\Sessions;
 
+use Memcached;
+
 class SessionsMemcached extends Sessions
 {
     private $memcached = null;
@@ -17,10 +19,14 @@ class SessionsMemcached extends Sessions
     /**
      * @var $servers List of servers. Example: [[127.0.0.1, 112211], [192.168.1.10, 112211]]
      */
-    public function __construct(array $servers, ?string $persistentId = null, $sessionName = 'SMC', ?Sessions $backupHandler = null)
-    {
-        $this->memcached = new \Memcached($persistentId);
-        $this->memcached->setOption(\Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
+    public function __construct(
+        array $servers,
+        ?string $persistentId = null,
+        $sessionName = 'SMC',
+        ?Sessions $backupHandler = null
+    ) {
+        $this->memcached = new Memcached($persistentId);
+        $this->memcached->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
         if (!count($this->memcached->getServerList())) {
             $this->memcached->addServers($servers);
         }

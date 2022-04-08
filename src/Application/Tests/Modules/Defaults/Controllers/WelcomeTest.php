@@ -2,11 +2,11 @@
 
 namespace Tests\Modules\Defaults\Controllers;
 
-use \PHPUnit\Framework\TestCase;
-use \System\Modules\Core\Controllers\Controller;
-use \System\Modules\Core\Models\Load;
-use \System\Modules\Core\Models\Router;
-use \System\Modules\Core\Models\Request;
+use PHPUnit\Framework\TestCase;
+use System\Modules\Core\Controllers\Controller;
+use System\Modules\Core\Models\Load;
+use System\Modules\Core\Models\Router;
+use System\Modules\Core\Models\Request;
 
 class WelcomeTest extends TestCase
 {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Dev router
  */
@@ -24,7 +25,8 @@ if ($filePath && is_file($filePath)) {
     // 1. check that file is not outside of this directory for security
     // 2. check for circular reference to router.php
     // 3. don't serve dotfiles
-    if (strpos($filePath, __DIR__ . DIRECTORY_SEPARATOR) === 0
+    if (
+        strpos($filePath, __DIR__ . DIRECTORY_SEPARATOR) === 0
         && $filePath != __DIR__ . DIRECTORY_SEPARATOR . 'dev-router.php'
         && substr(basename($filePath), 0, 1) != '.'
     ) {

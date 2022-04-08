@@ -24,12 +24,12 @@ function html_css()
         foreach ($files as $file) {
             switch (substr($file, 0, 2)) {
                 case 'i:':
-                    echo '<style>'.substr($file, 2).'</style>';
+                    echo '<style>' . substr($file, 2) . '</style>';
                     break;
 
                 default:
                     if (defined('HTML_CSS_VERSION')) {
-                        $file = $file.(strpos($file, '?') !== false ? '&' : '?').HTML_CSS_VERSION;
+                        $file = $file . (strpos($file, '?') !== false ? '&' : '?') . HTML_CSS_VERSION;
                     }
                     echo '<link rel="stylesheet" type="text/css" href="', $file, '" />', "\n";
                     break;
@@ -48,15 +48,15 @@ function html_js()
         foreach ($files as $file) {
             switch (substr($file, 0, 2)) {
                 case 'i:':
-                echo '<script type="text/javascript">', substr($file, 2), '</script>', "\n";
-                break;
+                    echo '<script type="text/javascript">', substr($file, 2), '</script>', "\n";
+                    break;
 
                 default:
-                if (defined('HTML_JS_VERSION')) {
-                    $file = $file.(strpos($file, '?') !== false ? '&' : '?').HTML_JS_VERSION;
-                }
-                echo '<script type="text/javascript" src="', $file, '"></script>', "\n";
-                break;
+                    if (defined('HTML_JS_VERSION')) {
+                        $file = $file . (strpos($file, '?') !== false ? '&' : '?') . HTML_JS_VERSION;
+                    }
+                    echo '<script type="text/javascript" src="', $file, '"></script>', "\n";
+                    break;
             }
         }
     }
@@ -69,28 +69,35 @@ function html_js()
 */
 
 // Return html dropdown
-function html_dropdown($items, $selected = null, $addons = null, $add_empty = false, $as_value = null, $as_text = null, $grouped = false)
-{
-    $select = (empty($grouped) ? '<select'.(!empty($addons['#']) ? ' '.$addons['#'] : '').'>' : '');
+function html_dropdown(
+    $items,
+    $selected = null,
+    $addons = null,
+    $add_empty = false,
+    $as_value = null,
+    $as_text = null,
+    $grouped = false
+) {
+    $select = (empty($grouped) ? '<select' . (!empty($addons['#']) ? ' ' . $addons['#'] : '') . '>' : '');
 
     // Add empty option
     if (!empty($add_empty)) {
         $value = key($add_empty);
-        $select .= '<option value="'.html_escape_input($value).'"';
+        $select .= '<option value="' . html_escape_input($value) . '"';
         if (!empty($addons[$value])) {
-            $select .= ' '.$addons[$value];
+            $select .= ' ' . $addons[$value];
         }
         if (is_array($selected) && in_array($value, $selected) || $selected == $value) {
             $select .= ' selected="selected"';
         }
-        $select .= '>'.reset($add_empty).'</option>';
+        $select .= '>' . reset($add_empty) . '</option>';
     }
 
     // Loop through options
     foreach ($items as $value => $text) {
         // If grouped dropdown
         if (is_array($text)) {
-            $select .= '<optgroup label="'.$value.'">';
+            $select .= '<optgroup label="' . $value . '">';
             $select .= html_dropdown($text, $selected, $addons, false, $as_value, $as_text, true);
             $select .= '</optgroup>';
             continue;
@@ -99,15 +106,15 @@ function html_dropdown($items, $selected = null, $addons = null, $add_empty = fa
         $value = (empty($as_value) ? $value : $text->{$as_value});
         $text = (empty($as_text) ? $text : $text->{$as_text});
 
-        $select .= '<option value="'.html_escape_input($value).'"';
+        $select .= '<option value="' . html_escape_input($value) . '"';
         if (!empty($addons[$value])) {
-            $select .= ' '.$addons[$value];
+            $select .= ' ' . $addons[$value];
         }
 
         if (is_array($selected) && in_array($value, $selected) || $selected == $value) {
             $select .= ' selected="selected"';
         }
-        $select .= '>'.$text.'</option>';
+        $select .= '>' . $text . '</option>';
     }
 
     if (empty($grouped)) {

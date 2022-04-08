@@ -8,7 +8,7 @@
 
 namespace System\Modules\Utils\Models\Sessions;
 
-use \Redis;
+use Redis;
 
 class SessionsRedis extends Sessions
 {

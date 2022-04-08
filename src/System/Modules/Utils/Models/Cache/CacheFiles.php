@@ -2,7 +2,7 @@
 
 namespace System\Modules\Utils\Models\Cache;
 
-use \Exception;
+use Exception;
 
 /**
  *  Files cache implementation
@@ -41,7 +41,7 @@ class CacheFiles extends Cache
     {
         $key = md5($key);
 
-        $subpath = $this->config['path'].'/';
+        $subpath = $this->config['path'] . '/';
         for ($i = 1; $i <= $this->config['levels']; $i++) {
             $subpath .= substr($key, -($i * $this->config['sub_path_length']), $this->config['sub_path_length']);
             $subpath .= '/';
@@ -51,7 +51,7 @@ class CacheFiles extends Cache
             mkdir($subpath, 0777, true);
         }
 
-        return $subpath.$this->prefix($key).'.'.$this->config['ext'];
+        return $subpath . $this->prefix($key) . '.' . $this->config['ext'];
     }
 
     /**

@@ -71,7 +71,7 @@ function uuid4()
  */
 function parseQueryString($str, $delimiter = '&')
 {
-    $op = array();
+    $op = [];
     $pairs = explode($delimiter, $str);
     foreach ($pairs as $pair) {
         $ex = explode("=", $pair);
@@ -103,7 +103,7 @@ function weekRange($week, $year = null)
     $ts = strtotime("{$year}0104 +{$week} weeks"); // By http://en.wikipedia.org/wiki/ISO_8601#Week_dates
     $start = (date('w', $ts) == 1) ? $ts : strtotime('last monday', $ts);
 
-    return array($start, strtotime('next sunday', $start));
+    return [$start, strtotime('next sunday', $start)];
 }
 
 
@@ -131,7 +131,7 @@ function monthRangeDateTime($timestamp = null)
     $end->modify('last day of this month');
     $end->setTime(23, 59, 59);
 
-    return array($start, $end);
+    return [$start, $end];
 }
 
 
@@ -142,7 +142,7 @@ function monthRangeDateTime($timestamp = null)
  */
 function getIsoWeeksInYear($year)
 {
-    $date = new DateTime;
+    $date = new DateTime();
     $date->setISODate($year, 53);
     return ($date->format("W") === "53" ? 53 : 52);
 }
@@ -171,9 +171,9 @@ function extractArrayByKeys($array, $keys, $required = false, $fill_missing = fa
     foreach ($keys as $key) {
         if (isset($array[$key])) {
             $new_array[$key] = $array[$key];
-        } else if ($required === true) {
+        } elseif ($required === true) {
             return false;
-        } else if ($fill_missing !== false) {
+        } elseif ($fill_missing !== false) {
             $new_array[$key] = $fill_missing;
         }
     }
@@ -218,7 +218,7 @@ function tmpFilename($prefix = 'tmp_', $postfix = '')
 {
     $random = uniqid(rand(), true);
     $random = str_replace('.', '_', $random);
-    $filename = sys_get_temp_dir().'/'.$prefix.$random.$postfix;
+    $filename = sys_get_temp_dir() . '/' . $prefix . $random . $postfix;
     return $filename;
 }
 
@@ -276,11 +276,11 @@ function validISODate($date)
 function validISODateTime($datetime)
 {
     return preg_match(
-        '/^'.
-            '(\d{4})-(\d{2})-(\d{2})T'. // YYYY-MM-DDT ex: 2014-01-01T
-            '(\d{2}):(\d{2}):(\d{2})'.  // HH-MM-SS  ex: 17:00:00
-            '(Z|((-|\+)\d{2}:\d{2}))'.  // Z or +01:00 or -01:00
-        '$/'
-        , $datetime
+        '/^'
+            . '(\d{4})-(\d{2})-(\d{2})T' // YYYY-MM-DDT ex: 2014-01-01T
+            . '(\d{2}):(\d{2}):(\d{2})'  // HH-MM-SS  ex: 17:00:00
+            . '(Z|((-|\+)\d{2}:\d{2}))'  // Z or +01:00 or -01:00
+        . '$/',
+        $datetime
     ) == 1;
 }

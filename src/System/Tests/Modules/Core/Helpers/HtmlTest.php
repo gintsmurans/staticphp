@@ -2,13 +2,11 @@
 
 namespace Tests\Modules\Core\Helpers;
 
-
 use PHPUnit\Framework\TestCase;
-use Core\Models\Load;
+use System\Modules\Core\Models\Load;
 
 // Load helper here, because it cannot be loaded more than once
-Load::helper('Html', 'Core', 'System');
-
+Load::helper(['Html'], 'Core', 'System');
 
 class HtmlTest extends TestCase
 {
@@ -17,7 +15,7 @@ class HtmlTest extends TestCase
         html_css('test.css');
         html_css('test2.css');
 
-        $this->expectOutputString('<link rel="stylesheet" type="text/css" href="test.css" />'."\n".'<link rel="stylesheet" type="text/css" href="test2.css" />'."\n");
+        $this->expectOutputString('<link rel="stylesheet" type="text/css" href="test.css" />' . "\n" . '<link rel="stylesheet" type="text/css" href="test2.css" />' . "\n");
         html_css();
     }
 
@@ -27,7 +25,7 @@ class HtmlTest extends TestCase
         html_js('test.js');
         html_js('test2.js');
 
-        $this->expectOutputString('<script type="text/javascript" src="test.js"></script>'."\n".'<script type="text/javascript" src="test2.js"></script>'."\n");
+        $this->expectOutputString('<script type="text/javascript" src="test.js"></script>' . "\n" . '<script type="text/javascript" src="test2.js"></script>' . "\n");
         html_js();
     }
 

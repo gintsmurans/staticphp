@@ -5,7 +5,6 @@ namespace System\Modules\Presentation\Models\Tables\Sql;
 use System\Modules\Presentation\Models\Tables\Column;
 use System\Modules\Presentation\Models\Tables\Enums\ColumnType;
 use System\Modules\Presentation\Models\Tables\Enums\FilterType;
-
 use System\Modules\Presentation\Models\Tables\Interfaces\TableInstanceInterface;
 use System\Modules\Presentation\Models\Tables\Traits\TableInstance;
 use System\Modules\Presentation\Models\Tables\Utils;
@@ -99,7 +98,7 @@ class SQLFilters implements TableInstanceInterface
             return '';
         }
 
-        return " {$prefix} ".implode(' AND ', $this->queries);
+        return " {$prefix} " . implode(' AND ', $this->queries);
     }
 
     /**
@@ -143,7 +142,7 @@ class SQLFilters implements TableInstanceInterface
                 $queryValue,
                 [$valueFormatter]
             );
-            $queryValue = "'".implode("','", $queryValue)."'";
+            $queryValue = "'" . implode("','", $queryValue) . "'";
         } else {
             $queryValue = Utils::valueOrClosure($queryValue, $valueFormatter);
         }

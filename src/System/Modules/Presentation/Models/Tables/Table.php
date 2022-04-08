@@ -4,7 +4,6 @@ namespace System\Modules\Presentation\Models\Tables;
 
 use System\Modules\Presentation\Models\Tables\Interfaces\TableInterface;
 use System\Modules\Presentation\Models\Tables\Interfaces\OutputInterface;
-
 use System\Modules\Presentation\Models\Tables\Enums\RowPosition;
 
 class Table implements TableInterface
@@ -57,7 +56,7 @@ class Table implements TableInterface
         array $columns,
         string $urlPrefix = ''
     ) {
-        $this->tableId = md5(time().mt_rand(1, 100));
+        $this->tableId = md5(time() . mt_rand(1, 100));
         $this->urlPrefix = $urlPrefix;
 
         $this->setColumns($columns);
@@ -84,7 +83,7 @@ class Table implements TableInterface
      */
     public function parseQueryString(string $str, string $delimiter = '&')
     {
-        $op = array();
+        $op = [];
         $pairs = explode($delimiter, $str);
         foreach ($pairs as $pair) {
             $ex = explode("=", $pair);

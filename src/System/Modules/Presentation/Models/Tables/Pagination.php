@@ -69,8 +69,13 @@ class Pagination implements PaginationInterface
      * @param  string $url_prefix (default: [empty string])
      * @return void
      */
-    public function __construct(TableInterface &$tableInstance, string $urlPrefix = '', int $currentPage = 1, int $limitPerPage = 50, int $pagesToShow = 10)
-    {
+    public function __construct(
+        TableInterface &$tableInstance,
+        string $urlPrefix = '',
+        int $currentPage = 1,
+        int $limitPerPage = 50,
+        int $pagesToShow = 10
+    ) {
         $this->tableInstance = &$tableInstance;
         $this->urlPrefix = $urlPrefix;
         $this->currentPage = $currentPage;
@@ -86,7 +91,7 @@ class Pagination implements PaginationInterface
 
         return (
             strpos($this->urlPrefix, '%pagination') === false ?
-                $this->urlPrefix.'%pagination' :
+                $this->urlPrefix . '%pagination' :
                 $this->urlPrefix
         );
     }
@@ -113,11 +118,19 @@ class Pagination implements PaginationInterface
         switch (true) {
             case ($this->currentPage - $pages_left < 1):
                 $this->pagesFrom = 1;
-                $this->pagesTo = ($this->currentPage + $this->pagesToShow >= $this->pageCount ? $this->pageCount : $this->currentPage + ($this->pagesToShow - $this->currentPage));
+                $this->pagesTo = (
+                    $this->currentPage
+                    + ($this->pagesToShow >= $this->pageCount ? $this->pageCount : $this->currentPage)
+                    + ($this->pagesToShow - $this->currentPage)
+                );
                 break;
 
             case ($this->currentPage + $pages_right >= $this->pageCount):
-                $this->pagesFrom = (int) ($this->currentPage - $this->pagesToShow <= 0 ? 1 : $this->currentPage - ($this->pagesToShow - ($this->pageCount - $this->currentPage) - 1));
+                $this->pagesFrom = (int) (
+                    $this->currentPage
+                    - ($this->pagesToShow <= 0 ? 1 : $this->currentPage)
+                    - ($this->pagesToShow - ($this->pageCount - $this->currentPage) - 1)
+                );
                 $this->pagesTo = $this->pageCount;
                 break;
 

@@ -5,9 +5,7 @@ namespace System\Modules\Presentation\Models\Tables;
 use System\Modules\Presentation\Models\Tables\Interfaces\ColumnInterface;
 use System\Modules\Presentation\Models\Tables\Interfaces\SortInterface;
 use System\Modules\Presentation\Models\Tables\Interfaces\TableInterface;
-
 use System\Modules\Presentation\Models\Tables\Enums\SortDirection;
-
 use System\Modules\Presentation\Models\Tables\Column;
 
 /**

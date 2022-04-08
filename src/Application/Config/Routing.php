@@ -16,5 +16,6 @@ $config['routing'] = [
     '' => 'Defaults/Welcome/index',
 
     // Rest of the routing
-    # '^([0-9]+)$' => 'orders/details/$1'  # Example rewrite: http://example.com/1234 -> http://example.com/orders/details/1234
+    # '^([0-9]+)$' => 'orders/details/$1'
+        # Example rewrite: http://example.com/1234 -> http://example.com/orders/details/1234
 ];

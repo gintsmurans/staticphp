@@ -6,8 +6,8 @@ namespace System\Modules\Utils\Models;
 
 class RecordObject implements \Iterator, \JsonSerializable, \ArrayAccess
 {
-    const DataRecord = 0;
-    const DataFormattedRecord = 1;
+    public const DATA_RECORD = 0;
+    public const DATA_FORMATTED_RECORD = 1;
 
     protected $record = [];
     protected $original_record = [];
@@ -80,11 +80,11 @@ class RecordObject implements \Iterator, \JsonSerializable, \ArrayAccess
     /** =========================================== Instance methods ==================================================== */
     public function get(string $name, int $from = null)
     {
-        if (($from === null || $from == RecordObject::DataRecord) && isset($this->record[$name])) {
+        if (($from === null || $from == RecordObject::DATA_RECORD) && isset($this->record[$name])) {
             return $this->record[$name];
         }
 
-        if (($from === null || $from == RecordObject::DataFormattedRecord) && isset($this->formatted_record[$name])) {
+        if (($from === null || $from == RecordObject::DATA_FORMATTED_RECORD) && isset($this->formatted_record[$name])) {
             return $this->formatted_record[$name];
         }
 
@@ -132,7 +132,7 @@ class RecordObject implements \Iterator, \JsonSerializable, \ArrayAccess
 
 
     /** =========================================== Iterator Implementation ==================================================== */
-    public function rewind()
+    public function rewind(): void
     {
         reset($this->record);
     }
@@ -149,13 +149,12 @@ class RecordObject implements \Iterator, \JsonSerializable, \ArrayAccess
         return $var;
     }
 
-    public function next()
+    public function next(): void
     {
-        $var = next($this->record);
-        return $var;
+        next($this->record);
     }
 
-    public function valid()
+    public function valid(): bool
     {
         $key = key($this->record);
         $var = ($key !== null && $key !== false);
@@ -165,7 +164,7 @@ class RecordObject implements \Iterator, \JsonSerializable, \ArrayAccess
 
 
     /** =========================================== ArrayAccess Implementation ==================================================== */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if (is_null($offset)) {
             throw new \Exception("Adding empty array entries is not allowed");
@@ -174,12 +173,12 @@ class RecordObject implements \Iterator, \JsonSerializable, \ArrayAccess
         }
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->record[$offset]) || isset($this->formatted_record[$offset]);
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->record[$offset], $this->formatted_record[$offset]);
     }

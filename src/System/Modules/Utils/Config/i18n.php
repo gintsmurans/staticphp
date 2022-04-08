@@ -9,32 +9,32 @@ $config['i18n']['url_format'] = '{{country}}-{{language}}';
 // All available countries and languages
 // First match will be used, if there is no match, first item in array will be used
 $config['i18n']['available'] = [
-	[
+    [
         'name' => 'Latvia',
-		'code' => 'lv',
-		'languages' => ['lv', 'en', 'ru'],
-		'formats' => [
-			'date_short' => 'Y.m.d',
-			'date_long' => 'Y.m.d',
-			'time' => 'hh:mm:ss',
-			'decimal_point' => ',',
-			'tousands_separator' => ' ',
-			'after_comma' => 2
-		]
-	],
-	[
+        'code' => 'lv',
+        'languages' => ['lv', 'en', 'ru'],
+        'formats' => [
+            'date_short' => 'Y.m.d',
+            'date_long' => 'Y.m.d',
+            'time' => 'hh:mm:ss',
+            'decimal_point' => ',',
+            'tousands_separator' => ' ',
+            'after_comma' => 2
+        ]
+    ],
+    [
         'name' => 'Estonia',
-		'code' => 'ee',
-		'languages' => ['ee', 'en', 'ru'],
-		'formats' => [
-			'date_short' => 'Y.m.d',
-			'date_long' => 'Y.m.d',
-			'time' => 'hh:mm:ss',
-			'decimal_point' => ',',
-			'tousands_separator' => ' ',
-			'after_comma' => 2
-		]
-	]
+        'code' => 'ee',
+        'languages' => ['ee', 'en', 'ru'],
+        'formats' => [
+            'date_short' => 'Y.m.d',
+            'date_long' => 'Y.m.d',
+            'time' => 'hh:mm:ss',
+            'decimal_point' => ',',
+            'tousands_separator' => ' ',
+            'after_comma' => 2
+        ]
+    ]
 ];
 
 /**

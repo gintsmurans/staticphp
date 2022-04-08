@@ -2,12 +2,10 @@
 
 namespace System\Modules\Presentation\Models\Tables\Output;
 
-use \PhpOffice\PhpSpreadsheet\Spreadsheet;
-use \PhpOffice\PhpSpreadsheet\Cell\DataType;
-use \PhpOffice\PhpSpreadsheet\IOFactory;
-
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use System\Modules\Presentation\Models\Tables\Interfaces\OutputInterface;
-
 use System\Modules\Presentation\Models\Tables\Traits\TableInstance;
 
 class Excel implements OutputInterface
@@ -51,11 +49,11 @@ class Excel implements OutputInterface
                     case 'int':
                     case 'float':
                         $cell->setValueExplicit($cellValue ?? 0, DataType::TYPE_NUMERIC);
-                    break;
+                        break;
 
                     default:
                         $cell->setValueExplicit($cellValue ?? '', DataType::TYPE_STRING);
-                    break;
+                        break;
                 }
                 $colNr += 1;
             }
@@ -80,12 +78,12 @@ class Excel implements OutputInterface
         }
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'.$this->filename.'.xlsx"');
+        header('Content-Disposition: attachment;filename="' . $this->filename . '.xlsx"');
         header('Cache-Control: max-age=0');
         header('Cache-Control: max-age=1');
 
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-        header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
         header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header('Pragma: public'); // HTTP/1.0
 

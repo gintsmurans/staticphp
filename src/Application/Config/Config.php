@@ -1,18 +1,21 @@
 <?php
 
-use Symfony\Component\Dotenv\Dotenv;
+/**
+ * StaticPHP main configuration file
+ */
 
-use \System\Modules\Core\Models\Logger;
+use Symfony\Component\Dotenv\Dotenv;
+use System\Modules\Core\Models\Logger;
 
 /**
  * We are gonna start with loading of the .env files
  */
 $dotenv = new Dotenv();
-if (file_exists(BASE_PATH.'/.env')) {
-    $dotenv->load(BASE_PATH.'/.env');
+if (file_exists(BASE_PATH . '/.env')) {
+    $dotenv->load(BASE_PATH . '/.env');
 }
-if (file_exists(APP_PATH.'/.env')) {
-    $dotenv->overload(APP_PATH.'/.env');
+if (file_exists(APP_PATH . '/.env')) {
+    $dotenv->overload(APP_PATH . '/.env');
 }
 
 

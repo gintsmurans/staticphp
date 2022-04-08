@@ -8,6 +8,8 @@
 
 namespace System\Modules\Utils\Models\Sessions;
 
+use MongoDB\Client;
+
 class SessionsMongoDb extends Sessions
 {
     protected $mdbConnectionString = null;
@@ -15,10 +17,14 @@ class SessionsMongoDb extends Sessions
     protected $mdbDatabase = null;
     protected $mdbCollection = null;
 
-    public function __construct($connectionString, string $databaseName = 'sessions', $sessionName = 'SMDB', ?Sessions $backupHandler = null)
-    {
+    public function __construct(
+        $connectionString,
+        string $databaseName = 'sessions',
+        $sessionName = 'SMDB',
+        ?Sessions $backupHandler = null
+    ) {
         $this->mdbConnectionString = $connectionString;
-        $this->mdbConnection = new \MongoDB\Client($this->mdbConnectionString);
+        $this->mdbConnection = new Client($this->mdbConnectionString);
         $this->mdbDatabase = $this->mdbConnection->{$databaseName};
         $this->mdbCollection = $this->mdbDatabase->php_sessions;
 

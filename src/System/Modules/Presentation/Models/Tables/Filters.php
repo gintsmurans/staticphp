@@ -85,7 +85,7 @@ class Filters implements FiltersInterface
 
         return (
             strpos($this->urlPrefix, '%filter') === false ?
-                $this->urlPrefix.'%filter' :
+                $this->urlPrefix . '%filter' :
                 $this->urlPrefix
         );
     }
@@ -185,7 +185,10 @@ class Filters implements FiltersInterface
                 if (is_array($column->filterDefaultValue)) {
                     $filter[$column->id] = $column->filterDefaultValue;
                 } else {
-                    $filter[$column->id] = ['title' => $column->filterDefaultValue, 'value' => $column->filterDefaultValue];
+                    $filter[$column->id] = [
+                        'title' => $column->filterDefaultValue,
+                        'value' => $column->filterDefaultValue
+                    ];
                 }
             }
         }

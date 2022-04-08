@@ -32,7 +32,7 @@
 
 namespace System\Modules\Utils\Models;
 
-use \System\Modules\Core\Models\Config;
+use System\Modules\Core\Models\Config;
 
 /**
  * Form validation class.
@@ -233,7 +233,7 @@ class Fv
 
     public static function setPlain($string, $valid = '')
     {
-        return preg_replace('/[^a-z_\-0-9\ \p{L}'.$valid.']+/iu', '', $string);
+        return preg_replace('/[^a-z_\-0-9\ \p{L}' . $valid . ']+/iu', '', $string);
     }
 
     public static function setClean($string)
@@ -417,7 +417,7 @@ class Fv
 
     public static function float($value, $delimiter = '.')
     {
-        return (bool) preg_match('/^\d+'.preg_quote($delimiter, '/').'?\d+$/', $value);
+        return (bool) preg_match('/^\d+' . preg_quote($delimiter, '/') . '?\d+$/', $value);
     }
 
     public static function string($value)
@@ -492,7 +492,7 @@ class Fv
             return false;
         }
 
-        return ' value="'.(!empty($field) ? htmlspecialchars($field) : '').'"';
+        return ' value="' . (!empty($field) ? htmlspecialchars($field) : '') . '"';
     }
 
     public function setSelected($name, $test = '')

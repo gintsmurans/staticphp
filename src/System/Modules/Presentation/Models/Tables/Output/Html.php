@@ -5,14 +5,11 @@ namespace System\Modules\Presentation\Models\Tables\Output;
 use Core\Models\Router;
 use Exception;
 use System\Modules\Presentation\Models\Tables\Interfaces\OutputInterface;
-
 use System\Modules\Presentation\Models\Tables\Enums\TableType;
 use System\Modules\Presentation\Models\Tables\Enums\ColumnType;
 use System\Modules\Presentation\Models\Tables\Enums\RowPosition;
 use System\Modules\Presentation\Models\Tables\Enums\SortDirection;
-
 use System\Modules\Presentation\Models\Tables\Traits\TableInstance;
-
 use System\Modules\Presentation\Models\Tables\Column;
 use System\Modules\Presentation\Models\Tables\Utils;
 
@@ -101,12 +98,12 @@ class Html implements OutputInterface
 
         $link_addon = (empty($forColumn->sortLinkAttribute) ? '' : $forColumn->sortLinkAttribute);
         if (!empty($forColumn->description)) {
-            $link_addon .= ' title="'.$forColumn->description.'" class="tooltip-line" data-toggle="tooltip" data-placement="top"';
+            $link_addon .= ' title="' . $forColumn->description . '" class="tooltip-line" data-toggle="tooltip" data-placement="top"';
         }
-        $link = '<div class="hidden-print d-print-none"><a href="'.$url.'" '.$link_addon.'>'.$forColumn->title.'</a></div>';
-        $link .= '<div class="visible-print d-none d-print-inline">'.$forColumn->title.'</div>'.$html;
+        $link = '<div class="hidden-print d-print-none"><a href="' . $url . '" ' . $link_addon . '>' . $forColumn->title . '</a></div>';
+        $link .= '<div class="visible-print d-none d-print-inline">' . $forColumn->title . '</div>' . $html;
 
-        $link = '<div class="d-flex align-items-center">'.$link.'</div>';
+        $link = '<div class="d-flex align-items-center">' . $link . '</div>';
         return $link;
     }
 
@@ -149,7 +146,7 @@ class Html implements OutputInterface
                 $tmp = implode(' ', $tmp);
                 $attributes .= " class=\"{$tmp}\" ";
 
-                $html .= '<th'.$attributes.'>'.$linkHtml.'</th>';
+                $html .= '<th' . $attributes . '>' . $linkHtml . '</th>';
             }
         }
         $html .= '</tr>';
@@ -187,9 +184,9 @@ class Html implements OutputInterface
 
         $attributes = '';
         if (isset($parsedData[$field])) {
-            $attributes .= ' value="'.str_replace('"', '&quot;', $parsedData[$field]['title']).'"';
+            $attributes .= ' value="' . str_replace('"', '&quot;', $parsedData[$field]['title']) . '"';
             if ($parsedData[$field]['title'] != $parsedData[$field]['value']) {
-                $attributes .= ' data-value="'.str_replace('"', '&quot;', $parsedData[$field]['value']).'"';
+                $attributes .= ' data-value="' . str_replace('"', '&quot;', $parsedData[$field]['value']) . '"';
             }
         }
 
@@ -211,7 +208,7 @@ class Html implements OutputInterface
         }
 
         // Attributes
-        $attributes = ' id="filter_'.$forColumn->id.'" ';
+        $attributes = ' id="filter_' . $forColumn->id . '" ';
 
         $tmp = $forColumn->filterInputAttributes;
         $tmp = Utils::runClosures($tmp, [$forColumn, $value]);
@@ -242,18 +239,18 @@ class Html implements OutputInterface
                 }
 
                 if (!empty($forColumn->filterDateValue)) {
-                    $attributes .= ' data-unix="'.$forColumn->filterDateValue.'"';
+                    $attributes .= ' data-unix="' . $forColumn->filterDateValue . '"';
                 }
 
                 // no break
 
             case ColumnType::MULTILINE_TEXT:
             case ColumnType::TEXT:
-                $html = '<input type="text" class="'.$classes.'"'.$attributes;
+                $html = '<input type="text" class="' . $classes . '"' . $attributes;
                 if (!empty($forColumn->filterTitle)) {
-                    $html .= ' placeholder="'.$forColumn->filterTitle.'" ';
+                    $html .= ' placeholder="' . $forColumn->filterTitle . '" ';
                 }
-                $html .= ' '.$this->filterInputValue($forColumn->id).'>';
+                $html .= ' ' . $this->filterInputValue($forColumn->id) . '>';
                 break;
 
             case ColumnType::SELECT:
@@ -267,22 +264,42 @@ class Html implements OutputInterface
 
                 $parsedData = $this->tableInstance->filter->parsedData();
                 $classes .= ' form-select form-select-sm';
-                $html = '<select class="'.$classes.'"'.$attributes.'>';
+                $html = '<select class="' . $classes . '"' . $attributes . '>';
                 if (count($forColumn->filterSelectOptions) == 0 && isset($parsedData[$forColumn->id])) {
-                    $html .= '<option value="'.$parsedData[$forColumn->id]['value'].'">'.$parsedData[$forColumn->id]['title'].'</option>';
+                    $html .= '<option value="' . $parsedData[$forColumn->id]['value'] . '">';
+                    $html .= $parsedData[$forColumn->id]['title'];
+                    $html .= '</option>';
                 } elseif (empty($forColumn->filterSelectSkipEmptyDefault)) {
-                    $html .= '<option value=""'.(!empty($forColumn->filterSelectDefaultDisabled) ? ' disabled="disabled"' : '').'>'.($forColumn->filterTitle ?? '').'</option>';
+                    $html .= '<option value=""' . (!empty($forColumn->filterSelectDefaultDisabled) ? ' disabled="disabled"' : '') . '>';
+                    $html .= ($forColumn->filterTitle ?? '');
+                    $html .= '</option>';
                 }
                 if (!empty($forColumn->filterSelectOptionsGroups) && is_array($forColumn->filterSelectOptionsGroups)) {
                     foreach ($forColumn->filterSelectOptionsGroups as $gkey => $gitem) {
-                        $final_optgroup_title = (empty($forColumn->filterSelectOptionsGroupTitleKey) ? $gitem : $gitem[$forColumn->filterSelectOptionsGroupTitleKey]);
-                        $html .= '<optgroup label="'. $final_optgroup_title .'">';
+                        $final_optgroup_title = (
+                            empty($forColumn->filterSelectOptionsGroupTitleKey)
+                            ? $gitem
+                            : $gitem[$forColumn->filterSelectOptionsGroupTitleKey]
+                        );
+                        $html .= '<optgroup label="' . $final_optgroup_title . '">';
 
                         if (isset($forColumn->filterSelectOptions[$gkey])) {
                             foreach ($forColumn->filterSelectOptions[$gkey] as $key => $item) {
-                                $finalId = (empty($forColumn->filterSelectOptionsIdKey) ? $key : $item[$forColumn->filterSelectOptionsIdKey]);
-                                $finalTitle = (empty($forColumn->filterSelectOptionsTitleKey) ? $item : $item[$forColumn->filterSelectOptionsTitleKey]);
-                                $html .= '<option value="'.$finalId.'"'. $this->filterInputValue($forColumn->id, $finalId) .'>'.$finalTitle.'</option>';
+                                $finalId = (
+                                    empty($forColumn->filterSelectOptionsIdKey)
+                                    ? $key
+                                    : $item[$forColumn->filterSelectOptionsIdKey]
+                                );
+                                $finalTitle = (
+                                    empty($forColumn->filterSelectOptionsTitleKey)
+                                    ? $item
+                                    : $item[$forColumn->filterSelectOptionsTitleKey]
+                                );
+                                $html .= '<option value="' . $finalId . '"';
+                                $html .= $this->filterInputValue($forColumn->id, $finalId);
+                                $html .= '>';
+                                $html .= $finalTitle;
+                                $html .= '</option>';
                             }
                         }
 
@@ -292,15 +309,15 @@ class Html implements OutputInterface
                     foreach ($forColumn->filterSelectOptions as $key => $item) {
                         $finalId = (empty($forColumn->filterSelectOptionsIdKey) ? $key : $item[$forColumn->filterSelectOptionsIdKey]);
                         $finalTitle = (empty($forColumn->filterSelectOptionsTitleKey) ? $item : $item[$forColumn->filterSelectOptionsTitleKey]);
-                        $html .= '<option value="'.$finalId.'"'. $this->filterInputValue($forColumn->id, $finalId) .'>'.$finalTitle.'</option>';
+                        $html .= '<option value="' . $finalId . '"' . $this->filterInputValue($forColumn->id, $finalId) . '>' . $finalTitle . '</option>';
                     }
                 }
                 $html .= '</select>';
                 break;
 
             case ColumnType::SELECT_ALL_CHECKBOX:
-                $id = 'parent_checkbox_'.$this->tableInstance->tableId();
-                $html = '<input type="checkbox" class="faCheckbox parent_checkbox" id="'.$id.'"><label for="'.$id.'"></label>';
+                $id = 'parent_checkbox_' . $this->tableInstance->tableId();
+                $html = '<input type="checkbox" class="faCheckbox parent_checkbox" id="' . $id . '"><label for="' . $id . '"></label>';
                 break;
 
             case ColumnType::SWITCH:
@@ -308,15 +325,15 @@ class Html implements OutputInterface
 
                 $parsedData = $this->tableInstance->filter->parsedData();
                 $classes .= ' form-select form-select-sm';
-                $html = '<select class="'.$classes.'"'.$attributes.'>';
+                $html = '<select class="' . $classes . '"' . $attributes . '>';
                 if (count($options) == 0 && isset($parsedData[$forColumn->id])) {
-                    $html .= '<option value="'.$parsedData[$forColumn->id]['value'].'">'.$parsedData[$forColumn->id]['title'].'</option>';
+                    $html .= '<option value="' . $parsedData[$forColumn->id]['value'] . '">' . $parsedData[$forColumn->id]['title'] . '</option>';
                 } elseif (empty($forColumn->filterSelectSkipEmptyDefault)) {
-                    $html .= '<option value=""'.(!empty($forColumn->filterSelectDefaultDisabled) ? ' disabled="disabled"' : '').'>'.($forColumn->filterTitle ?? '').'</option>';
+                    $html .= '<option value=""' . (!empty($forColumn->filterSelectDefaultDisabled) ? ' disabled="disabled"' : '') . '>' . ($forColumn->filterTitle ?? '') . '</option>';
                 }
 
                 foreach ($options as $key => $item) {
-                    $html .= '<option value="'.$key.'"'. $this->filterInputValue($forColumn->id, $key) .'>'.$item.'</option>';
+                    $html .= '<option value="' . $key . '"' . $this->filterInputValue($forColumn->id, $key) . '>' . $item . '</option>';
                 }
 
                 $html .= '</select>';
@@ -338,7 +355,7 @@ class Html implements OutputInterface
             throw new Exception("Filter is not initialized");
         }
 
-        $html = '<tr id="table_filters_'.$this->tableInstance->tableId().'">'."\n";
+        $html = '<tr id="table_filters_' . $this->tableInstance->tableId() . '">' . "\n";
 
         /** @var Column $column */
         $column = null;
@@ -399,7 +416,7 @@ class Html implements OutputInterface
                 $attributes .= " class=\"{$tmp}\" ";
             }
 
-            $html = '<tr title="'.$title.'"'.$attributes.'>';
+            $html = '<tr title="' . $title . '"' . $attributes . '>';
             foreach ($this->tableInstance->columns as $column) {
                 $dataValue = '';
                 if (is_callable($column->dataKey)) {
@@ -645,19 +662,19 @@ class Html implements OutputInterface
 
         $url = $pagination->url();
         $pages = '<ul class="pagination">';
-        $pages .= '<li class="page-item'.($pagination->currentPage == 1 ? ' disabled' : '').'"><a class="page-link" href="'.$this->paginationUrl($url, 1).'"><span aria-hidden="true">1</span><span class="sr-only">Previous</span></a></li>';
-        $pages .= '<li class="page-item'.($pagination->currentPage == 1 ? ' disabled' : '').'"><a class="page-link" href="'.$this->paginationUrl($url, $pagination->prevPage).'"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>';
+        $pages .= '<li class="page-item' . ($pagination->currentPage == 1 ? ' disabled' : '') . '"><a class="page-link" href="' . $this->paginationUrl($url, 1) . '"><span aria-hidden="true">1</span><span class="sr-only">Previous</span></a></li>';
+        $pages .= '<li class="page-item' . ($pagination->currentPage == 1 ? ' disabled' : '') . '"><a class="page-link" href="' . $this->paginationUrl($url, $pagination->prevPage) . '"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>';
 
         for ($i = $pagination->pagesFrom; $i <= $pagination->pagesTo; ++$i) {
             if ($i === $pagination->currentPage) {
-                $pages .= '<li class="page-item active"><a class="page-link" href="'.$this->paginationUrl($url, $i).'">'.$i.' <span class="sr-only">(current)</span></a></li>';
+                $pages .= '<li class="page-item active"><a class="page-link" href="' . $this->paginationUrl($url, $i) . '">' . $i . ' <span class="sr-only">(current)</span></a></li>';
             } else {
-                $pages .= '<li class="page-item"><a class="page-link" href="'.$this->paginationUrl($url, $i).'">'.$i.'</a></li>';
+                $pages .= '<li class="page-item"><a class="page-link" href="' . $this->paginationUrl($url, $i) . '">' . $i . '</a></li>';
             }
         }
 
-        $pages .= '<li class="page-item'.($pagination->currentPage == $pagination->pageCount ? ' disabled' : '').'"><a class="page-link" href="'.$this->paginationUrl($url, $pagination->nextPage).'"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>';
-        $pages .= '<li class="page-item'.($pagination->currentPage == $pagination->pageCount ? ' disabled' : '').'"><a class="page-link" href="'.$this->paginationUrl($url, $pagination->pageCount).'"><span aria-hidden="true">'.$pagination->pageCount.'</span><span class="sr-only">Last</span></a></li>';
+        $pages .= '<li class="page-item' . ($pagination->currentPage == $pagination->pageCount ? ' disabled' : '') . '"><a class="page-link" href="' . $this->paginationUrl($url, $pagination->nextPage) . '"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>';
+        $pages .= '<li class="page-item' . ($pagination->currentPage == $pagination->pageCount ? ' disabled' : '') . '"><a class="page-link" href="' . $this->paginationUrl($url, $pagination->pageCount) . '"><span aria-hidden="true">' . $pagination->pageCount . '</span><span class="sr-only">Last</span></a></li>';
         $pages .= '</ul>';
 
         return $pages;

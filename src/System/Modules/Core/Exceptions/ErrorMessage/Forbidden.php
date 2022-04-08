@@ -2,7 +2,7 @@
 
 namespace System\Modules\Core\Exceptions\ErrorMessage;
 
-use \System\Modules\Core\Exceptions\ErrorMessage;
+use System\Modules\Core\Exceptions\ErrorMessage;
 
 class Forbidden extends ErrorMessage
 {

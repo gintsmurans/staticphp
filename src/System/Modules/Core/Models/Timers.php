@@ -2,7 +2,7 @@
 
 namespace System\Modules\Core\Models;
 
-use \System\Modules\Core\Models\Logger;
+use System\Modules\Core\Models\Logger;
 
 /**
  * Timer's class.
@@ -39,7 +39,8 @@ class Timers
     */
 
     /**
-     * Start timer. Timers are started incrementally, i.e. if two timers are started, first second timer needs to be stopped, then first one.
+     * Start timer. Timers are started incrementally, i.e. if two timers are started,
+     * first second timer needs to be stopped, then first one.
      *
      * @access public
      * @static
@@ -76,9 +77,9 @@ class Timers
     public static function markTime($name)
     {
         global $microtime;
-        self::$finished_timers['*'.$name] = round(microtime(true) - $microtime, 5);
+        self::$finished_timers['*' . $name] = round(microtime(true) - $microtime, 5);
 
-        return self::$finished_timers['*'.$name];
+        return self::$finished_timers['*' . $name];
     }
 
     /**
@@ -92,8 +93,8 @@ class Timers
     {
         global $microtime;
 
-        Logger::info('Total execution time: '.round(microtime(true) - $microtime, 5)." seconds;");
-        Logger::info('Memory used: '.round(memory_get_usage() / 1024 / 1024, 4)." MB;\n");
+        Logger::info('Total execution time: ' . round(microtime(true) - $microtime, 5) . " seconds;");
+        Logger::info('Memory used: ' . round(memory_get_usage() / 1024 / 1024, 4) . " MB;\n");
 
         if (!empty(self::$finished_timers)) {
             krsort(self::$finished_timers);

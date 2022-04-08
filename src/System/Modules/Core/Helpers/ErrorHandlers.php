@@ -1,11 +1,10 @@
 <?php
 
-use \System\Modules\Core\Exceptions\RouterException;
-use \System\Modules\Core\Exceptions\SpErrorException;
-
-use \System\Modules\Core\Models\Config;
-use \System\Modules\Core\Models\Logger;
-use \System\Modules\Core\Models\Router;
+use System\Modules\Core\Exceptions\RouterException;
+use System\Modules\Core\Exceptions\SpErrorException;
+use System\Modules\Core\Models\Config;
+use System\Modules\Core\Models\Logger;
+use System\Modules\Core\Models\Router;
 
 /**
  * StaticPHP's error handler. Turns errors into exceptions and passes on to sp_exception_handler().
@@ -91,7 +90,7 @@ function sp_send_error_email(\Throwable $e): void
     if (!empty($debug_email) && is_callable($email_func) && (time() - $last_error['time'] >= 30 || $last_error['exception'] != $e_formatted)) {
         $email_func(
             $debug_email, // To
-            'PHP ERROR: "'.$_SERVER['HTTP_HOST'].'"', // Subject
+            'PHP ERROR: "' . $_SERVER['HTTP_HOST'] . '"', // Subject
             $e_formatted, // Message
             "Content-Type: text/html; charset=utf-8", // Headers
             'error'
@@ -126,7 +125,7 @@ function sp_format_exception(\Throwable $e, bool $full = false, bool $markup = t
     if ($markup === true) {
         $message  = str_replace("\n", "<br />", $e->getMessage());
         $message .= '<br /><br /><strong>Trace:</strong><br /><table border="0" cellspacing="0" cellpadding="5" style="border: 1px #DADADA solid;"><tr><td style="border-bottom: 1px #DADADA solid;">';
-        $message .= str_replace("\n", '</td></tr><tr><td style="border-bottom: 1px #DADADA solid;">', $e->getTraceAsString()).'</td></tr></table>';
+        $message .= str_replace("\n", '</td></tr><tr><td style="border-bottom: 1px #DADADA solid;">', $e->getTraceAsString()) . '</td></tr></table>';
     } else {
         $message = $e->getMessage();
         $message .= "\n\nTrace:";
@@ -150,9 +149,9 @@ function sp_format_exception(\Throwable $e, bool $full = false, bool $markup = t
 
     // Format message
     if ($markup === true) {
-        $session = str_replace(array(" ", "\n"), array('&nbsp;', '<br />'), $session);
-        $server = str_replace(array(" ", "\n"), array('&nbsp;', '<br />'), $server);
-        $post = str_replace(array(" ", "\n"), array('&nbsp;', '<br />'), $post);
+        $session = str_replace([" ", "\n"], ['&nbsp;', '<br />'], $session);
+        $server = str_replace([" ", "\n"], ['&nbsp;', '<br />'], $server);
+        $post = str_replace([" ", "\n"], ['&nbsp;', '<br />'], $post);
     }
 
     $msg = '';

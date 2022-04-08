@@ -2,11 +2,10 @@
 
 namespace System\Modules\Utils\Models;
 
-use \PDO;
-use \PDOStatement;
-
-use \System\Modules\Core\Models\Config;
-use \System\Modules\Core\Models\Timers;
+use PDO;
+use PDOStatement;
+use System\Modules\Core\Models\Config;
+use System\Modules\Core\Models\Timers;
 
 /**
  * Database wrapper for pdo.
@@ -44,7 +43,8 @@ class Db
      * Init connection to the database.
      *
      * Connection can be made by passing configuration array to $config parameter or
-     * by passing a name of the connection that has been set up in Application/Config/Db.php (see example in System/Config/Db.php).
+     * by passing a name of the connection that has been set up in
+     * Application/Config/Db.php (see example in System/Config/Db.php).
      *
      * @example Db::init();
      * @example Db::init('second');
@@ -102,7 +102,7 @@ class Db
 
         // Set encoding - mysql only
         if (!empty($config['charset']) && self::$dbLinks[$name]->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
-            self::$dbLinks[$name]->exec('SET NAMES '.$config['charset'].';');
+            self::$dbLinks[$name]->exec('SET NAMES ' . $config['charset'] . ';');
         }
 
         return self::$dbLinks[$name];
@@ -150,7 +150,7 @@ class Db
             if (!empty($data)) {
                 $log_data = array_map(
                     function ($item) {
-                        return (is_integer($item) == true ? $item : "'".$item."'");
+                        return (is_integer($item) == true ? $item : "'" . $item . "'");
                     },
                     (array)$data
                 );
@@ -215,17 +215,21 @@ class Db
      * @param  string        $name  (default: 'default')
      * @return PDOStatement Returns statement created by query.
      */
-    public static function insert(string $table, array $data, string $name = 'default', string $returning = null): PDOStatement
-    {
+    public static function insert(
+        string $table,
+        array $data,
+        string $name = 'default',
+        string $returning = null
+    ): PDOStatement {
         $keys = [];
         $values = [];
         $params = [];
         foreach ((array) $data as $key => $value) {
             if ($key[0] == '!') {
-                $keys[] = self::$dbConfigs[$name]['wrap_column'].substr($key, 1).self::$dbConfigs[$name]['wrap_column'];
+                $keys[] = self::$dbConfigs[$name]['wrap_column'] . substr($key, 1) . self::$dbConfigs[$name]['wrap_column'];
                 $values[] = $value;
             } else {
-                $keys[] = self::$dbConfigs[$name]['wrap_column'].$key.self::$dbConfigs[$name]['wrap_column'];
+                $keys[] = self::$dbConfigs[$name]['wrap_column'] . $key . self::$dbConfigs[$name]['wrap_column'];
                 $values[] = '?';
                 $params[] = $value;
             }
@@ -261,9 +265,9 @@ class Db
         $params = [];
         foreach ((array) $data as $key => $value) {
             if ($key[0] == '!') {
-                $set[] = self::$dbConfigs[$name]['wrap_column'].substr($key, 1).self::$dbConfigs[$name]['wrap_column']." = {$value}";
+                $set[] = self::$dbConfigs[$name]['wrap_column'] . substr($key, 1) . self::$dbConfigs[$name]['wrap_column'] . " = {$value}";
             } else {
-                $set[] = self::$dbConfigs[$name]['wrap_column'].$key.self::$dbConfigs[$name]['wrap_column'].' = ?';
+                $set[] = self::$dbConfigs[$name]['wrap_column'] . $key . self::$dbConfigs[$name]['wrap_column'] . ' = ?';
                 $params[] = $value;
             }
         }
@@ -284,26 +288,26 @@ class Db
                 if ($key[0] == '!') {
                     if (is_array($value)) {
                         $c = 'NOT IN';
-                        $value = '('.implode(',', $value).')';
-                        $cond[] = self::$dbConfigs[$name]['wrap_column'].substr($key, 1).self::$dbConfigs[$name]['wrap_column']." {$c} {$value}";
+                        $value = '(' . implode(',', $value) . ')';
+                        $cond[] = self::$dbConfigs[$name]['wrap_column'] . substr($key, 1) . self::$dbConfigs[$name]['wrap_column'] . " {$c} {$value}";
                     } else {
-                        $cond[] = self::$dbConfigs[$name]['wrap_column'].substr($key, 1).self::$dbConfigs[$name]['wrap_column']." {$c} ?";
+                        $cond[] = self::$dbConfigs[$name]['wrap_column'] . substr($key, 1) . self::$dbConfigs[$name]['wrap_column'] . " {$c} ?";
                         $params[] = $value;
                     }
                 } else {
                     if (is_array($value)) {
                         $c = 'IN';
-                        $value = '('.implode(',', $value).')';
-                        $cond[] = self::$dbConfigs[$name]['wrap_column'].$key.self::$dbConfigs[$name]['wrap_column']." {$c} {$value}";
+                        $value = '(' . implode(',', $value) . ')';
+                        $cond[] = self::$dbConfigs[$name]['wrap_column'] . $key . self::$dbConfigs[$name]['wrap_column'] . " {$c} {$value}";
                     } else {
-                        $cond[] = self::$dbConfigs[$name]['wrap_column'].$key.self::$dbConfigs[$name]['wrap_column']." {$c} ?";
+                        $cond[] = self::$dbConfigs[$name]['wrap_column'] . $key . self::$dbConfigs[$name]['wrap_column'] . " {$c} ?";
                         $params[] = $value;
                     }
                 }
             }
 
             if (!empty($cond)) {
-                $cond = 'WHERE '.implode(' AND ', $cond);
+                $cond = 'WHERE ' . implode(' AND ', $cond);
             }
         } else {
             $cond = "WHERE {$where}";

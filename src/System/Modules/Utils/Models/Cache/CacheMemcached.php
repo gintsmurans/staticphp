@@ -2,9 +2,8 @@
 
 namespace System\Modules\Utils\Models\Cache;
 
-use \Memcached;
-
-use \System\Modules\Core\Models\Config;
+use Memcached;
+use System\Modules\Core\Models\Config;
 
 /**
  *  Memcached cache implementation

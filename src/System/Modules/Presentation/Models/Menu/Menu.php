@@ -2,14 +2,12 @@
 
 namespace System\Modules\Presentation\Models\Menu;
 
-use \Twig\TwigFunction;
-
-use \System\Modules\Core\Models\Load;
-use \System\Modules\Core\Models\Config;
-use \System\Modules\Core\Models\Router;
-use \System\Modules\Core\Controllers\Controller;
-
-use \System\Modules\Presentation\Models\Menu\MenuType;
+use Twig\TwigFunction;
+use System\Modules\Core\Models\Load;
+use System\Modules\Core\Models\Config;
+use System\Modules\Core\Models\Router;
+use System\Modules\Core\Controllers\Controller;
+use System\Modules\Presentation\Models\Menu\MenuType;
 
 /**
  * Generate Menus
@@ -140,13 +138,13 @@ class Menu
 
     public static function hideMenus($menuFlags)
     {
-        if ($menuFlags & MenuType::MAIN_MENU) {
+        if ($menuFlags & MenuType::MAIN_MENU->value) {
             unset(Config::$items['view_data']['menu_main']);
         }
-        if ($menuFlags & MenuType::SUB_MENU) {
+        if ($menuFlags & MenuType::SUB_MENU->value) {
             unset(Config::$items['view_data']['menu_submenu']);
         }
-        if ($menuFlags & MenuType::TABS) {
+        if ($menuFlags & MenuType::TABS->value) {
             unset(Config::$items['view_data']['menu_tabs']);
         }
     }

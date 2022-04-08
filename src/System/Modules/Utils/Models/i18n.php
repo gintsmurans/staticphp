@@ -4,11 +4,10 @@
 
 namespace System\Modules\Utils\Models;
 
-use \System\Modules\Core\Models\Config;
-use \System\Modules\Core\Models\Router;
-
-use \System\Modules\Utils\Models\Db;
-use \System\Modules\Utils\Models\Cache;
+use System\Modules\Core\Models\Config;
+use System\Modules\Core\Models\Router;
+use System\Modules\Utils\Models\Db;
+use System\Modules\Utils\Models\Cache;
 
 /**
  *  Internationalization (i18n).
@@ -139,7 +138,7 @@ class i18n
      */
     public static function hash()
     {
-        return sha1(self::$country_code.self::$language_code);
+        return sha1(self::$country_code . self::$language_code);
     }
 
     /**
@@ -262,7 +261,7 @@ class i18n
         }
 
         // Key
-        self::$language_key = self::$country_code.'_'.self::$language_code;
+        self::$language_key = self::$country_code . '_' . self::$language_code;
         self::$cache_key_prefix = self::$config['cache_prefix'];
 
         // Load cache, if external
@@ -287,7 +286,7 @@ class i18n
             $language_key = self::$language_key;
         }
 
-        $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'].'.' : '');
+        $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'] . '.' : '');
         $cached = null;
         if (self::$debug !== true) {
             $cached = Db::fetch(
@@ -356,7 +355,7 @@ class i18n
      * @param  null $escape
      * @return string
      */
-    public static function item($ident, $replace = array(), $escape = null)
+    public static function item($ident, $replace = [], $escape = null)
     {
         return empty($replace) ? constant($ident) : str_replace(array_keys($replace), $replace, constant($ident));
     }
@@ -384,16 +383,16 @@ class i18n
         }
 
         if (empty(self::$cache[$language_key][$text])) { // A note: using isset returns false when value NULL is returned from postgresql
-            $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'].'.' : '');
+            $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'] . '.' : '');
             $record = Db::fetch("SELECT id FROM {$db_scheme}i18n_keys WHERE key = ?", [$text], self::$config['db_config']);
             if (empty($record)) {
                 $record = Db::fetch("INSERT INTO {$db_scheme}i18n_keys (key) VALUES (?) RETURNING id", [$text], self::$config['db_config']);
             }
 
-            self::$cache[$language_key][$text] = $text.'*';
+            self::$cache[$language_key][$text] = $text . '*';
             Db::query(
                 "INSERT INTO {$db_scheme}i18n_translations (key_id, language, value) VALUES (?, ?, ?)",
-                [$record['id'], $language_key, $text.'*'],
+                [$record['id'], $language_key, $text . '*'],
                 self::$config['db_config']
             );
 
@@ -409,12 +408,12 @@ class i18n
         // Do some output escaping, if pointed
         switch ($escape) {
             case 'js':
-                $text = str_replace(array("'", "\r", "\n"), array("\\'", '', ''), $text);
-            break;
+                $text = str_replace(["'", "\r", "\n"], ["\\'", '', ''], $text);
+                break;
 
             case 'input':
                 $text = str_replace('"', '&quot;', $text);
-            break;
+                break;
         }
 
         // Return text, replace if necessary
@@ -448,7 +447,7 @@ class i18n
             throw new \Exception("Key \"{$key}\" doesn't exist");
         }
 
-        $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'].'.' : '');
+        $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'] . '.' : '');
         $record = Db::fetch("SELECT id FROM {$db_scheme}i18n_keys WHERE key = ?", [$key], self::$config['db_config']);
         if (empty($record)) {
             throw new \Exception("Key \"{$key}\" doesn't exist #2");
@@ -485,9 +484,13 @@ class i18n
         Config::$items['view_data']['i18n']['countries'] = &self::$countries;
 
         // Register filters
-        $filter = new \Twig\TwigFilter('translate', function ($text, $replace = [], $escape = null, $language_key = null) {
-            return \System\Modules\Utils\Models\i18n::translate($text, $replace, $escape, $language_key);
-        }, ['is_safe' => ['html']]);
+        $filter = new \Twig\TwigFilter(
+            'translate',
+            function ($text, $replace = [], $escape = null, $language_key = null) {
+                return \System\Modules\Utils\Models\i18n::translate($text, $replace, $escape, $language_key);
+            },
+            ['is_safe' => ['html']]
+        );
         Config::$items['view_engine']->addFilter($filter);
 
 
@@ -512,8 +515,8 @@ class i18n
      */
     public static function cacheFile($language_key)
     {
-        $cache_dir = APP_PATH.'Cache/'.self::$config['cache_subdir'].'/';
-        $cache_file = $cache_dir.self::$cache_key_prefix.$language_key.'.php';
+        $cache_dir = APP_PATH . 'Cache/' . self::$config['cache_subdir'] . '/';
+        $cache_file = $cache_dir . self::$cache_key_prefix . $language_key . '.php';
 
         // Create directories
         if (!is_dir($cache_dir)) {
@@ -532,7 +535,7 @@ class i18n
      */
     public static function cacheInvalidate($language_key)
     {
-        $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'].'.' : '');
+        $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'] . '.' : '');
         Db::query(
             "DELETE FROM {$db_scheme}i18n_cached WHERE id = ?;",
             [$language_key],
@@ -549,7 +552,7 @@ class i18n
      */
     public static function cacheApprove($language_key)
     {
-        $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'].'.' : '');
+        $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'] . '.' : '');
         Db::query(
             "INSERT INTO {$db_scheme}i18n_cached (id) VALUES (?);",
             [$language_key],
@@ -572,7 +575,7 @@ class i18n
             // Write to internal (file) cache
 
             $cache_file = self::cacheFile($language_key);
-            $contents = "<?php\n\n# Country: ". self::$country_code ."\n# Language: ". self::$language_code ."\n\n";
+            $contents = "<?php\n\n# Country: " . self::$country_code . "\n# Language: " . self::$language_code . "\n\n";
 
             // Walk through the result
             foreach ($res as $item) {
@@ -593,7 +596,7 @@ class i18n
             $cache[$item['key']] = $item['value'];
         }
 
-        Cache::set(self::$cache_key_prefix.$language_key, $cache);
+        Cache::set(self::$cache_key_prefix . $language_key, $cache);
     }
 
     /**
@@ -625,7 +628,7 @@ class i18n
         }
 
         // Load from external cache (defined by Cache model)
-        $res = Cache::get(self::$cache_key_prefix.$language_key);
+        $res = Cache::get(self::$cache_key_prefix . $language_key);
         if (empty($res) || is_array($res) === false) {
             return $dummy;
         }

@@ -2,7 +2,7 @@
 
 namespace System\Modules\Core\Exceptions;
 
-use \System\Modules\Core\Models\Load;
+use System\Modules\Core\Models\Load;
 
 /**
  * Global ErrorMessage Exception for throwing and catching custom errors

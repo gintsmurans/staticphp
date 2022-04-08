@@ -2,14 +2,14 @@
 
 namespace System\Modules\Core\Models;
 
-use \System\Modules\Core\Models\Timers;
+use System\Modules\Core\Models\Timers;
 
 /**
  * Core logger class.
  */
 class Logger
 {
-    const errorLevels = [
+    public const ERROR_LEVELS = [
         'none' => 1000,
         'emergency' => 800,
         'alert' => 700,
@@ -21,15 +21,15 @@ class Logger
         'debug' => 100,
     ];
 
-    const NONE = 'none';
-    const EMERGENCY = 'emergency';
-    const ALERT = 'alert';
-    const CRITICAL = 'critical';
-    const ERROR = 'error';
-    const WARNING = 'warning';
-    const NOTICE = 'notice';
-    const INFO = 'info';
-    const DEBUG = 'debug';
+    public const NONE = 'none';
+    public const EMERGENCY = 'emergency';
+    public const ALERT = 'alert';
+    public const CRITICAL = 'critical';
+    public const ERROR = 'error';
+    public const WARNING = 'warning';
+    public const NOTICE = 'notice';
+    public const INFO = 'info';
+    public const DEBUG = 'debug';
 
     /**
      * Array for log entries.
@@ -57,15 +57,15 @@ class Logger
      */
     public static function contains(string $errorLevel1, string $errorLevel2): bool
     {
-        if (empty(self::errorLevels[$errorLevel1])) {
+        if (empty(self::ERROR_LEVELS[$errorLevel1])) {
             return null;
         }
-        $errorLevelInt1 = self::errorLevels[$errorLevel1];
+        $errorLevelInt1 = self::ERROR_LEVELS[$errorLevel1];
 
-        if (empty(self::errorLevels[$errorLevel2])) {
+        if (empty(self::ERROR_LEVELS[$errorLevel2])) {
             return null;
         }
-        $errorLevelInt2 = self::errorLevels[$errorLevel2];
+        $errorLevelInt2 = self::ERROR_LEVELS[$errorLevel2];
 
         return ($errorLevelInt1 <= $errorLevelInt2);
     }
@@ -83,7 +83,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function emergency(string $message, array $context = array()): void
+    public static function emergency(string $message, array $context = []): void
     {
         self::log(Logger::EMERGENCY, $message, $context);
     }
@@ -98,7 +98,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function alert(string $message, array $context = array()): void
+    public static function alert(string $message, array $context = []): void
     {
         self::log(Logger::ALERT, $message, $context);
     }
@@ -112,7 +112,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function critical(string $message, array $context = array()): void
+    public static function critical(string $message, array $context = []): void
     {
         self::log(Logger::CRITICAL, $message, $context);
     }
@@ -125,7 +125,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function error(string $message, array $context = array()): void
+    public static function error(string $message, array $context = []): void
     {
         self::log(Logger::ERROR, $message, $context);
     }
@@ -140,7 +140,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function warning(string $message, array $context = array()): void
+    public static function warning(string $message, array $context = []): void
     {
         self::log(Logger::WARNING, $message, $context);
     }
@@ -152,7 +152,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function notice(string $message, array $context = array()): void
+    public static function notice(string $message, array $context = []): void
     {
         self::log(Logger::NOTICE, $message, $context);
     }
@@ -166,7 +166,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function info(string $message, array $context = array()): void
+    public static function info(string $message, array $context = []): void
     {
         self::log(Logger::INFO, $message, $context);
     }
@@ -178,7 +178,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function debug(string $message, array $context = array()): void
+    public static function debug(string $message, array $context = []): void
     {
         self::log(Logger::DEBUG, $message, $context);
     }
@@ -191,7 +191,7 @@ class Logger
      * @param  array  $context
      * @return void
      */
-    public static function log(string $level, $message, array $context = array()): void
+    public static function log(string $level, $message, array $context = []): void
     {
         self::$logs[] = ['level' => $level, 'message' => $message, 'context' => $context];
     }
@@ -245,9 +245,9 @@ class Logger
                     break;
             }
 
-            $output .= '<span class="text-'.$class.'">'.strtoupper($item['level']).': </span>';
+            $output .= '<span class="text-' . $class . '">' . strtoupper($item['level']) . ': </span>';
             $output .= $item['message'];
-            $output .= (!empty($item['context']) ? " [".implode(',', $item['context'])."]\n" : "\n");
+            $output .= (!empty($item['context']) ? " [" . implode(',', $item['context']) . "]\n" : "\n");
         }
 
         // Return it

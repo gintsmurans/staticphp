@@ -1,7 +1,7 @@
 <?php
 
-use \System\Modules\Presentation\Models\Menu\Menu;
-use \Defaults\Data\MainMenu;
+use System\Modules\Presentation\Models\Menu\Menu;
+use Defaults\Data\MainMenu;
 
 // This is the right place to set headers, start a session, etc.
 

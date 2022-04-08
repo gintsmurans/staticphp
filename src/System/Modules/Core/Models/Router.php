@@ -2,11 +2,10 @@
 
 namespace System\Modules\Core\Models;
 
-use \System\Modules\Core\Exceptions\RouterException;
-use \System\Modules\Core\Exceptions\ErrorMessage;
-
-use \System\Modules\Core\Models\Load;
-use \System\Modules\Core\Models\Config;
+use System\Modules\Core\Exceptions\RouterException;
+use System\Modules\Core\Exceptions\ErrorMessage;
+use System\Modules\Core\Models\Load;
+use System\Modules\Core\Models\Config;
 
 /**
  * Router class.
@@ -264,7 +263,7 @@ class Router
      */
     public static function baseUrl(string $url = ''): string
     {
-        return self::$base_url.self::ensureStartsWithSlash($url);
+        return self::$base_url . self::ensureStartsWithSlash($url);
     }
 
     /**
@@ -287,7 +286,7 @@ class Router
         $url002 = !empty($prefix) ? self::ensureStartsWithSlash($prefix) : '';
         $url002 .= !empty($current_prefix) && !empty(self::$prefixes_url) ? self::ensureStartsWithSlash(self::$prefixes_url) : '';
 
-        return self::$base_url.$url002.self::ensureStartsWithSlash($url);
+        return self::$base_url . $url002 . self::ensureStartsWithSlash($url);
     }
 
     /**
@@ -313,20 +312,20 @@ class Router
     public static function redirect(string $url = '', bool $site_uri = true, bool $e301 = false, string $type = 'http'): void
     {
         switch ($type) {
-        case 'js':
-            echo '<script type="text/javascript"> window.location.href = \'',
-                ($site_uri === false ? $url : self::siteUrl($url)),
-                '\'; </script>';
-            break;
+            case 'js':
+                echo '<script type="text/javascript"> window.location.href = \'',
+                    ($site_uri === false ? $url : self::siteUrl($url)),
+                    '\'; </script>';
+                break;
 
-        default:
-            if ($e301 === true) {
-                header("HTTP/1.1 301 Moved Permanently");
-            }
+            default:
+                if ($e301 === true) {
+                    header("HTTP/1.1 301 Moved Permanently");
+                }
 
-            header("Location: ".(empty($site_uri) ? $url : self::siteUrl($url)));
-            header("Connection: close");
-            break;
+                header("Location: " . (empty($site_uri) ? $url : self::siteUrl($url)));
+                header("Connection: close");
+                break;
         }
         exit(0);
     }
@@ -380,7 +379,7 @@ class Router
     {
         $filename = 'Error';
         if (!empty($error_code)) {
-            header('HTTP/1.0 '.$error_code.' '.$error_string);
+            header('HTTP/1.0 ' . $error_code . ' ' . $error_string);
             $filename = "E{$error_code}";
         }
         $data = ['code' => $error_code, 'title' => $error_string, 'description' => $description];
@@ -634,16 +633,21 @@ class Router
         // Set some variables
         if (empty(self::$base_url) && !empty($_SERVER['HTTP_HOST'])) {
             $https = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on');
-            self::$domain_url = 'http'.(empty($https) ? '' : 's').'://'.$_SERVER['HTTP_HOST'];
+            self::$domain_url = 'http' . (empty($https) ? '' : 's') . '://' . $_SERVER['HTTP_HOST'];
             if (preg_match('/:[0-9]+$/', $_SERVER['HTTP_HOST']) === false) {
-                if ((empty($https) && $_SERVER['SERVER_PORT'] != 80)
+                if (
+                    (empty($https) && $_SERVER['SERVER_PORT'] != 80)
                     || (!empty($https) && $_SERVER['SERVER_PORT'] != 443)
                 ) {
-                    self::$domain_url .= ':'.$_SERVER['SERVER_PORT'];
+                    self::$domain_url .= ':' . $_SERVER['SERVER_PORT'];
                 }
             }
 
-            self::$base_url = self::$domain_url.(!empty($script_path) ? self::ensureStartsWithSlash($script_path) : '');
+            self::$base_url = self::$domain_url . (
+                !empty($script_path)
+                ? self::ensureStartsWithSlash($script_path)
+                : ''
+            );
         }
 
         // Replace script_path in uri and remove query string
@@ -664,7 +668,7 @@ class Router
         foreach (Config::$items['routing'] as $key => &$item) {
             if (!empty($key) && !empty($item)) {
                 $key = str_replace('#', '\\#', $key);
-                $tmp = preg_replace('#'.$key.'#', $item, $uri);
+                $tmp = preg_replace('#' . $key . '#', $item, $uri);
                 if ($tmp !== $uri) {
                     self::$initial_segments_url = $uri;
                     self::$initial_segments = explode('/', $uri);
@@ -732,7 +736,7 @@ class Router
         $count = count($segments);
 
         // Namespace always starts with a module
-        self::$namespace = '\\'.$module.'\\Controllers';
+        self::$namespace = '\\' . $module . '\\Controllers';
 
         // Look for controller, class and method in segments
         foreach ($segments as $one) {
@@ -742,18 +746,18 @@ class Router
             }
             $slice = array_slice($segments, 0, $count);
             $filename = implode(DS, $slice);
-            $path_to_file = APP_MODULES_PATH.$module.'/Controllers'.DS.$filename.'.php';
+            $path_to_file = APP_MODULES_PATH . $module . '/Controllers' . DS . $filename . '.php';
 
             if (is_file($path_to_file)) {
                 $namespace = array_slice($segments, 0, $count - 1);
                 if (!empty($namespace)) {
-                    self::$namespace .= '\\'.implode('\\', $namespace);
+                    self::$namespace .= '\\' . implode('\\', $namespace);
                 }
 
                 self::$module = $module;
                 self::$controller = implode(DS, $slice);
                 self::$class = $segments[$count - 1];
-                self::$file = $module.'/Controllers/'.self::$controller;
+                self::$file = $module . '/Controllers/' . self::$controller;
                 self::$file_path = dirname(self::$file);
 
                 if (count($segments) > $count) {
@@ -802,8 +806,8 @@ class Router
         $tmp = self::urlToFile(Config::$items['routing']['']);
         if ($tmp === false) {
             throw new RouterException(
-                "Error in default routing configuration. Should be: module/class/method, instead found: ".
-                Config::$items['routing']['']
+                "Error in default routing configuration. Should be: module/class/method, instead found: "
+                . Config::$items['routing']['']
             );
         }
 
@@ -840,9 +844,9 @@ class Router
 
         // Set url to the method
         if (self::$file !== null) {
-            self::$method_url = self::$module.'/';
-            self::$method_url .= str_replace(self::$module.'/Controllers/', '', self::$file);
-            self::$method_url .= '/'.self::$method;
+            self::$method_url = self::$module . '/';
+            self::$method_url .= str_replace(self::$module . '/Controllers/', '', self::$file);
+            self::$method_url .= '/' . self::$method;
             self::$method_url = self::namespaceToUrl(self::$method_url);
         }
     }
@@ -872,7 +876,7 @@ class Router
     ): void {
         // Load current file if $file parameter is empty
         if (empty($file)) {
-            $file = APP_MODULES_PATH.self::$file.'.php';
+            $file = APP_MODULES_PATH . self::$file . '.php';
         }
 
         // Load current namespace if $namespace parameter is empty
@@ -903,13 +907,13 @@ class Router
         }
 
         // Check if module has a bootstrap file
-        $bootstrapFile = APP_MODULES_PATH.$module.'/Helpers/Bootstrap.php';
+        $bootstrapFile = APP_MODULES_PATH . $module . '/Helpers/Bootstrap.php';
         if (is_file($bootstrapFile)) {
             include $bootstrapFile;
         }
 
         // Check if controllers has a bootstrap file
-        $bootstrapPath = APP_MODULES_PATH.self::$file_path;
+        $bootstrapPath = APP_MODULES_PATH . self::$file_path;
         while (strlen($bootstrapPath) > strlen(APP_MODULES_PATH)) {
             $bootstrapFile = "{$bootstrapPath}/_bootstrap.php";
             if (is_file($bootstrapFile)) {
@@ -922,13 +926,15 @@ class Router
         // Check for $file
         if (is_file($file)) {
             // Namespaces support
-            $class = $namespace.'\\'.$class;
+            $class = $namespace . '\\' . $class;
 
             // Create new reflection object from the controller class
             try {
                 $ref = new \ReflectionClass($class);
             } catch (\Exception $e) {
-                throw new RouterException('File "'.$file.'" was loaded, but the class '.$class.' could NOT be found');
+                throw new RouterException(
+                    'File "' . $file . '" was loaded, but the class ' . $class . ' could NOT be found'
+                );
             }
 
             // Call our contructor, if there is any
@@ -959,7 +965,8 @@ class Router
                 // Add method to arguments
                 $add_method = (bool)$ref->getStaticPropertyValue('add_method_to_parameters', true);
                 $add_default_method = (bool)$ref->getStaticPropertyValue('add_default_method_to_parameters', false);
-                if ($add_method === true
+                if (
+                    $add_method === true
                     && ($add_default_method === true || $method !== self::$default_route['method'])
                 ) {
                     array_unshift($arguments, $method);
@@ -980,7 +987,7 @@ class Router
                 }
             } else {
                 // Error - method not found
-                throw new RouterException('Method "'.$method.'" of class "'.$class.'" could not be found');
+                throw new RouterException('Method "' . $method . '" of class "' . $class . '" could not be found');
             }
 
             // Append method response to construct response
@@ -990,8 +997,8 @@ class Router
                 } elseif (is_array($response)) {
                     if (is_array($method_response) == false) {
                         throw new RouterException(
-                            "Construct method returns <em>\"".gettype($response)."\"</em>, ".
-                            "but {$method} returns <em>\"".gettype($method_response)."\"</em>"
+                            "Construct method returns <em>\"" . gettype($response) . "\"</em>, "
+                            . "but {$method} returns <em>\"" . gettype($method_response) . "\"</em>"
                         );
                     }
                     $response = array_merge($response, $method_response);
@@ -1020,9 +1027,9 @@ class Router
                 }
             }
         } else {
-            $msg = 'Controller file for path: "'.self::$requested_url.'" was not found';
+            $msg = 'Controller file for path: "' . self::$requested_url . '" was not found';
             if (empty(self::$requested_url)) {
-                $msg = 'Default controller was not found: "'.Config::$items['routing'][''].'"';
+                $msg = 'Default controller was not found: "' . Config::$items['routing'][''] . '"';
             }
             throw new RouterException($msg);
         }

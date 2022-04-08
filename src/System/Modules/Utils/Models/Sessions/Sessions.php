@@ -26,8 +26,8 @@ class Sessions implements \SessionHandlerInterface
         ini_set('session.gc_probability', 1);
         ini_set('session.gc_divisor', 100);
 
-        ini_set('session.gc_maxlifetime', 432000*4);
-        ini_set('session.cookie_lifetime', 432000*4);
+        ini_set('session.gc_maxlifetime', 432000 * 4);
+        ini_set('session.cookie_lifetime', 432000 * 4);
 
         ini_set('session.hash_function', 'sha512');
         ini_set('session.hash_bits_per_character', 5);

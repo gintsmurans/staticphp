@@ -7,7 +7,7 @@ class Request
     public static function internal(string $url, array $post = null, array $query = null, bool $https = false): string
     {
         // Create command array
-        $cmd_arr = ['php', PUBLIC_PATH.'index.php'];
+        $cmd_arr = ['php', PUBLIC_PATH . 'index.php'];
 
         if (!empty($post) && is_array($post)) {
             array_push($cmd_arr, '--post');

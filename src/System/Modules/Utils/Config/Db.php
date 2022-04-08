@@ -1,6 +1,9 @@
 <?php
 
-// Database configuration, See PDO documentation for connection string: http://php.net/manual/en/pdo.construct.php for more information
+/**
+ * Database configuration, See PDO documentation for connection string.
+ * http://php.net/manual/en/pdo.construct.php for more information
+ */
 
 $config['db']['pdo']['default'] = [
     'string' => 'mysql:host=localhost;dbname=',

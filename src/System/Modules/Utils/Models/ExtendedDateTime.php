@@ -73,17 +73,17 @@ class ExtendedDateTime extends \DateTime
         $this->modify('23:59:59');
     }
 
-    public static function _startOfTheMonth(int $unix_time)
+    public static function startOfTheMonthFromTimestamp(int $unixTime)
     {
-        $tmp = new ExtendedDateTime("@{$unix_time}");
+        $tmp = new ExtendedDateTime("@{$unixTime}");
         $tmp->startOfTheMonth();
 
         return $tmp->getTimestamp();
     }
 
-    public static function _endOfTheMonth(int $unix_time)
+    public static function endOfTheMonthFromTimestamp(int $unixTime)
     {
-        $tmp = new ExtendedDateTime("@{$unix_time}");
+        $tmp = new ExtendedDateTime("@{$unixTime}");
         $tmp->endOfTheMonth();
 
         return $tmp->getTimestamp();

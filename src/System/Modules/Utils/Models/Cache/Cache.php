@@ -2,7 +2,7 @@
 
 namespace System\Modules\Utils\Models\Cache;
 
-use \Exception;
+use Exception;
 
 /**
  *  Cache library for various cache backends.

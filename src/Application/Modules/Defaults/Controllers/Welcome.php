@@ -2,11 +2,10 @@
 
 namespace Defaults\Controllers;
 
-use \System\Modules\Core\Exceptions\ErrorMessage;
-
-use \System\Modules\Core\Controllers\Controller;
-use \System\Modules\Core\Models\Load;
-use \System\Modules\Core\Models\Timers;
+use System\Modules\Core\Exceptions\ErrorMessage;
+use System\Modules\Core\Controllers\Controller;
+use System\Modules\Core\Models\Load;
+use System\Modules\Core\Models\Timers;
 
 /**
  * Welcome page controller.
@@ -38,7 +37,8 @@ class Welcome extends Controller
      *
      * Segments after /home/index/ will be passed as parameters in handler method.
      * For example http://example.com/home/index/post/34 will call index method from home controller with
-     * $param1 == 'post' and $param2 == '34'.<br />If you would like to see a better looking urls like http://example.com/post/34
+     * $param1 == 'post' and $param2 == '34'.<br />If you would like to see a better looking urls like
+     * http://example.com/post/34
      * and home/index as handler, take a look in config/routing.php file.
      *
      * @access public

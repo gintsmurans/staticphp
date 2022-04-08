@@ -2,17 +2,11 @@
 
 namespace Tests\Modules\Core\Helpers;
 
-
 use PHPUnit\Framework\TestCase;
-use Core\Controllers\Controller;
-use Core\Models\Load;
-use Core\Models\Router;
-use Core\Models\Request;
-
+use System\Modules\Core\Models\Load;
 
 // Load helper here, because it cannot be loaded more than once
-Load::helper('Other', 'Core', 'System');
-
+Load::helper(['Other'], 'Core', 'System');
 
 class OtherTest extends TestCase
 {

@@ -2,7 +2,7 @@
 
 namespace System\Modules\Utils\Models\Cache;
 
-use \Redis;
+use Redis;
 
 /**
  *  Redis cache implementation

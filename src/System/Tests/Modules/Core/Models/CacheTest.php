@@ -2,7 +2,6 @@
 
 namespace Tests\Modules\Core\Models;
 
-
 use PHPUnit\Framework\TestCase;
 use Core\Models\Cache;
 

@@ -2,8 +2,8 @@
 
 namespace System\Modules\Core\Models;
 
-use \System\Modules\Core\Models\Config;
-use \System\Modules\Core\Models\Router;
+use System\Modules\Core\Models\Config;
+use System\Modules\Core\Models\Router;
 
 /**
  * Core class for loading resources.
@@ -25,19 +25,15 @@ class Load
             // 32 bits for "time_low"
             mt_rand(0, 0xffff),
             mt_rand(0, 0xffff),
-
             // 16 bits for "time_mid"
             mt_rand(0, 0xffff),
-
             // 16 bits for "time_hi_and_version",
             // four most significant bits holds version number 4
             mt_rand(0, 0x0fff) | 0x4000,
-
             // 16 bits, 8 bits for "clk_seq_hi_res",
             // 8 bits for "clk_seq_low",
             // two most significant bits holds zero and one for variant DCE1.1
             mt_rand(0, 0x3fff) | 0x8000,
-
             // 48 bits for "node"
             mt_rand(0, 0xffff),
             mt_rand(0, 0xffff),
@@ -117,7 +113,7 @@ class Load
         }
 
         // Put directory together
-        $dir = (empty($parts) ? '' : implode('/', $parts).'/');
+        $dir = (empty($parts) ? '' : implode('/', $parts) . '/');
 
         // Create hashed directory
         for ($i = 1; $i <= $levelsDeep; ++$i) {
@@ -126,9 +122,9 @@ class Load
         }
 
         // Put other stuff together
-        $data['dir'] = str_replace($data['hash_dir'], '', $dir).$data['hash_dir'];
-        $data['file'] = $data['dir'].$data['filename'].(empty($data['ext']) ? '' : '.'.$data['ext']);
-        $data['hash_file'] = $data['hash_dir'].$data['filename'].(empty($data['ext']) ? '' : '.'.$data['ext']);
+        $data['dir'] = str_replace($data['hash_dir'], '', $dir) . $data['hash_dir'];
+        $data['file'] = $data['dir'] . $data['filename'] . (empty($data['ext']) ? '' : '.' . $data['ext']);
+        $data['hash_file'] = $data['hash_dir'] . $data['filename'] . (empty($data['ext']) ? '' : '.' . $data['ext']);
 
         // Create directories
         if (!empty($createDirectories) && !is_dir($data['dir'])) {
@@ -208,12 +204,12 @@ class Load
 
             $file = '';
             if (!empty($module)) {
-                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH.$project1.DS.'Modules'.DS);
-                $file .= $module.DS;
+                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH . $project1 . DS . 'Modules' . DS);
+                $file .= $module . DS;
             } else {
-                $file = (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS);
+                $file = (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS);
             }
-            $file .= 'Config'.DS.$name.'.php';
+            $file .= 'Config' . DS . $name . '.php';
 
             require($file);
         }
@@ -242,12 +238,12 @@ class Load
 
             $file = '';
             if (!empty($module)) {
-                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH.$project1.DS.'Modules'.DS);
-                $file .= $module.DS;
+                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH . $project1 . DS . 'Modules' . DS);
+                $file .= $module . DS;
             } else {
-                $file = (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS);
+                $file = (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS);
             }
-            $file .= 'Controllers'.DS.$name.'.php';
+            $file .= 'Controllers' . DS . $name . '.php';
 
             require($file);
         }
@@ -276,12 +272,12 @@ class Load
 
             $file = '';
             if (!empty($module)) {
-                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH.$project1.DS.'Modules'.DS);
-                $file .= $module.DS;
+                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH . $project1 . DS . 'Modules' . DS);
+                $file .= $module . DS;
             } else {
-                $file = (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS);
+                $file = (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS);
             }
-            $file .= 'Models'.DS.$name.'.php';
+            $file .= 'Models' . DS . $name . '.php';
 
             require($file);
         }
@@ -310,12 +306,12 @@ class Load
 
             $file = '';
             if (!empty($module)) {
-                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH.$project1.DS.'Modules'.DS);
-                $file .= $module.DS;
+                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH . $project1 . DS . 'Modules' . DS);
+                $file .= $module . DS;
             } else {
-                $file = (empty($project1) ? APP_PATH : BASE_PATH.$project1.DS);
+                $file = (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS);
             }
-            $file .= 'Helpers'.DS.$name.'.php';
+            $file .= 'Helpers' . DS . $name . '.php';
 
             require($file);
         }
@@ -350,7 +346,7 @@ class Load
 
             $config = Config::$items;
             foreach ((array) $files as $key => $file) {
-                require APP_MODULES_PATH.$file;
+                require APP_MODULES_PATH . $file;
             }
 
             return true;
