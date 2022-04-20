@@ -822,6 +822,7 @@ class Router
         if (count(self::$segments) === 0) {
             // Defaults
             self::$file = $tmp['file'];
+            self::$file_path = dirname(self::$file);
         } else {
             // Look for controller, class and method in segments
             self::findControllerInSegments();
