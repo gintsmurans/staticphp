@@ -8,9 +8,12 @@ const DS = DIRECTORY_SEPARATOR;
 if (defined('PUBLIC_PATH') == false) {
     define(
         'PUBLIC_PATH',
-        realpath(dirname(__FILE__) . '../../../../')
-        . 'Application/Public' . DS
+        realpath(dirname(__FILE__) . '/../../../..')
+        . '/Application/Public'
     );
+}
+
+if (defined('APP_PATH') == false) {
     define('APP_PATH', dirname(PUBLIC_PATH) . DS);
     define('APP_MODULES_PATH', APP_PATH . 'Modules' . DS);
     define('BASE_PATH', dirname(APP_PATH) . DS);

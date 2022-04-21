@@ -6,58 +6,11 @@ use System\Modules\Core\Models\Config;
 use System\Modules\Core\Models\Router;
 use System\Modules\Core\Models\Timers;
 
-/*
- * Handle cli sapi
- * @param --query Sets query string
- * @param --post Sets post data
- * @param --https Sets https to on
- */
-if (php_sapi_name() === 'cli') {
-    $last_param = null;
-    foreach ($GLOBALS['argv'] as $param) {
-        switch ($last_param) {
-            case '--query':
-                parse_str($param, $_GET);
-                $_SERVER['QUERY_STRING'] = $param;
-                break;
-
-            case '--post':
-                parse_str($param, $_POST);
-                break;
-        }
-        $last_param = null;
-
-        switch ($param) {
-            case '--query':
-            case '--post':
-                $last_param = $param;
-                break;
-            case '--https':
-                $_SERVER['HTTPS'] = 'on';
-                break;
-            default:
-                $_SERVER['REQUEST_URI'] = $param;
-                break;
-        }
-    }
-
-    $_SERVER['HTTP_HOST'] = 'example.com';
-    $_SERVER['SERVER_PORT'] = 80;
-    $_SERVER['REQUEST_METHOD'] = empty($post) ? 'GET' : 'POST';
-    $_SERVER['HTTPS'] = empty($https) ? '' : 'on';
-    $_SERVER['HTTP_USER_AGENT'] = (
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-        . ' AppleWebKit/537.36 (KHTML, like Gecko)'
-        . ' Chrome/57.0.2987.133 Safari/537.36'
-    );
-    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-}
-
 // Set microtime
 $microtime = microtime(true);
 
 // Autoload
-require_once SYS_MODULES_PATH . 'Core/Helpers/Autoload.php';
+require_once dirname(__FILE__) . '/Autoload.php';
 
 // Load default config file and routing
 Config::load(['Config', 'Routing']);

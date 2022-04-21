@@ -1,0 +1,69 @@
+#!/usr/bin/env php
+<?php
+
+define('SAPI', 'cli');
+
+if (count($GLOBALS['argv']) == 1) {
+    echo "Missing arguments\n";
+    exit -1;
+}
+
+// Go through all arguments
+$last_param = null;
+foreach ($GLOBALS['argv'] as $param) {
+    switch ($last_param) {
+        case '--query':
+            parse_str($param, $_GET);
+            $_SERVER['QUERY_STRING'] = $param;
+            continue 2;
+
+        case '--post':
+            parse_str($param, $_POST);
+            continue 2;
+
+        case '--project':
+            $projectPath = dirname(__FILE__)."/src/{$param}/Public";
+            if (is_dir($projectPath) == false) {
+                echo "Project '{$param}' not found\n";
+                exit -1;
+            }
+
+            define('PUBLIC_PATH', $projectPath);
+            continue 2;
+    }
+    $last_param = null;
+
+    switch ($param) {
+        case '--help':
+            echo "Help is on the way, meaning its not finished yet\n";
+            exit;
+        case '--project':
+        case '--query':
+        case '--post':
+            $last_param = $param;
+            continue 2;
+        case '--https':
+            $_SERVER['HTTPS'] = 'on';
+            continue 2;
+        default:
+            $_SERVER['REQUEST_URI'] = $param;
+            continue 2;
+    }
+}
+
+// Fill in some default data
+$_SERVER['HTTP_HOST'] = 'localhost';
+$_SERVER['SERVER_PORT'] = empty($_SERVER['HTTPS']) ? 80 : 443;
+$_SERVER['REQUEST_METHOD'] = empty($_POST) ? 'GET' : 'POST';
+$_SERVER['HTTP_USER_AGENT'] = (
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+    . ' AppleWebKit/537.36 (KHTML, like Gecko)'
+    . ' Chrome/57.0.2987.133 Safari/537.36'
+);
+$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+
+// Bootstrap
+$basePath = dirname(__FILE__).'/src';
+$systemPath = "{$basePath}/System";
+$bootstrapPath = "{$systemPath}/Modules/Core/Helpers/Bootstrap.php";
+require $bootstrapPath;
