@@ -80,7 +80,7 @@ class Controller
     {
         $views = (array)$views;
         foreach ($views as $key => $item) {
-            $views[$key] = Router::$module . DS . 'Views' . DS . $item;
+            $views[$key] = Router::$module . "/Views/{$item}";
         }
 
         Load::view($views, $view_data);

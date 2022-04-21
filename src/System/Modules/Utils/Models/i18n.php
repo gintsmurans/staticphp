@@ -515,8 +515,8 @@ class i18n
      */
     public static function cacheFile($language_key)
     {
-        $cache_dir = APP_PATH . 'Cache/' . self::$config['cache_subdir'] . '/';
-        $cache_file = $cache_dir . self::$cache_key_prefix . $language_key . '.php';
+        $cache_dir = APP_PATH . '/Cache/' . self::$config['cache_subdir'];
+        $cache_file = $cache_dir . '/' . self::$cache_key_prefix . $language_key . '.php';
 
         // Create directories
         if (!is_dir($cache_dir)) {

@@ -3,7 +3,7 @@
 //tideways_enable(TIDEWAYS_FLAGS_NO_SPANS);
 
 // Define paths
-define('PUBLIC_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);
+define('PUBLIC_PATH', dirname(__FILE__));
 
 // Bootstrap
 $basePath = realpath(dirname(__FILE__) . '/../..');

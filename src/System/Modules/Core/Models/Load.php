@@ -204,12 +204,12 @@ class Load
 
             $file = '';
             if (!empty($module)) {
-                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH . $project1 . DS . 'Modules' . DS);
-                $file .= $module . DS;
+                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH . "/{$project1}/Modules");
+                $file .= "/{$module}";
             } else {
-                $file = (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS);
+                $file = (empty($project1) ? APP_PATH : BASE_PATH . "/{$project1}");
             }
-            $file .= 'Config' . DS . $name . '.php';
+            $file .= "/Config/{$name}.php";
 
             require($file);
         }
@@ -238,12 +238,12 @@ class Load
 
             $file = '';
             if (!empty($module)) {
-                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH . $project1 . DS . 'Modules' . DS);
-                $file .= $module . DS;
+                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH . "/{$project1}/Modules");
+                $file .= "/{$module}";
             } else {
-                $file = (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS);
+                $file = (empty($project1) ? APP_PATH : BASE_PATH . "/{$project1}");
             }
-            $file .= 'Controllers' . DS . $name . '.php';
+            $file .= "/Controllers/{$name}.php";
 
             require($file);
         }
@@ -272,12 +272,12 @@ class Load
 
             $file = '';
             if (!empty($module)) {
-                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH . $project1 . DS . 'Modules' . DS);
-                $file .= $module . DS;
+                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH . "/{$project1}/Modules");
+                $file .= "/{$module}";
             } else {
-                $file = (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS);
+                $file = (empty($project1) ? APP_PATH : BASE_PATH . "/{$project1}");
             }
-            $file .= 'Models' . DS . $name . '.php';
+            $file .= "/Models/{$name}.php";
 
             require($file);
         }
@@ -306,12 +306,12 @@ class Load
 
             $file = '';
             if (!empty($module)) {
-                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH . $project1 . DS . 'Modules' . DS);
-                $file .= $module . DS;
+                $file = (empty($project1) ? APP_MODULES_PATH : BASE_PATH . "/{$project1}/Modules");
+                $file .= "/{$module}";
             } else {
-                $file = (empty($project1) ? APP_PATH : BASE_PATH . $project1 . DS);
+                $file = (empty($project1) ? APP_PATH : BASE_PATH . "/{$project1}");
             }
-            $file .= 'Helpers' . DS . $name . '.php';
+            $file .= "/Helpers/{$name}.php";
 
             require($file);
         }
@@ -346,7 +346,7 @@ class Load
 
             $config = Config::$items;
             foreach ((array) $files as $key => $file) {
-                require APP_MODULES_PATH . $file;
+                require APP_MODULES_PATH . "/{$file}";
             }
 
             return true;

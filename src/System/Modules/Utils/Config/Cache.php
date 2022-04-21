@@ -23,7 +23,7 @@ $config['cache'] = [
     ],
     'files' => [
         'prefix' => null,
-        'path' => APP_PATH . 'Cache/cache',
+        'path' => APP_PATH . '/Cache/cache',
         'ext' => 'cache',
         'levels' => 2, // Max 32/2 = 16 levels per 2 sub path length
         'sub_path_length' => 2

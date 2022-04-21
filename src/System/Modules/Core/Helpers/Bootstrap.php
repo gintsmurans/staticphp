@@ -55,7 +55,7 @@ set_exception_handler('sp_exception_handler');
 
 // Load twig
 if (Config::get('disable_twig') !== true) {
-    if (is_file(VENDOR_PATH . 'twig/twig/src/Token.php') !== true) {
+    if (is_file(VENDOR_PATH . '/twig/twig/src/Token.php') !== true) {
         throw new Exception(
             'Twig Not Found! If you installed StaticPHP manually, not using'
             . ' composer, please see README.md to where to place the twig library.'
@@ -66,7 +66,7 @@ if (Config::get('disable_twig') !== true) {
         [
             APP_MODULES_PATH,
             APP_PATH,
-            SYS_MODULES_PATH . 'Core/Views'
+            SYS_MODULES_PATH . '/Core/Views'
         ]
     );
     Config::$items['view_engine'] = new \Twig\Environment(
@@ -75,7 +75,7 @@ if (Config::get('disable_twig') !== true) {
             'cache' => (
                 Config::get('debug') == true
                 ? false
-                : APP_PATH . 'Cache/Views/'
+                : APP_PATH . '/Cache/Views/'
             ),
             'debug' => Config::get('debug'),
             // 'strict_variables' => Config::get('debug'),

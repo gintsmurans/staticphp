@@ -492,7 +492,7 @@ class Router
      */
     public static function makePathString(string $path): string
     {
-        return str_replace(['/', '\\'], DS, $path);
+        return str_replace(['/', '\\'], '/', $path);
     }
 
     /**
@@ -745,8 +745,8 @@ class Router
                 continue;
             }
             $slice = array_slice($segments, 0, $count);
-            $filename = implode(DS, $slice);
-            $path_to_file = APP_MODULES_PATH . $module . '/Controllers' . DS . $filename . '.php';
+            $filename = implode('/', $slice);
+            $path_to_file = APP_MODULES_PATH . "/{$module}/Controllers/{$filename}.php";
 
             if (is_file($path_to_file)) {
                 $namespace = array_slice($segments, 0, $count - 1);
@@ -755,7 +755,7 @@ class Router
                 }
 
                 self::$module = $module;
-                self::$controller = implode(DS, $slice);
+                self::$controller = implode('/', $slice);
                 self::$class = $segments[$count - 1];
                 self::$file = $module . '/Controllers/' . self::$controller;
                 self::$file_path = dirname(self::$file);
@@ -877,7 +877,7 @@ class Router
     ): void {
         // Load current file if $file parameter is empty
         if (empty($file)) {
-            $file = APP_MODULES_PATH . self::$file . '.php';
+            $file = APP_MODULES_PATH . '/' . self::$file . '.php';
         }
 
         // Load current namespace if $namespace parameter is empty
@@ -908,13 +908,13 @@ class Router
         }
 
         // Check if module has a bootstrap file
-        $bootstrapFile = APP_MODULES_PATH . $module . '/Helpers/Bootstrap.php';
+        $bootstrapFile = APP_MODULES_PATH . "/{$module}/Helpers/Bootstrap.php";
         if (is_file($bootstrapFile)) {
             include $bootstrapFile;
         }
 
         // Check if controllers has a bootstrap file
-        $bootstrapPath = APP_MODULES_PATH . self::$file_path;
+        $bootstrapPath = APP_MODULES_PATH . '/' . self::$file_path;
         while (strlen($bootstrapPath) > strlen(APP_MODULES_PATH)) {
             $bootstrapFile = "{$bootstrapPath}/_bootstrap.php";
             if (is_file($bootstrapFile)) {
