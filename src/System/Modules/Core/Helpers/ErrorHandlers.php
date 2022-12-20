@@ -123,12 +123,17 @@ function sp_format_exception(\Throwable $e, bool $full = false, bool $markup = t
     // Message
     $message = '';
     if ($markup === true) {
-        $message  = str_replace("\n", "<br />", $e->getMessage());
+        $message  = $e->getCode() .' ';
+        $message .= str_replace("\n", "<br />", $e->getMessage());
+        $message .= '<br /><strong>File:</strong> ' . str_replace("\n", "<br />", $e->getFile());
+        $message .= '<br /><strong>Line:</strong> ' . str_replace("\n", "<br />", $e->getLine());
         $message .= '<br /><br /><strong>Trace:</strong><br /><table border="0" cellspacing="0" cellpadding="5" style="border: 1px #DADADA solid;"><tr><td style="border-bottom: 1px #DADADA solid;">';
         $message .= str_replace("\n", '</td></tr><tr><td style="border-bottom: 1px #DADADA solid;">', $e->getTraceAsString()) . '</td></tr></table>';
     } else {
-        $message = $e->getMessage();
-        $message .= "\n\nTrace:";
+        $message = $e->getCode() . " " . $e->getMessage();
+        $message .= "\nFile: " . $e->getFile();
+        $message .= "\nLine: " . $e->getLine();
+        $message .= "\nTrace:\n\n";
         $message .= $e->getTraceAsString();
     }
 
@@ -157,15 +162,15 @@ function sp_format_exception(\Throwable $e, bool $full = false, bool $markup = t
     $msg = '';
     if ($full === true) {
         if ($markup === true) {
-            $msg = "<pre><strong>META</strong><br />{$datetime}<br /><br /><strong>URL</strong><br />{$url}<br /><br /><strong>Error</strong><br />{$message}<br /><br /><strong>Sesssion Info</strong><br />{$session}<br /><br /><strong>Post Info</strong><br />{$post}<br /><br /><strong>Server</strong><br />{$server}</pre>";
+            $msg = "<pre><strong>Error:</strong> {$message}<br /><br /><strong>URL: </strong>{$url}<br /><strong>Datetime:</strong> {$datetime}<br /><br /><strong>Sesssion Info</strong><br />{$session}<br /><br /><strong>Post Info</strong><br />{$post}<br /><br /><strong>Server</strong><br />{$server}</pre>";
         } else {
-            $msg = "META\n{$datetime}\n\nURL\n{$url}\n\nError\n{$message}\n\nSesssion Info\n{$session}\n\nPost Info\n{$post}\n\nServer\n{$server}";
+            $msg = "Error: {$message}\n\nURL: {$url}\nDatetime: {$datetime}\n\nSesssion Info:\n{$session}\n\nPost Info\n{$post}\n\nServer\n{$server}";
         }
     } else {
         if ($markup === true) {
-            $msg = "<pre><strong>Error:</strong><br />{$message}<br /></pre>";
+            $msg = "<pre><strong>Error:</strong> {$message}<br /></pre>";
         } else {
-            $msg = "Error:\n{$message}\n";
+            $msg = "Error: {$message}\n";
         }
     }
 
