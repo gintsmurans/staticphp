@@ -1013,6 +1013,8 @@ class Router
                 if (is_array($response)) {
                     header('Content-Type:application/json; charset=utf-8');
                     echo json_encode($response);
+                } elseif ($response instanceof ErrorMessage) {
+                    echo $response->outputMessage();
                 } elseif (is_string($response) || is_numeric($response)) {
                     echo $response;
                 }
