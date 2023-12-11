@@ -9,7 +9,7 @@ const config = {
     mode: 'production',
     context: path.resolve(__dirname, 'src/Application/Public'),
     entry: {
-        defaults: './assets/src/index.js',
+        defaults: './assets/src/index.ts',
     },
     output: {
         devtoolModuleFilenameTemplate: '[resource-path]?[loaders]',
@@ -19,21 +19,28 @@ const config = {
         library: '[name]Module',
     },
     resolve: {
+        extensions: ['.ts', '.tsx', '.js', '.jsx'],
         alias: {
-            utils: path.resolve(__dirname, 'src/Application/Public/assets/src/base/js/utils.js'),
-            customPolyfill: path.resolve(__dirname, 'src/Application/Public/assets/src/base/js/customPolyfill.js'),
+            base: path.resolve(
+                __dirname,
+                'src/Application/Public/assets/src/base/ts'
+            ),
         },
     },
     module: {
         rules: [
             {
-                test: /\.js*$/,
-                use: {
-                    loader: 'strip-trailing-space-loader',
-                    options: {
-                        line_endings: 'unix',
+                test: /\.(ts|tsx|js|jsx)$/,
+                use: [
+                    {
+                        loader: 'esbuild-loader',
+                        options: {
+                            format: 'esm',
+                            target: 'ES2022',
+                        },
                     },
-                },
+                ],
+                exclude: /node_modules/,
             },
         ],
     },
@@ -64,9 +71,7 @@ const config = {
     stats: {
         colors: true,
     },
-    plugins: [
-        new ESLintPlugin(),
-    ],
+    plugins: [new ESLintPlugin()],
     devtool: 'source-map',
     watchOptions: {
         ignored: /node_modules/,
@@ -80,9 +85,11 @@ module.exports = (env, argv) => {
     // } else {
     //     dotenv.config({ path: './src/Application/.env' });
     // }
-    config.plugins.push(new webpack.DefinePlugin({
-        APP_ENV: JSON.stringify(argv.mode),
-    }));
+    config.plugins.push(
+        new webpack.DefinePlugin({
+            APP_ENV: JSON.stringify(argv.mode),
+        })
+    );
 
     if (argv.mode === 'production') {
         config.output.filename = '[name].min.js';

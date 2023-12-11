@@ -1,6 +1,5 @@
 <?php
 
-use Throwable;
 use System\Modules\Core\Exceptions\RouterException;
 use System\Modules\Core\Exceptions\SpErrorException;
 use System\Modules\Core\Models\Config;
