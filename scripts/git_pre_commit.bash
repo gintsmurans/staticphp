@@ -13,7 +13,6 @@ TRACKING_REMOTE="`git config branch.$LOCAL_BRANCH.remote`"
 TRACKING_BRANCH="$TRACKING_REMOTE/$LOCAL_BRANCH"
 
 
-
 # Test non-ascii filenames
 echo "*Testing non-ascii filenames.. "
 if [ $(git diff --cached --name-only --diff-filter=A -z $COMMIT | LC_ALL=C tr -d '[ -~]\0' | wc -c) -gt 0 ]; then
@@ -30,19 +29,6 @@ echo " Done"
 echo
 
 
-
-# Test for whitespace errors
-echo "*Testing for whitespace errors.. "
-git diff-index --cached --check $COMMIT --
-if [ "$?" != "0" ]; then
-    echo "!!! ERROR !!!"
-    exit 1
-fi
-echo " Done"
-echo
-
-
-
 # Test for most common debug symbols
 #echo "*Testing for debug symbols.. "
 #if [ "$(git diff --cached $COMMIT | grep -P 'print_r|console\\.log')" != "" ]; then
@@ -52,7 +38,6 @@ echo
 #fi
 #echo " Done"
 #echo
-
 
 
 # Trying to compile all php files
@@ -90,8 +75,9 @@ if [ $(git diff-index --cached --name-only $COMMIT | grep \\.scss | wc -l) -gt 0
     echo
 fi
 
+
 # Compile js
-if [ $(git diff-index --cached --name-only $COMMIT | grep \\.js | wc -l) -gt 0 ]; then
+if [ $(git diff-index --cached --name-only $COMMIT | grep -E "\.(js|ts)$" | wc -l) -gt 0 ]; then
     echo "*JS file(s) modified, compressing.. "
     cd $BASE_PATH
     npm run js:build
@@ -106,3 +92,19 @@ if [ $(git diff-index --cached --name-only $COMMIT | grep \\.js | wc -l) -gt 0 ]
     echo " Done"
     echo
 fi
+
+
+# Bump patch version
+echo "*Bumping patch version.. "
+./scripts/bump_version.bash 1
+
+
+# Test for whitespace errors
+echo "*Testing for whitespace errors.. "
+git diff-index --cached --check $COMMIT --
+if [ "$?" != "0" ]; then
+    echo "!!! ERROR !!!"
+    exit 1
+fi
+echo " Done"
+echo
