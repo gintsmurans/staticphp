@@ -32,21 +32,20 @@
         <script type="text/javascript" src="{{ base_url }}/assets/dist/js/vendors.bundle.js?{{ config.asset_version }}"></script>
 
         {% if js_include %}
-        <script type="text/javascript"
-            src="{{ base_url }}/assets/dist/js/{{ js_include }}.bundle.js?{{ config.asset_version }}"></script>
+            <script type="text/javascript" src="{{ base_url }}/assets/dist/js/{{ js_include }}.bundle.js?{{ config.asset_version }}"></script>
         {% endif %}
     {% else %}
         <script src="{{ base_url }}/assets/dist/js/vendors.min.js?{{ config.asset_version }}"></script>
 
         {% if js_include %}
-        <script src="{{ base_url }}/assets/dist/js/{{ js_include }}.min.js?{{ config.asset_version }}"></script>
+            <script src="{{ base_url }}/assets/dist/js/{{ js_include }}.min.js?{{ config.asset_version }}"></script>
         {% endif %}
     {% endif %}
 
     {% block scripts %}{% endblock%}
 
     {% block footer %}
-        <footer class="page-footer">© StaticPHP 2022</footer>
+        <footer class="page-footer">© StaticPHP 2024</footer>
     {% endblock%}
 
     {% if config.debug %}
