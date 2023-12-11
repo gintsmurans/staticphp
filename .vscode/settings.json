@@ -1,18 +1,43 @@
 {
-    "files.eol": "\n",
-    "files.encoding": "utf8",
-    "files.insertFinalNewline": true,
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.insertSpaces": true,
-    "editor.tabSize": 4,
-    "editor.quickSuggestions": {
-        "comments": true
+    "files.associations": {
+        "*.html": "twig"
+    },
+    "terminal.integrated.env.linux": {
+        "PATH": "${containerEnv:PATH}"
+    },
+    "php.suggest.basic": false,
+    "php.validate.enable": false,
+    "phpcs.enable": true,
+    "phpcs.executablePath": "vendor/bin/phpcs",
+    "phpcs.ignorePatterns": [
+        "*/vendor/*"
+    ],
+    "python.languageServer": "Pylance",
+    "python.analysis.typeCheckingMode": "strict",
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "[php]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+    },
+    "php-cs-fixer.executablePath": "vendor/bin/php-cs-fixer",
+    "[javascript]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[twig]": {
-        "editor.formatOnSave": false,
+        "editor.formatOnSave": false
     },
     "[html]": {
-        "editor.formatOnSave": false,
+        "editor.formatOnSave": false
+    },
+    "[sql]": {
+        "editor.defaultFormatter": "mtxr.sqltools"
     }
 }
