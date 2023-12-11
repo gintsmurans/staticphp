@@ -1,6 +1,7 @@
 import 'core-js/es/object/assign';
-import 'customPolyfill';
-import { Utils } from 'utils';
+import 'base/customPolyfill';
+
+import { Utils } from 'base/utils';
 
 // Assign stuff to global context
 window.Utils = Utils;
@@ -13,6 +14,4 @@ require('bootstrap');
 // init($);
 
 // Export all
-export {
-    Utils,
-};
+export { Utils };

@@ -1,14 +1,44 @@
 {
+    "plugins": [
+        // "@typescript-eslint",
+        "import",
+        "compat"
+    ],
     "env": {
         "browser": true,
         "es6": true
     },
-    "extends": "airbnb-base",
+    "extends": [
+        "plugin:compat/recommended",
+        "eslint:recommended"
+    ],
+    "parserOptions": {
+        // "project": "tsconfig.json",
+        // "tsconfigRootDir": "./",
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
     "settings": {
         "import/resolver": {
-            "node": {
-                "paths": [
-                    "./src/Application/Public/assets/src/base/js/"
+            "webpack": {
+                "config": "webpack.config.js"
+            },
+            // "typescript": {},
+            "alias": {
+                "map": [
+                    [
+                        "~/*",
+                        "./src/*"
+                    ],
+                    [
+                        "base/*",
+                        "./src/Application/Public/assets/src/base/ts/*"
+                    ]
+                ],
+                "extensions": [
+                    ".js",
+                    ".jsx",
+                    ".json"
                 ]
             }
         }
@@ -16,37 +46,23 @@
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly",
-
         "$": "readonly",
         "jQuery": "readonly",
         "BASE_URL": "readonly",
         "BASE_URI": "readonly",
-        "mainModule": "readonly",
         "translateStrings": "readonly",
-
+        "Utils": "readonly",
         "APP_ENV": "readonly"
     },
-    "parserOptions": {
-        "ecmaVersion": 2018,
-        "sourceType": "module"
-    },
     "rules": {
-        "no-new": 0,
-        "indent": ["error", 4],
-        "func-names": [ "off" ],
-        "comma-dangle": ["error", {
-            "arrays": "always-multiline",
-            "objects": "always-multiline",
-            "imports": "always-multiline",
-            "exports": "always-multiline",
-            "functions": "never"
-        }],
-        "prefer-arrow-callback": [ "off" ],
-        "import/prefer-default-export": "off",
-        "import/newline-after-import": ["error", { "count": 2 }],
-        "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
-        "max-classes-per-file": [ "off" ],
-        "no-use-before-define": ["error", { "functions": true, "classes": false }],
-        "no-multiple-empty-lines": ["error", { "max": 2, "maxBOF": 1}]
+        "import/no-unresolved": "error",
+        "no-new": 0, // TODO: disallow new for side effects
+        "indent": [
+            "error",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ]
     }
 }
