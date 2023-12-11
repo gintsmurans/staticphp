@@ -2,9 +2,6 @@
     "files.associations": {
         "*.html": "twig"
     },
-    "terminal.integrated.env.linux": {
-        "PATH": "${containerEnv:PATH}"
-    },
     "php.suggest.basic": false,
     "php.validate.enable": false,
     "phpcs.enable": true,
