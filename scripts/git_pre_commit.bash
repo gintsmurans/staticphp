@@ -97,6 +97,10 @@ fi
 # Bump patch version
 echo "*Bumping patch version.. "
 ./scripts/bump_version.bash 1
+if [ "$?" != "0" ]; then
+    echo "!!! ERROR !!!"
+    exit 1
+fi
 
 
 # Test for whitespace errors
