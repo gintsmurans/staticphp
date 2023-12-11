@@ -73,16 +73,15 @@ if [ $(git diff-index --cached --name-only --diff-filter=ACMR $COMMIT | grep \\.
 fi
 
 
-
-# Compile css, js
-if [ $(git diff-index --cached --name-only $COMMIT | grep \\.js | wc -l) -gt 0 ]; then
-    echo "*JS file(s) modified, compressing.. "
+# Compile css
+if [ $(git diff-index --cached --name-only $COMMIT | grep \\.scss | wc -l) -gt 0 ]; then
+    echo "*SCSS file(s) modified, compressing.. "
     cd $BASE_PATH
-    npm run js:build
+    npm run css:build
 
     if [ "$?" != "0" ]; then
         echo
-        echo "Something went wrong while trying to minify css or javascript.."
+        echo "Something went wrong while trying to minify css files"
         echo
         exit 1
     fi
@@ -91,41 +90,19 @@ if [ $(git diff-index --cached --name-only $COMMIT | grep \\.js | wc -l) -gt 0 ]
     echo
 fi
 
-
-
-# Dump sql schema
-#echo "*Dumping database schema .. "
-#if [ "$PLATFORM" = "Linux" ]; then
-#   sudo -u postgres pg_dump --schema-only --no-owner pm > "$BASE_PATH/Application/Files/db_schema.sql"
-#elif [ "$PLATFORM" = "FreeBSD" ]; then
-#   sudo -u pgsql pg_dump --schema-only --no-owner --no-privileges pm > "$BASE_PATH/Application/Files/db_schema.sql"
-#fi
-
-#git add "$BASE_PATH/Application/Files/db_schema.sql"
-#echo " Done"
-#echo
-
-
-
-# Check git remote changes
-if [ "$TRACKING_REMOTE" != "" ]; then
-    echo "*Checking git remote changes.. "
-
-    git fetch > /dev/null
-    git merge --no-commit --no-ff --quiet $TRACKING_BRANCH > /dev/null 2>&1
+# Compile js
+if [ $(git diff-index --cached --name-only $COMMIT | grep \\.js | wc -l) -gt 0 ]; then
+    echo "*JS file(s) modified, compressing.. "
+    cd $BASE_PATH
+    npm run js:build
 
     if [ "$?" != "0" ]; then
         echo
-        echo "Remote repository has some new updates that conflicts with your changes. Stash your files first, then do 'git merge $TRACKING_BRANCH' and then apply stash by 'git stash pop'"
+        echo "Something went wrong while trying to minify js files"
         echo
         exit 1
     fi
 
-    echo " Done"
-    echo
-
-    echo "*Merging latest remote changes.. "
-    git merge $TRACKING_BRANCH --no-edit --quiet
     echo " Done"
     echo
 fi
