@@ -10,9 +10,11 @@
             "type": "php",
             "request": "launch",
             "port": 9100,
-            "pathMappings": {
-                "/srv/sites/web/": "${workspaceRoot}",
-            }
+            "pathMappings": [
+                {
+                    "localRoot": "/srv/app",
+                }
+            ]
         },
         {
             "name": "Launch currently open script",
