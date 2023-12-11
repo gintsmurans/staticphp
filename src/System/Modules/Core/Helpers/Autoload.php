@@ -9,7 +9,7 @@ if (defined('PUBLIC_PATH') == false) {
     define(
         'PUBLIC_PATH',
         realpath(dirname(__FILE__) . '/../../../..')
-        . '/Application/Public'
+            . '/Application/Public'
     );
 }
 

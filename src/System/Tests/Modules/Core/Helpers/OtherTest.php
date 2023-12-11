@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Modules\Core\Helpers;
+namespace System\Tests\Modules\Core\Helpers;
 
 use PHPUnit\Framework\TestCase;
 use System\Modules\Core\Models\Load;

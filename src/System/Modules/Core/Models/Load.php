@@ -190,7 +190,7 @@ class Load
     public static function config(array $files, ?string $module = null, ?string $project = null, ?array &$config = null): void
     {
         if ($config === null) {
-            $config = & Config::$items;
+            $config = &Config::$items;
         } else {
             Config::$items = &$config;
         }
@@ -355,6 +355,7 @@ class Load
         // Add default view data
         if (empty($globalsAdded)) {
             Config::$items['view_engine']->addGlobal('env', $_ENV);
+            Config::$items['view_engine']->addGlobal('now', time());
             Config::$items['view_engine']->addGlobal('config', Config::$items);
             Config::$items['view_engine']->addGlobal('session', $_SESSION ?? []);
             Config::$items['view_engine']->addGlobal('cookie', $_COOKIE ?? []);

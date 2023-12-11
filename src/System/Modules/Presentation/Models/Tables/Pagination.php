@@ -89,10 +89,9 @@ class Pagination implements PaginationInterface
             return '';
         }
 
-        return (
-            strpos($this->urlPrefix, '%pagination') === false ?
-                $this->urlPrefix . '%pagination' :
-                $this->urlPrefix
+        return (strpos($this->urlPrefix, '%pagination') === false ?
+            $this->urlPrefix . '%pagination' :
+            $this->urlPrefix
         );
     }
 

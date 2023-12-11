@@ -10,4 +10,7 @@ enum FilterType: string
     case DATE = 'date';
     case DATETIME = 'datetime';
     case DATEINTERVAL = 'dateinterval';
+    case DATE_NATIVE = 'date_native';
+    case DATETIME_NATIVE = 'datetime_native';
+    case DATEINTERVAL_NATIVE = 'dateinterval_native';
 }

@@ -109,8 +109,12 @@ class SQLFilters implements TableInstanceInterface
         return ($sqlDate === true ? $value : strtotime($value));
     }
 
-    public static function valueToQuery(string $fieldName, $value, string $compare = '=', ?\Closure $valueFormatter = null): array
-    {
+    public static function valueToQuery(
+        string $fieldName,
+        $value,
+        string $compare = '=',
+        ?\Closure $valueFormatter = null
+    ): array {
         $regex = '/(.+)(~)(.+)/';
         $matches = [];
         $match = preg_match($regex, $value, $matches);
@@ -171,15 +175,15 @@ class SQLFilters implements TableInstanceInterface
                 $query = "{$fieldName} IN ({$queryValue})";
                 break;
             case '^':
-                $query = "{$fieldName} ILIKE ?";
+                $query = "{$fieldName}::TEXT ILIKE ?";
                 $params = ["{$queryValue}%"];
                 break;
             case '$':
-                $query = "{$fieldName} ILIKE ?";
+                $query = "{$fieldName}::TEXT ILIKE ?";
                 $params = ["%{$queryValue}"];
                 break;
             default:
-                $query = "{$fieldName} ILIKE ?";
+                $query = "{$fieldName}::TEXT ILIKE ?";
                 $params = ["%{$queryValue}%"];
                 break;
         }
@@ -255,15 +259,21 @@ class SQLFilters implements TableInstanceInterface
         }
 
         // DATE
-        if ($filterType === FilterType::DATE) {
+        if ($filterType === FilterType::DATE || $filterType === FilterType::DATE_NATIVE) {
             $field = $filterBy;
             $start = preg_replace('/^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$/', '$3-$2-$1', $value);
             if (preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $start)) {
+                $startQ = "{$start} 00:00:00";
+                $endQ = "{$start} 23:59:59";
                 return [
                     'query' => "{$field} >= ? AND {$field} <= ? ",
                     'param' => [
-                        self::strtotime("{$start} 00:00:00", $filterColumn->filterSqlDate),
-                        self::strtotime("{$start} 23:59:59", $filterColumn->filterSqlDate)
+                        $filterType === FilterType::DATE
+                            ? self::strtotime($startQ, $filterColumn->filterSqlDate)
+                            : $startQ,
+                        $filterType === FilterType::DATE
+                            ? self::strtotime($endQ, $filterColumn->filterSqlDate)
+                            : $endQ
                     ],
                     'data'  => [
                         'title' => $value,
@@ -276,14 +286,21 @@ class SQLFilters implements TableInstanceInterface
         }
 
         // DATETIME
-        if ($filterType === FilterType::DATETIME) {
+        if ($filterType === FilterType::DATETIME || $filterType === FilterType::DATETIME_NATIVE) {
             $field = $filterBy;
-            $start = preg_replace('/^([0-9]{2})\.([0-9]{2})\.([0-9]{4}) ([0-9]{2}):([0-9]{2})$/', '$3-$2-$1 $4:$5', $value);
+            $start = preg_replace(
+                '/^([0-9]{2})\.([0-9]{2})\.([0-9]{4}) ([0-9]{2}):([0-9]{2})$/',
+                '$3-$2-$1 $4:$5',
+                $value
+            );
             if (preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2})/', $start)) {
+                $startQ = "{$start}";
                 return [
                     'query' => "{$field} = ?",
                     'param' => [
-                        self::strtotime("{$start}", $filterColumn->filterSqlDate)
+                        $filterType === FilterType::DATETIME
+                            ? self::strtotime($startQ, $filterColumn->filterSqlDate)
+                            : $startQ
                     ],
                     'data'  => [
                         'title' => $value,
@@ -296,16 +313,26 @@ class SQLFilters implements TableInstanceInterface
         }
 
         // DATEINTERVAL
-        if ($filterType === FilterType::DATEINTERVAL) {
+        if ($filterType === FilterType::DATEINTERVAL || $filterType === FilterType::DATEINTERVAL_NATIVE) {
             $field = $filterBy;
             $start = preg_replace('/^([0-9]{2})\.([0-9]{2})\.([0-9]{4})?.*/', '$3-$2-$1', $value);
             $stop = preg_replace('/.*([0-9]{2})\.([0-9]{2})\.([0-9]{4})$/', '$3-$2-$1', $value);
-            if (preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $start) && preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $stop)) {
+            if (
+                preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $start)
+                && preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $stop)
+            ) {
+                $startQ = "{$start} 00:00:00";
+                $endQ = "{$stop} 23:59:59";
+
                 return [
                     'query' => "{$field} >= ? AND {$field} <= ? ",
                     'param' => [
-                        self::strtotime("{$start} 00:00:00", $filterColumn->filterSqlDate),
-                        self::strtotime("{$stop} 23:59:59", $filterColumn->filterSqlDate)
+                        $filterType === FilterType::DATEINTERVAL
+                            ? self::strtotime($startQ, $filterColumn->filterSqlDate)
+                            : $startQ,
+                        $filterType === FilterType::DATEINTERVAL
+                            ? self::strtotime($endQ, $filterColumn->filterSqlDate)
+                            : $endQ
                     ],
                     'data'  => [
                         'title' => $value,
@@ -313,11 +340,17 @@ class SQLFilters implements TableInstanceInterface
                     ]
                 ];
             } elseif (preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $start)) {
+                $startQ = "{$start} 00:00:00";
+                $endQ = "{$start} 23:59:59";
                 return [
                     'query' => "{$field} >= ? AND {$field} <= ? ",
                     'param' => [
-                        self::strtotime("{$start} 00:00:00", $filterColumn->filterSqlDate),
-                        self::strtotime("{$start} 23:59:59", $filterColumn->filterSqlDate)
+                        $filterType === FilterType::DATEINTERVAL
+                            ? self::strtotime($startQ, $filterColumn->filterSqlDate)
+                            : $startQ,
+                        $filterType === FilterType::DATEINTERVAL
+                            ? self::strtotime($endQ, $filterColumn->filterSqlDate)
+                            : $endQ
                     ],
                     'data'  => [
                         'title' => $value,

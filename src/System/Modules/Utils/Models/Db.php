@@ -225,11 +225,24 @@ class Db
         $values = [];
         $params = [];
         foreach ((array) $data as $key => $value) {
+            // Little dirty hack for boolean values
+            if (is_bool($value)) {
+                $value = $value ? 'true' : 'false';
+            }
+
             if ($key[0] == '!') {
-                $keys[] = self::$dbConfigs[$name]['wrap_column'] . substr($key, 1) . self::$dbConfigs[$name]['wrap_column'];
+                $keys[] = (
+                    self::$dbConfigs[$name]['wrap_column']
+                    . substr($key, 1)
+                    . self::$dbConfigs[$name]['wrap_column']
+                );
                 $values[] = $value;
             } else {
-                $keys[] = self::$dbConfigs[$name]['wrap_column'] . $key . self::$dbConfigs[$name]['wrap_column'];
+                $keys[] = (
+                    self::$dbConfigs[$name]['wrap_column']
+                    . $key
+                    . self::$dbConfigs[$name]['wrap_column']
+                );
                 $values[] = '?';
                 $params[] = $value;
             }
@@ -264,10 +277,25 @@ class Db
         $set = [];
         $params = [];
         foreach ((array) $data as $key => $value) {
+            // Little dirty hack for boolean values
+            if (is_bool($value)) {
+                $value = $value ? 'true' : 'false';
+            }
+
             if ($key[0] == '!') {
-                $set[] = self::$dbConfigs[$name]['wrap_column'] . substr($key, 1) . self::$dbConfigs[$name]['wrap_column'] . " = {$value}";
+                $set[] = (
+                    self::$dbConfigs[$name]['wrap_column']
+                    . substr($key, 1)
+                    . self::$dbConfigs[$name]['wrap_column']
+                    . " = {$value}"
+                );
             } else {
-                $set[] = self::$dbConfigs[$name]['wrap_column'] . $key . self::$dbConfigs[$name]['wrap_column'] . ' = ?';
+                $set[] = (
+                    self::$dbConfigs[$name]['wrap_column']
+                    . $key
+                    . self::$dbConfigs[$name]['wrap_column']
+                    . ' = ?'
+                );
                 $params[] = $value;
             }
         }
@@ -289,18 +317,38 @@ class Db
                     if (is_array($value)) {
                         $c = 'NOT IN';
                         $value = '(' . implode(',', $value) . ')';
-                        $cond[] = self::$dbConfigs[$name]['wrap_column'] . substr($key, 1) . self::$dbConfigs[$name]['wrap_column'] . " {$c} {$value}";
+                        $cond[] = (
+                            self::$dbConfigs[$name]['wrap_column']
+                            . substr($key, 1)
+                            . self::$dbConfigs[$name]['wrap_column']
+                            . " {$c} {$value}"
+                        );
                     } else {
-                        $cond[] = self::$dbConfigs[$name]['wrap_column'] . substr($key, 1) . self::$dbConfigs[$name]['wrap_column'] . " {$c} ?";
+                        $cond[] = (
+                            self::$dbConfigs[$name]['wrap_column']
+                            . substr($key, 1)
+                            . self::$dbConfigs[$name]['wrap_column']
+                            . " {$c} ?"
+                        );
                         $params[] = $value;
                     }
                 } else {
                     if (is_array($value)) {
                         $c = 'IN';
                         $value = '(' . implode(',', $value) . ')';
-                        $cond[] = self::$dbConfigs[$name]['wrap_column'] . $key . self::$dbConfigs[$name]['wrap_column'] . " {$c} {$value}";
+                        $cond[] = (
+                            self::$dbConfigs[$name]['wrap_column']
+                            . $key
+                            . self::$dbConfigs[$name]['wrap_column']
+                            . " {$c} {$value}"
+                        );
                     } else {
-                        $cond[] = self::$dbConfigs[$name]['wrap_column'] . $key . self::$dbConfigs[$name]['wrap_column'] . " {$c} ?";
+                        $cond[] = (
+                            self::$dbConfigs[$name]['wrap_column']
+                            . $key
+                            . self::$dbConfigs[$name]['wrap_column']
+                            . " {$c} ?"
+                        );
                         $params[] = $value;
                     }
                 }
@@ -445,7 +493,7 @@ class Db
                 $res = self::query('SELECT currval(?) as id', [$sequence_name]);
             }
 
-            return (empty($res->id) ? null : $res->id);
+            return (empty($res['id']) ? null : $res['id']);
         }
     }
 

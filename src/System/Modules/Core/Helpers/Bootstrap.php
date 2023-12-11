@@ -58,7 +58,7 @@ if (Config::get('disable_twig') !== true) {
     if (is_file(VENDOR_PATH . 'twig/twig/src/Token.php') !== true) {
         throw new Exception(
             'Twig Not Found! If you installed StaticPHP manually, not using'
-            . ' composer, please see README.md to where to place the twig library.'
+                . ' composer, please see README.md to where to place the twig library.'
         );
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Modules\Core\Helpers;
+namespace System\Tests\Modules\Core\Helpers;
 
 use PHPUnit\Framework\TestCase;
 use System\Modules\Core\Models\Load;
@@ -15,7 +15,12 @@ class HtmlTest extends TestCase
         html_css('test.css');
         html_css('test2.css');
 
-        $this->expectOutputString('<link rel="stylesheet" type="text/css" href="test.css" />' . "\n" . '<link rel="stylesheet" type="text/css" href="test2.css" />' . "\n");
+        $this->expectOutputString(
+            '<link rel="stylesheet" type="text/css" href="test.css" />'
+                . "\n"
+                . '<link rel="stylesheet" type="text/css" href="test2.css" />'
+                . "\n"
+        );
         html_css();
     }
 
@@ -25,14 +30,24 @@ class HtmlTest extends TestCase
         html_js('test.js');
         html_js('test2.js');
 
-        $this->expectOutputString('<script type="text/javascript" src="test.js"></script>' . "\n" . '<script type="text/javascript" src="test2.js"></script>' . "\n");
+        $this->expectOutputString(
+            '<script type="text/javascript" src="test.js"></script>'
+                . "\n"
+                . '<script type="text/javascript" src="test2.js"></script>'
+                . "\n"
+        );
         html_js();
     }
 
 
     public function testDropdown()
     {
-        $dropdown = html_dropdown(['1' => 'One', '2' => 'Two'], $selected = 2, $addons = ['#' => 'class="test"', '1' => 'data-param="xx"'], []);
+        $dropdown = html_dropdown(
+            ['1' => 'One', '2' => 'Two'],
+            $selected = 2,
+            $addons = ['#' => 'class="test"', '1' => 'data-param="xx"'],
+            []
+        );
 
         $this->assertContains('<select', $dropdown);
         $this->assertContains('class="test"', $dropdown);

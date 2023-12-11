@@ -54,6 +54,27 @@ class Filters implements FiltersInterface
      */
     protected array $filterDataParsed = [];
 
+    /**
+     * The filter query array.
+     *
+     * @var array
+     */
+    protected array $filterQuery = [];
+
+    /**
+     * The filter parameters array.
+     *
+     * @var array
+     */
+    protected array $filterParams = [];
+
+    /**
+     * The filter parameters by key array.
+     *
+     * @var array
+     */
+    protected array $filterParamsByKey = [];
+
 
     /**
      * Construct tableFilters
@@ -83,10 +104,9 @@ class Filters implements FiltersInterface
             return null;
         }
 
-        return (
-            strpos($this->urlPrefix, '%filter') === false ?
-                $this->urlPrefix . '%filter' :
-                $this->urlPrefix
+        return (strpos($this->urlPrefix, '%filter') === false ?
+            $this->urlPrefix . '%filter' :
+            $this->urlPrefix
         );
     }
 

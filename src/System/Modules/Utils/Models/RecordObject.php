@@ -4,7 +4,11 @@
 
 namespace System\Modules\Utils\Models;
 
-class RecordObject implements \Iterator, \JsonSerializable, \ArrayAccess
+use Iterator;
+use JsonSerializable;
+use ArrayAccess;
+
+class RecordObject implements Iterator, JsonSerializable, ArrayAccess
 {
     public const DATA_RECORD = 0;
     public const DATA_FORMATTED_RECORD = 1;
@@ -70,7 +74,7 @@ class RecordObject implements \Iterator, \JsonSerializable, \ArrayAccess
 
 
     /** =========================================== JSON ==================================================== */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->record + $this->formatted_record;
     }
@@ -137,13 +141,13 @@ class RecordObject implements \Iterator, \JsonSerializable, \ArrayAccess
         reset($this->record);
     }
 
-    public function current()
+    public function current(): mixed
     {
         $var = current($this->record);
         return $var;
     }
 
-    public function key()
+    public function key(): mixed
     {
         $var = key($this->record);
         return $var;
@@ -164,7 +168,7 @@ class RecordObject implements \Iterator, \JsonSerializable, \ArrayAccess
 
 
     /** =========================================== ArrayAccess Implementation ==================================================== */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (is_null($offset)) {
             throw new \Exception("Adding empty array entries is not allowed");
@@ -173,17 +177,17 @@ class RecordObject implements \Iterator, \JsonSerializable, \ArrayAccess
         }
     }
 
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->record[$offset]) || isset($this->formatted_record[$offset]);
     }
 
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->record[$offset], $this->formatted_record[$offset]);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         if (isset($this->record[$offset])) {
             return $this->record[$offset];

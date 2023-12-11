@@ -10,13 +10,13 @@ use System\Modules\Presentation\Models\Tables\Enums\SortNulls;
 
 class Column implements ColumnInterface
 {
-    // Default
+    // ## Default
     public string $id;
     public string $title = '';
     public string $description = '';
     public ColumnType $type = ColumnType::TEXT;
 
-    // Column
+    // ## Column
     public bool|\Closure $showColumn = true;
 
     /**
@@ -25,17 +25,7 @@ class Column implements ColumnInterface
      */
     public bool|\Closure $isEditable = false;
 
-    /**
-     * Elements can be string or Closure. If its a Closure, column is passed as the only argument.
-     */
-    public array $columnAttributes = [];
-
-    /**
-     * Elements can be string or Closure. If its a Closure, column is passed as the only argument.
-     */
-    public array $columnClasses = [];
-
-    // Sort
+    // ## Sort
     public bool $sortEnabled = true;
     public null|string|\Closure $sortBy = null;
     public bool $sortDefaultColumn = false;
@@ -43,7 +33,7 @@ class Column implements ColumnInterface
     public SortNulls $sortNulls = SortNulls::FIRST;
     public ?string $sortLinkAttribute = null;
 
-    // Filter
+    // ## Filter
     public bool $filterHidden = false;
     public bool $filterEnabled = true;
     public ?string $filterTitle = null;
@@ -70,7 +60,7 @@ class Column implements ColumnInterface
     public null|array|\Closure $filterData = null;
     public bool $filterSqlDate = false;
 
-    // Data
+    // ## Data
     public null|string|\Closure $idKey = null;
     public null|string|\Closure $dataKey = null;
     public null|string|\Closure $editKey = null;
@@ -79,8 +69,29 @@ class Column implements ColumnInterface
     public string|\Closure $dataColumnPrefix = '';
     public string|\Closure $dataColumnAddon = '';
 
-    // Export
+    // ## Export
     public null|string|\Closure $exportKey = null;
+
+    // ## Presentation
+    /**
+     * Elements can be string or Closure. If its a Closure, column is passed as the only argument.
+     */
+    public array $columnAttributes = [];
+
+    /**
+     * Elements can be string or Closure. If its a Closure, column is passed as the only argument.
+     */
+    public array $columnClasses = [];
+
+    /**
+     * Wether or not the column is expandable.
+     */
+    public bool $expandableText = false;
+
+    /**
+     * Should html be escaped in a column
+     */
+    public bool $escapeDataHtml = false;
 
 
     public function __construct($id, ...$settings)
