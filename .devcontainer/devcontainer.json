@@ -1,57 +1,68 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.205.2/containers/docker-existing-docker-compose
-// If you want to run as a non-root user in the container, see .devcontainer/docker-compose.yml.
 {
-    "name": "StaticPHP Develop",
-    // Update the 'dockerComposeFile' list if you have more compose files or use different names.
-    // The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
+    "name": "StaticPHP",
     "dockerComposeFile": [
-        "../docker-compose.yml",
-        "docker-compose.yml"
+        "../docker-compose.yml"
     ],
-    // The 'service' property is the name of the service for the container that VS Code should
-    // use. Update this value and .devcontainer/docker-compose.yml to the real service name.
     "service": "develop",
-    // The optional 'workspaceFolder' property is the path VS Code should open by default when
-    // connected. This is typically a file mount in .devcontainer/docker-compose.yml
-    "workspaceFolder": "/srv/sites/web",
-    // Set *default* container specific settings.json values on container create.
-    "settings": {
-        "php.suggest.basic": false,
-        "php.validate.enable": false,
-        "phpcs.enable": true,
-        "phpcs.executablePath": "./vendor/bin/phpcs",
-        "phpcs.ignorePatterns": [
-            "*/vendor/*"
-        ],
-        "[php]": {
-            "editor.formatOnSave": true
-        },
-        "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
-        "python.languageServer": "Pylance",
-        "python.formatting.provider": "black"
+    "runServices": [
+        "develop"
+    ],
+    "shutdownAction": "none",
+    "workspaceFolder": "/srv/app",
+    "remoteEnv": {
+        "PATH": "${containerEnv:PATH}"
     },
-    // Add the IDs of extensions you want installed when the container is created.
-    "extensions": [
-        "ikappas.composer",
-        "dbaeumer.vscode-eslint", // JS linter
-        "bmewburn.vscode-intelephense-client", // PHP intellisense
-        "ikappas.phpcs", // PHP Linter
-        "junstyle.php-cs-fixer", // PHP Formatter
-        "mblode.twig-language-2", // Twig
-        "esbenp.prettier-vscode", // JS/CSS language formatter
-        "shakram02.bash-beautify", // Bash beautifier
-        "ms-python.python", // Python
-        "ms-python.vscode-pylance" // Python
-    ]
-    // Use 'forwardPorts' to make a list of ports inside the container available locally.
-    // "forwardPorts": [],
-    // Uncomment the next line if you want start specific services in your Docker Compose config.
-    // "runServices": [],
-    // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
-    // "shutdownAction": "none",
-    // Uncomment the next line to run commands after the container is created - for example installing curl.
-    // "postCreateCommand": "apt-get update && apt-get install -y curl",
-    // Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
-    // "remoteUser": "vscode"
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "files.associations": {
+                    "*.html": "twig"
+                },
+                "terminal.integrated.env.linux": {
+                    "PATH": "${containerEnv:PATH}"
+                },
+                "php.suggest.basic": false,
+                "php.validate.enable": false,
+                "phpcs.enable": true,
+                "phpcs.executablePath": "vendor/bin/phpcs",
+                "phpcs.ignorePatterns": [
+                    "*/vendor/*"
+                ],
+                "[php]": {
+                    "editor.formatOnSave": true,
+                    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+                },
+                "php-cs-fixer.executablePath": "vendor/bin/php-cs-fixer",
+                "[javascript]": {
+                    "editor.formatOnSave": true,
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                },
+                "[typescript]": {
+                    "editor.formatOnSave": true,
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                },
+                "[twig]": {
+                    "editor.formatOnSave": false
+                },
+                "[html]": {
+                    "editor.formatOnSave": false
+                },
+                "[sql]": {
+                    "editor.defaultFormatter": "mtxr.sqltools"
+                }
+            },
+            "extensions": [
+                "ikappas.composer",
+                "bmewburn.vscode-intelephense-client", // PHP intellisense
+                "shevaua.phpcs", // PHP Linter
+                "junstyle.php-cs-fixer", // PHP Formatter
+                "mblode.twig-language-2", // Twig
+                "dbaeumer.vscode-eslint", // JS linter
+                "esbenp.prettier-vscode", // JS/CSS language formatter
+                "shakram02.bash-beautify", // Bash beautifier
+                "mtxr.sqltools", // SQL formatter
+                "github.copilot" // Copilot
+            ]
+        }
+    }
 }
