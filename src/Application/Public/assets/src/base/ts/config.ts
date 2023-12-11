@@ -3,7 +3,7 @@ export const CONFIG = {
 
     // These are supposed to be set automatically by a git pre-compile script
     // They are one git commit hash behind, if used automatically
-    version: 'v1.2.3',
-    git_commit_hash: '34027b84d80afadd1a03ffc0bc41577fe56000b1',
-    git_commit_date: '11.12.2023 21:54',
+    version: 'v1.2.5',
+    git_commit_hash: 'd985e07d48905edf6d8633c4afaf66afb5031eb6',
+    git_commit_date: '11.12.2023 21:58',
 };

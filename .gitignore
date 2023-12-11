@@ -21,6 +21,7 @@
 
 .phpunit.result.cache
 .php-cs-fixer.cache
+scripts/.fuse_hidden*
 
 # Python
 ###################################################################################################
