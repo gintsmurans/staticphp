@@ -27,6 +27,7 @@ class Controller
         self::$controller_url = self::controllerUrl();
 
         // Pass these to the view, too
+        Config::$items['view_data']['current_url'] = Router::$parsed_url;
         Config::$items['view_data']['module_url'] = self::$module_url;
         Config::$items['view_data']['controller_url'] = self::$controller_url;
         Config::$items['view_data']['method_url'] = self::$method_url;
@@ -68,7 +69,6 @@ class Controller
      */
     public static function controllerUrl(): string
     {
-        // Handle empty method calls
         $methodUrl = self::methodUrl();
         return dirname($methodUrl);
     }

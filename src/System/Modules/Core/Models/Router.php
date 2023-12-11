@@ -2,6 +2,8 @@
 
 namespace System\Modules\Core\Models;
 
+use Exception;
+use System\Modules\Core\Interfaces\RequestContentType;
 use System\Modules\Core\Exceptions\RouterException;
 use System\Modules\Core\Exceptions\ErrorMessage;
 use System\Modules\Core\Models\Load;
@@ -242,6 +244,17 @@ class Router
      */
     public static ?string $method_url = null;
 
+    /**
+     * Request content type.
+     *
+     * (default value: null)
+     *
+     * @var RequestContentType
+     * @access public
+     * @static
+     */
+    public static ?RequestContentType $request_content_type = null;
+
 
     /*
     |-------------------------------------------------------------------------------------------------------------------
@@ -309,13 +322,18 @@ class Router
      *
      * @return void
      */
-    public static function redirect(string $url = '', bool $site_uri = true, bool $e301 = false, string $type = 'http'): void
-    {
+    public static function redirect(
+        string $url = '',
+        bool $site_uri = true,
+        bool $e301 = false,
+        string $type = 'http'
+    ): void {
         switch ($type) {
             case 'js':
-                echo '<script type="text/javascript"> window.location.href = \'',
-                    ($site_uri === false ? $url : self::siteUrl($url)),
-                    '\'; </script>';
+                echo ('<script type="text/javascript"> window.location.href = \''
+                    . ($site_uri === false ? $url : self::siteUrl($url))
+                    . '\'; </script>'
+                );
                 break;
 
             default:
@@ -367,7 +385,7 @@ class Router
     /**
      * Output an error to the browser and stop script execution.
      *
-     * @param int    $error_code   Error code
+     * @param int    $http_error_code   Error code
      * @param string $error_string Error string (default: '')
      * @param string $description  Error description (default: '')
      *
@@ -375,14 +393,14 @@ class Router
      * @static
      * @return void
      */
-    public static function error(int $error_code, string $error_string = '', string $description = ''): void
+    public static function error($http_error_code, $error_string = '', $description = '')
     {
         $filename = 'Error';
-        if (!empty($error_code)) {
-            header('HTTP/1.0 ' . $error_code . ' ' . $error_string);
-            $filename = "E{$error_code}";
+        if (!empty($http_error_code)) {
+            header('HTTP/1.0 ' . $http_error_code . ' ' . $error_string);
+            $filename = "E{$http_error_code}";
         }
-        $data = ['code' => $error_code, 'title' => $error_string, 'description' => $description];
+        $data = ['code' => $http_error_code, 'title' => $error_string, 'description' => $description];
         Load::view(["Errors/{$filename}.html"], $data);
         exit(10);
     }
@@ -600,12 +618,58 @@ class Router
      * @static
      * @return void
      */
-    public static function init(): void
+    public static function init()
     {
+        self::populatePostFromJson();
         self::splitSegments();
-        self::findController();
-        self::loadController();
+
+        try {
+            self::findController();
+            self::loadController();
+        } catch (ErrorMessage $e) {
+            $e->outputMessage(ErrorMessage::outputTypeFromRequestType(self::$request_content_type), true);
+        } catch (Exception $e) {
+            $msg = new ErrorMessage(
+                message: $e->getMessage(),
+                code: intval($e->getCode()),
+                description: null,
+                previous: $e,
+                httpStatusCode: 500,
+                showStackTrace: true
+            );
+            $msg->outputMessage(ErrorMessage::outputTypeFromRequestType(self::$request_content_type), true);
+
+            if (Logger::contains(Config::$items['logging']['log_level'], 'error')) {
+                sp_log_error($msg);
+            }
+
+            if (Logger::contains(Config::$items['logging']['report_level'], 'error')) {
+                sp_send_error_email($msg);
+            }
+        }
     }
+
+    /**
+     * Populates the $_POST superglobal with data from a JSON string obtained from the request body.
+     *
+     * @return void
+     */
+    public static function populatePostFromJson()
+    {
+        $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
+        self::$request_content_type = RequestContentType::fromString($contentType);
+        if ($contentType === "application/json") {
+            $jsonStr = file_get_contents('php://input');
+            $jsonArr = json_decode($jsonStr, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($jsonArr)) {
+                foreach ($jsonArr as $key => $value) {
+                    $_POST[$key] = $value;
+                }
+            }
+        }
+    }
+
 
     /**
      * Splits request url into segments.
@@ -807,7 +871,7 @@ class Router
         if ($tmp === false) {
             throw new RouterException(
                 "Error in default routing configuration. Should be: module/class/method, instead found: "
-                . Config::$items['routing']['']
+                    . Config::$items['routing']['']
             );
         }
 
@@ -941,24 +1005,14 @@ class Router
             // Call our contructor, if there is any
             $response = null;
             if ($ref->hasMethod('construct') === true) {
-                try {
-                    $response = $ref->getMethod('construct')->invokeArgs(null, [&$class, &$method]);
-                } catch (ErrorMessage $e) {
-                    echo $e->outputMessage();
-                    exit;
-                }
+                $response = $ref->getMethod('construct')->invokeArgs(null, [&$class, &$method]);
             }
 
             // Call requested method
             $method_response = null;
             if ($ref->hasMethod($method) === true) {
                 $class_method = $ref->getMethod($method);
-                try {
-                    $method_response = $class_method->invokeArgs(null, self::$segments);
-                } catch (ErrorMessage $e) {
-                    echo $e->outputMessage();
-                    exit;
-                }
+                $method_response = $class_method->invokeArgs(null, self::$segments);
             } elseif ($ref->hasMethod('__callStatic') === true) {
                 // Call __callStatic
                 $arguments = self::$segments;
@@ -980,12 +1034,7 @@ class Router
                 }
 
                 // Invoke __callStatic
-                try {
-                    $method_response = $ref->getMethod('__callStatic')->invoke(null, $method, $arguments);
-                } catch (ErrorMessage $e) {
-                    echo $e->outputMessage();
-                    exit;
-                }
+                $method_response = $ref->getMethod('__callStatic')->invoke(null, $method, $arguments);
             } else {
                 // Error - method not found
                 throw new RouterException('Method "' . $method . '" of class "' . $class . '" could not be found');
@@ -999,7 +1048,7 @@ class Router
                     if (is_array($method_response) == false) {
                         throw new RouterException(
                             "Construct method returns <em>\"" . gettype($response) . "\"</em>, "
-                            . "but {$method} returns <em>\"" . gettype($method_response) . "\"</em>"
+                                . "but {$method} returns <em>\"" . gettype($method_response) . "\"</em>"
                         );
                     }
                     $response = array_merge($response, $method_response);
@@ -1022,12 +1071,7 @@ class Router
 
             // Call desctructor method
             if ($ref->hasMethod('destruct') === true) {
-                try {
-                    $response = $ref->getMethod('destruct')->invokeArgs(null, []);
-                } catch (ErrorMessage $e) {
-                    echo $e->outputMessage();
-                    exit;
-                }
+                $response = $ref->getMethod('destruct')->invokeArgs(null, []);
             }
         } else {
             $msg = 'Controller file for path: "' . self::$requested_url . '" was not found';

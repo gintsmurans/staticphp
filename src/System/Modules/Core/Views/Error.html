@@ -5,14 +5,16 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>400 {{ title ? title : 'Bad Request' }}</title>
+        <title>{{ http_status_code }} {{ http_status_message ? http_status_message : 'Internal Server Error' }}</title>
 
-        {% include 'Errors/styles.html' %}
+        <link href="/assets/index.css" rel="stylesheet" type="text/css" />
     </head>
-    <body class="error-page">
+    <body class="error-page {{ error_class }}">
         <div class="container">
-            <h1 class="text-center">400 {{ title ? title|raw : 'Bad Request' }}</h1>
+            <h1 class="text-center">{{ http_status_message ? http_status_message : 'Internal Server Error'}}</h1>
+            <p id="message"><strong>{{ code ? code }} {{ message|raw }}</strong></p>
             <p id="description" class="text-center">{{ description|raw }}</p>
+            <pre>{{ stack_trace }}</pre>
         </div>
         <script>
                 var description = document.getElementById('description');

@@ -5,7 +5,7 @@ namespace System\Modules\Core\Models;
 use System\Modules\Core\Models\Logger;
 
 /**
- * Timer's class.
+ * Core timer's class.
  */
 class Timers
 {
@@ -30,7 +30,6 @@ class Timers
      * @static
      */
     protected static $finished_timers = [];
-
 
     /*
     |-------------------------------------------------------------------------------------------------------------------
@@ -59,7 +58,7 @@ class Timers
      * @param  string $name
      * @return float  Returns time in microseconds it took timer to execute.
      */
-    public static function stopTimer($name)
+    public static function stopTimer($name, $returnSeconds = false)
     {
         self::$finished_timers[$name] = round(microtime(true) - array_pop(self::$started_timers), 5);
 
@@ -77,9 +76,9 @@ class Timers
     public static function markTime($name)
     {
         global $microtime;
-        self::$finished_timers['*' . $name] = round(microtime(true) - $microtime, 5);
+        self::$finished_timers["*{$name}"] = round(microtime(true) - $microtime, 5);
 
-        return self::$finished_timers['*' . $name];
+        return self::$finished_timers["*{$name}"];
     }
 
     /**
