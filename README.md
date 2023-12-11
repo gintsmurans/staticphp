@@ -4,7 +4,7 @@
 
 # StaticPHP
 
-Simple, modular php framework.
+Simple, modular php framework. **README.md needs to be updated.**
 
 ### Requirements
 
@@ -20,8 +20,8 @@ There are two ways to start using StaticPHP framework:
 
 **1. Using Docker**
 
-1. `python3 -m pip install -r requirements.txt`
-2. `fab docker.install`
+1. `docker compose build develop`
+2. `docker compose up -d --remove-orphans develop`
 3. Open in vscode using [Remote containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
 **2. Using composer**
