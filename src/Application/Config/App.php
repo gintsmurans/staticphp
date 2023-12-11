@@ -1,8 +1,8 @@
 <?php
 
-$config['version'] = 'v1.2.1';
-$config['git_commit_hash'] = 'b3ffbfd4e8b6e342252da5fcb33ec7e34773801d';
-$config['git_commit_date'] = '11.12.2023 21:43';
+$config['version'] = 'v1.2.2';
+$config['git_commit_hash'] = '9527d69aeb043fcd441d9c1a4bc20e3955a8c74c';
+$config['git_commit_date'] = '11.12.2023 21:50';
 
 $config['asset_version'] = (
     $config['environment'] === 'dev'

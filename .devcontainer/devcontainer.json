@@ -28,6 +28,13 @@
                 "phpcs.ignorePatterns": [
                     "*/vendor/*"
                 ],
+                "python.languageServer": "Pylance",
+                "python.analysis.typeCheckingMode": "strict",
+                "python.defaultInterpreterPath": "/srv/venv/bin/python3",
+                "[python]": {
+                    "editor.formatOnSave": true,
+                    "editor.defaultFormatter": "ms-python.black-formatter"
+                },
                 "[php]": {
                     "editor.formatOnSave": true,
                     "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
@@ -60,6 +67,9 @@
                 "dbaeumer.vscode-eslint", // JS linter
                 "esbenp.prettier-vscode", // JS/CSS language formatter
                 "shakram02.bash-beautify", // Bash beautifier
+                "ms-python.python", // Python
+                "ms-python.vscode-pylance", // Python autocomplete
+                "ms-python.black-formatter", // Python formatter
                 "mtxr.sqltools", // SQL formatter
                 "github.copilot" // Copilot
             ]
