@@ -57,9 +57,13 @@ class Welcome extends Controller
                 'Example error',
                 1001,
                 'Small description',
-                $param2 == 'json' ? ErrorMessage::OUTPUT_TYPE_JSON : ErrorMessage::OUTPUT_TYPE_HTML,
+                null,
                 500,
-                true
+                forceOutputType: (
+                    $param2 == 'json'
+                    ? ErrorMessage::OUTPUT_TYPE_JSON
+                    : ErrorMessage::OUTPUT_TYPE_HTML
+                ),
             );
         }
 

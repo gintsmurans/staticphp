@@ -143,7 +143,7 @@ XML;
                         'error_class' => $this->getClass(),
                     ];
                     Config::$items['view_engine']->setCache(false);
-                    Load::view("Error.html", $data);
+                    Load::view(["Error.html"], $data);
                 } else {
                     $stackTrace = str_replace("\n", '<br />', $stackTrace);
                     echo "{$this->code} {$this->message}<br /><br />{$this->description}<br /><br />{$stackTrace}";
