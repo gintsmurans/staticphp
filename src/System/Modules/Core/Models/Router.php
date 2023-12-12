@@ -2,7 +2,7 @@
 
 namespace System\Modules\Core\Models;
 
-use Exception;
+use Throwable;
 use System\Modules\Core\Interfaces\RequestContentType;
 use System\Modules\Core\Exceptions\RouterException;
 use System\Modules\Core\Exceptions\ErrorMessage;
@@ -628,7 +628,7 @@ class Router
             self::loadController();
         } catch (ErrorMessage $e) {
             $e->outputMessage(ErrorMessage::outputTypeFromRequestType(self::$request_content_type), true);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $msg = new ErrorMessage(
                 message: $e->getMessage(),
                 code: intval($e->getCode()),
