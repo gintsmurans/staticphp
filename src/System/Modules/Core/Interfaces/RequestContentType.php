@@ -25,6 +25,9 @@ enum RequestContentType: string
         if (strpos($contentType, ';') !== false) {
             $contentType = substr($contentType, 0, strpos($contentType, ';'));
         }
+        if (strpos($contentType, ',') !== false) {
+            $contentType = substr($contentType, 0, strpos($contentType, ','));
+        }
 
         switch ($contentType) {
             case 'application/json':

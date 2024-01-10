@@ -30,7 +30,7 @@ class ErrorMessage extends \Exception
         int $code = 0,
         ?string $description = null,
         ?Throwable $previous = null,
-        int $httpStatusCode = 200,
+        int $httpStatusCode = 400,
         ?string $httpStatusMessage = null,
         ?string $forceOutputType = null,
         bool $showStackTrace = false
@@ -107,7 +107,7 @@ class ErrorMessage extends \Exception
                     'msg' => [
                         'code' => $this->code,
                         'text' => $this->message,
-                        'description' => "{$this->description}\n{$stackTrace}",
+                        'description' => trim("{$this->description}\n{$stackTrace}", "\n"),
                     ],
                 ]);
                 break;

@@ -656,9 +656,16 @@ class Router
      */
     public static function populatePostFromJson()
     {
-        $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
+        $contentType = (isset($_SERVER["CONTENT_TYPE"])
+            ? trim($_SERVER["CONTENT_TYPE"])
+            : (isset($_SERVER["HTTP_ACCEPT"])
+                ? trim($_SERVER["HTTP_ACCEPT"])
+                : ''
+            )
+        );
+
         self::$request_content_type = RequestContentType::fromString($contentType);
-        if ($contentType === "application/json") {
+        if ($contentType === RequestContentType::JSON) {
             $jsonStr = file_get_contents('php://input');
             $jsonArr = json_decode($jsonStr, true);
 
