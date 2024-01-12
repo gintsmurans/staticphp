@@ -665,7 +665,7 @@ class Router
         );
 
         self::$request_content_type = RequestContentType::fromString($contentType);
-        if ($contentType === RequestContentType::JSON) {
+        if ($contentType === RequestContentType::JSON->value) {
             $jsonStr = file_get_contents('php://input');
             $jsonArr = json_decode($jsonStr, true);
 
