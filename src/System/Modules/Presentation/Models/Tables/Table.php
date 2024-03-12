@@ -15,6 +15,7 @@ class Table implements TableInterface
 
     public ?array $columns = null;
     public ?array $rows = null;
+    public ?array $children = null;
 
     public ?array $avgRow = null;
     public RowPosition $avgRowPosition = RowPosition::BODY_TOP;
@@ -143,6 +144,16 @@ class Table implements TableInterface
     public function setRows(array &$rows): void
     {
         $this->rows = &$rows;
+    }
+
+    public function getChildren(): array
+    {
+        return $this->children;
+    }
+
+    public function setChildren(array &$children): void
+    {
+        $this->children = &$children;
     }
 
     public function makeOutput()

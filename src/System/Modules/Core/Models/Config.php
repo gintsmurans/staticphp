@@ -89,7 +89,7 @@ class Config
      * @static
      * @return void
      */
-    public static function setViewData(string $name, mixed $value = null): void
+    public static function setViewData(string|array $name, mixed $value = null): void
     {
         if (is_array($name)) {
             foreach ($name as $key => $value) {

@@ -369,6 +369,81 @@ class Db
     }
 
     /**
+     * Make delete sql string and execute it from associative array of data.
+     *
+     * @example models\Db::delete('posts', ['id' => $post_id]);
+     *          will make and run query: DELETE FROM posts WHERE id = 2.
+     * @access public
+     * @static
+     * @param  string       $table
+     * @param  mixed        $where
+     * @param  string       $name  (default: 'default')
+     * @return \PDOStatement Returns statement created by query.
+     */
+    public static function delete($table, $where, $name = 'default')
+    {
+        // Make WHERE
+        $cond = '';
+        $params = [];
+        if (\is_array($where)) {
+            $cond = [];
+
+            foreach ($where as $key => $value) {
+                $c = '=';
+                $expl = explode(' ', $key);
+                if (count($expl) > 1) {
+                    $key = $expl[0];
+                    $c = $expl[1];
+                }
+
+                if ($key[0] == '!') {
+                    if (is_array($value)) {
+                        $c = 'NOT IN';
+                        $value = '(' . implode(',', $value) . ')';
+                        $cond[] = (self::$dbConfigs[$name]['wrap_column']
+                            . substr($key, 1)
+                            . self::$dbConfigs[$name]['wrap_column']
+                            . " {$c} {$value}"
+                        );
+                    } else {
+                        $cond[] = (self::$dbConfigs[$name]['wrap_column']
+                            . substr($key, 1)
+                            . self::$dbConfigs[$name]['wrap_column']
+                            . " {$c} ?"
+                        );
+                        $params[] = $value;
+                    }
+                } else {
+                    if (is_array($value)) {
+                        $c = 'IN';
+                        $value = '(' . implode(',', $value) . ')';
+                        $cond[] = (self::$dbConfigs[$name]['wrap_column']
+                            . $key
+                            . self::$dbConfigs[$name]['wrap_column']
+                            . " {$c} {$value}");
+                    } else {
+                        $cond[] = (self::$dbConfigs[$name]['wrap_column']
+                            . $key
+                            . self::$dbConfigs[$name]['wrap_column']
+                            . " {$c} ?"
+                        );
+                        $params[] = $value;
+                    }
+                }
+            }
+
+            if (!empty($cond)) {
+                $cond = 'WHERE ' . implode(' AND ', $cond);
+            }
+        } else {
+            $cond = "WHERE {$where}";
+        }
+
+        // Run Query
+        return self::query("DELETE FROM {$table} {$cond};", $params, $name);
+    }
+
+    /**
      * Initiates a database transaction on a database link by $name.
      *
      * Turns off autocommit mode. While autocommit mode is turned off,

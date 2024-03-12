@@ -7,7 +7,7 @@ namespace System\Modules\Utils\Models;
 use System\Modules\Core\Models\Config;
 use System\Modules\Core\Models\Router;
 use System\Modules\Utils\Models\Db;
-use System\Modules\Utils\Models\Cache;
+use System\Modules\Utils\Models\Cache\Cache;
 
 /**
  *  Internationalization (i18n).
@@ -264,11 +264,6 @@ class i18n
         self::$language_key = self::$country_code . '_' . self::$language_code;
         self::$cache_key_prefix = self::$config['cache_prefix'];
 
-        // Load cache, if external
-        if (self::$config['cache'] === 'external') {
-            Cache::init();
-        }
-
         // Load languages
         self::load();
     }
@@ -384,9 +379,17 @@ class i18n
 
         if (empty(self::$cache[$language_key][$text])) { // A note: using isset returns false when value NULL is returned from postgresql
             $db_scheme = (Config::$items['i18n']['db_scheme'] ? Config::$items['i18n']['db_scheme'] . '.' : '');
-            $record = Db::fetch("SELECT id FROM {$db_scheme}i18n_keys WHERE key = ?", [$text], self::$config['db_config']);
+            $record = Db::fetch(
+                "SELECT id FROM {$db_scheme}i18n_keys WHERE key = ?",
+                [$text],
+                self::$config['db_config']
+            );
             if (empty($record)) {
-                $record = Db::fetch("INSERT INTO {$db_scheme}i18n_keys (key) VALUES (?) RETURNING id", [$text], self::$config['db_config']);
+                $record = Db::fetch(
+                    "INSERT INTO {$db_scheme}i18n_keys (key) VALUES (?) RETURNING id",
+                    [$text],
+                    self::$config['db_config']
+                );
             }
 
             self::$cache[$language_key][$text] = $text . '*';

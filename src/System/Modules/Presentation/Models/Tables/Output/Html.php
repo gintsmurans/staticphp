@@ -438,6 +438,18 @@ class Html implements OutputInterface
 
             $html = '<tr title="' . $title . '"' . $attributes . '>';
             foreach ($this->tableInstance->columns as $column) {
+                $showColumn = true;
+                if (is_callable($column->showColumn)) {
+                    $showColumn = $column->showColumn;
+                    $showColumn = $showColumn();
+                } else {
+                    $showColumn = $column->showColumn;
+                }
+
+                if ($showColumn === false) {
+                    continue;
+                }
+
                 $dataValue = '';
                 if (is_callable($column->dataKey)) {
                     $dataKey = $column->dataKey;
@@ -650,7 +662,8 @@ class Html implements OutputInterface
                     [
                         $rowIndex,
                         $rowItem,
-                        $columnCount
+                        $columnCount,
+                        $this->tableInstance
                     ]
                 );
                 $html .= implode('', $tmp);
@@ -664,7 +677,8 @@ class Html implements OutputInterface
                     [
                         $rowIndex,
                         $rowItem,
-                        $columnCount
+                        $columnCount,
+                        $this->tableInstance
                     ]
                 );
                 $html .= implode('', $tmp);
