@@ -395,13 +395,21 @@ class Router
      */
     public static function error($http_error_code, $error_string = '', $description = '')
     {
-        $filename = 'Error';
         if (!empty($http_error_code)) {
             header('HTTP/1.0 ' . $http_error_code . ' ' . $error_string);
-            $filename = "E{$http_error_code}";
         }
-        $data = ['code' => $http_error_code, 'title' => $error_string, 'description' => $description];
-        Load::view(["Errors/{$filename}.html"], $data);
+        $data = [
+            'http_status_code' => $http_error_code,
+            'http_status_message' => $error_string,
+
+            'code' => $http_error_code,
+            'message' => $error_string,
+            'description' => '',
+            'stack_trace' => '',
+
+            'error_class' => '',
+        ];
+        Load::view(["Error.html"], $data);
         exit(10);
     }
 
